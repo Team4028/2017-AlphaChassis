@@ -72,7 +72,6 @@ public class RobotMap
 	public static final int SHIFTER_SOLENOID_EXTEND_PCM_PORT = 6;
 	
 	// TODO: update these
-	public static final int BALL_INFEED_TILT_RETRACT_PCM_PORT = 0;
 	public static final int BALL_INFEED_TILT_EXTEND_PCM_PORT = 0;
 	
 	// ======================================

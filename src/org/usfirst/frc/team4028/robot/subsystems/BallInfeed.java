@@ -14,10 +14,10 @@ public class BallInfeed
 {
 	// =====================================================================
 	// 1 DC Motor
-	//		1 Talon w/o Encoder		Ball Infeed
+	//		1 Talon w/o Encoder				Ball Infeed
 	//
 	// 1 Solenoid
-	// 		1 Dual Action 			Tilt
+	// 		1 Single Action/Spring Return 	Tilt
 	// =====================================================================
 	
 	
