@@ -101,7 +101,7 @@ public class Robot extends IterativeRobot
 		_gearHandler = new GearHandler(RobotMap.GEAR_TILT_CAN_BUS_ADDR, 
 										RobotMap.GEAR_INFEED_CAN_BUS_ADDR);
 		
-		_ballInfeed = new BallInfeed();
+		_ballInfeed = new BallInfeed(RobotMap.INFEED_MTR_CAN_BUS_ADDR, RobotMap.PCM_CAN_BUS_ADDR, RobotMap.BALL_INFEED_TILT_EXTEND_PCM_PORT);
 		
 		_shooter = new Shooter(RobotMap.SHOOTER_STG1_CAN_BUS_ADDR, 
 								RobotMap.SHOOTER_STG2_CAN_BUS_ADDR,
@@ -110,7 +110,7 @@ public class Robot extends IterativeRobot
 		// sensors follow
 		_lidar = new Lidar();
 		_navX = new NavXGyro(RobotMap.NAVX_PORT);
-		_switchableCameraServer = new SwitchableCameraServer(RobotMap.GEAR_CAMERA_NAME);
+		// = new SwitchableCameraServer(RobotMap.GEAR_CAMERA_NAME);
 		
 		// telop sequences follow
 		_hangGearInTeleopSeq = new HangGearInTeleopSequence(_gearHandler, _chassis);
@@ -221,7 +221,7 @@ public class Robot extends IterativeRobot
     	_ballInfeed.FullStop();
     	
     	// #### Cameras ####
-    	_switchableCameraServer.ChgToCamera(RobotMap.BALL_INFEED_CAMERA_NAME);
+    	//_switchableCameraServer.ChgToCamera(RobotMap.BALL_INFEED_CAMERA_NAME);
     	
     	// #### Telop Sequences ####
     	_telopMode = TELEOP_MODE.STANDARD;	// default to std mode
@@ -282,6 +282,19 @@ public class Robot extends IterativeRobot
 		    	// Climber Throttle Cmd
 				//=====================
 		    	_climber.RunMotor(_driversStation.getOperator_Winch_JoystickCmd());
+		    	
+    			//============================================================================
+    			// Fuel Infeed Cmd
+    			//===========================================================================
+    			
+    			if(_driversStation.getIsOperator_FuelInfeed_BtnPressed())
+    			{
+    				_ballInfeed.InfeedFuelAndExtendSolenoid();
+    			}
+    			else
+    			{
+    				_ballInfeed.FullStop();
+    			}
 		    	  
 		    	//=====================
 		    	// Gear Tilt Cmd
@@ -348,6 +361,9 @@ public class Robot extends IterativeRobot
     					DriverStation.reportWarning("=!=!= Cannot chg to Hang Gear Seq, Tilt is NOT finished zeroing yet =!=!=", false);
     				}
     			}
+    			
+
+    			
 		      	
 		      	break;	// end of _telopMode = STANDARD
       		
