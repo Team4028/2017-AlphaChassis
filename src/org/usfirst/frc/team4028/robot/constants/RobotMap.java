@@ -1,0 +1,84 @@
+package org.usfirst.frc.team4028.robot.constants;
+
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.SPI.Port;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+
+// This class contains id values for the physical elements of the robot so we can use names in the code
+// instead of hardcoded constants
+public class RobotMap 
+{
+	// ======================================
+	// Driver's station
+	// ======================================
+	public static final int DRIVER_GAMEPAD_USB_PORT = 0;
+	public static final int OPERATOR_GAMEPAD_USB_PORT = 1;
+	
+	// ======================================
+	// Constants for CAN Bus Addresses
+	// ======================================
+	
+	// define constant for PCM (Pneumatic Control Module)
+	public static final int PCM_CAN_BUS_ADDR = 0;				
+	
+	// define constant for PDP (Power Distribution Panel) CAN Bus Address
+	public static final int PDB_CAN_BUS_ADDR = 0; 
+	
+	// define constants for Talon SRX CAN Bus Addresses
+	public static final int LEFT_MASTER_CAN_BUS_ADDR = 1;
+	public static final int LEFT_SLAVE1_CAN_BUS_ADDR = 2;
+
+	public static final int RIGHT_MASTER_CAN_BUS_ADDR = 3;
+	public static final int RIGHT_SLAVE1_CAN_BUS_ADDR = 4;
+	
+	public static final int CLIMBER_CAN_BUS_ADDR = 5;
+	
+	public static final int GEAR_TILT_CAN_BUS_ADDR = 6;
+	public static final int GEAR_INFEED_CAN_BUS_ADDR = 7;
+	
+	public static final int SHOOTER_STG1_CAN_BUS_ADDR = 8;
+	public static final int SHOOTER_STG2_CAN_BUS_ADDR = 9;
+	public static final int BLENDER_AGITATOR_CAN_BUS_ADDR = 0;
+	public static final int BLENDER_OUTFEED_CAN_BUS_ADDR = 0;
+	
+	public static final int INFEED_MTR_CAN_BUS_ADDR = 0;
+	
+	// ======================================
+	// define constants for PWM Ports on RobioRio
+	// ======================================
+	public static final int SHOOTER_SLIDER_PWM_PORT = 0;
+	
+	// ======================================
+	// define constants for DIO Ports on RoboRio
+	// ======================================
+	
+	// ======================================
+	// define constants for usb cameras
+	// ======================================
+	public static final String SHOOTER_CAMERA_NAME = "cam0";
+	public static final String INFEED_CAMERA_NAME = "cam1";
+	public static final String GEAR_CAMERA_NAME = "cam2";
+	
+	// ======================================
+	// Define constants for solenoid ports on Pneumatic Control Module (PCM)
+	// ======================================
+	public static final int SHIFTER_SOLENOID_RETRACT_PCM_PORT = 7;
+	public static final int SHIFTER_SOLENOID_EXTEND_PCM_PORT = 6;
+	
+	public static final int INFEED_TILT_PCM_PORT = 0;
+	
+	// ======================================
+	// Define constants for solenoid positions 
+	// ======================================
+	public static final Value SHIFTER_SOLENOID_LOW_GEAR_POSITION = DoubleSolenoid.Value.kForward;
+	public static final Value SHIFTER_SOLENOID_HIGH_GEAR_POSITION = DoubleSolenoid.Value.kReverse;
+	
+	public static final SPI.Port NAVX_PORT = Port.kMXP;
+	
+	// ======================================
+	// define constants for logging
+	// ======================================
+	// this is where the USB stick is mounted on the RoboRIO filesystem.  You can confirm by logging into the RoboRIO using WinSCP
+	public static final String LOG_FILE_PATH = "/media/sda1/logging";
+}

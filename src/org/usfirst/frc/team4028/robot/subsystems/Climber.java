@@ -1,0 +1,141 @@
+package org.usfirst.frc.team4028.robot.subsystems;
+
+import java.util.Date;
+
+import org.usfirst.frc.team4028.robot.LogData;
+import org.usfirst.frc.team4028.robot.Utilities;
+
+import com.ctre.CANTalon;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+//This class implements all functionality for the CLIMBER Subsystem
+//=====> For Changes see Sydney Sauer
+
+//------------------------------------------------------
+//Rev		By		 D/T			Desc
+//0		Sydney	 15.Feb.2017	Initial Version
+//------------------------------------------------------
+
+public class Climber 
+{
+	// =====================================================================
+	// 1 DC Motor
+	//		1 Talon w/o Encoder		Climber
+	//
+	//	Note: Mechanical Ratchet Mechanism keeps the motor from running in reverse!
+	// =====================================================================
+	
+	// define class level variables for Robot objects
+	private CANTalon _climberMtr;
+	
+	// define class level working variables
+	private double _currentPercentVBusCmd;
+	private double _climberMotorCurrent;
+	private Date _timeWhenMotorExceededThreshhold;
+	private long _elapsedTimeSinceMotorCurrentExceededMaxThreshholdInMSec;
+	private boolean _isClimberMotorStalled;
+	private boolean _wasLastCycleOverMax;
+	
+	// define class level constants
+	private static final double CLIMBER_MAX_CURRENT = 20.0;
+	private static final double MAX_TIME_OVER_THRESHHOLD = 315;
+	
+
+	
+	//============================================================================================
+	// constructors follow
+	//============================================================================================
+	public Climber(int talonClimberCanBusAddr)
+	{
+		_climberMtr = new CANTalon(talonClimberCanBusAddr);
+		_climberMtr.changeControlMode(CANTalon.TalonControlMode.PercentVbus);	// open loop throttle
+		_climberMtr.enableBrakeMode(true);							// default to brake mode DISABLED
+    	//_climberMtr.setFeedbackDevice(FeedbackDevice.QuadEncoder);	// set encoder to be feedback device
+    	//_climberMtr.reverseSensor(false);  							// do not invert encoder feedback
+		_climberMtr.enableLimitSwitch(false, false);
+    	//_climberMtr.reverseOutput(true);
+	}
+	
+	//============================================================================================
+	// Methods follow
+	//============================================================================================
+	
+	// This is the main drive method
+	public void RunMotor(double percentVBusCmd)
+	{
+		_climberMotorCurrent = _climberMtr.getOutputCurrent();
+		
+		if (_climberMotorCurrent >= CLIMBER_MAX_CURRENT)
+		{	
+			
+			if (_wasLastCycleOverMax == false)
+			{
+				_wasLastCycleOverMax = true;
+				_timeWhenMotorExceededThreshhold = new Date();
+			}
+			// Time you've been in this part of the code equals duration between time when motor exceeded and now
+				Date now = new Date();
+				_elapsedTimeSinceMotorCurrentExceededMaxThreshholdInMSec = _timeWhenMotorExceededThreshhold.getTime() - now.getTime();
+		
+			if (_elapsedTimeSinceMotorCurrentExceededMaxThreshholdInMSec >= MAX_TIME_OVER_THRESHHOLD)
+			{
+				_climberMtr.set(0.0);
+				_isClimberMotorStalled = true;
+			}
+		}
+		else
+		{
+			_wasLastCycleOverMax = false;
+		}
+		
+		if (!_isClimberMotorStalled)
+		{
+			// send cmd to mtr controller
+			_currentPercentVBusCmd = percentVBusCmd;
+			_climberMtr.set(percentVBusCmd);
+		}	
+	}
+	
+	// stop the motor
+	public void FullStop()
+	{
+		RunMotor(0.0);
+	}
+	
+	public void SetUpClimberStatus()
+	{
+		// This is called in Teleop Init, and it resets the climbing mechanism. 
+		_isClimberMotorStalled = false;
+	}
+
+	// update the Dashboard with any Climber specific data values
+	public void OutputToSmartDashboard()
+	{
+		SmartDashboard.putNumber("Climber Motor Current", getActualMotorCurrent());
+	}
+	
+	// add any important data to the logdata
+	public void UpdateLogData(LogData logData)
+	{
+		logData.AddData("ClimberMtr:Cmd_%VBus", String.format("%.2f", _currentPercentVBusCmd));
+		logData.AddData("ClimberMtr:Act_%VBus", String.format("%.2f", getActualPercentVBus()));
+		//logData.AddData("ClimberMtr:Thold_Mtr_I, String.format("%.2f", <replace me>));
+		logData.AddData("ClimberMtr:Act_Mtr_I", String.format("%.2f", getActualMotorCurrent()));
+		logData.AddData("ClimberMtr:OMax_Msec", String.format("%d", _elapsedTimeSinceMotorCurrentExceededMaxThreshholdInMSec));
+	}
+	
+	//============================================================================================
+	// Property Accessors follow
+	//============================================================================================
+	
+	private double getActualMotorCurrent()
+	{
+		return _climberMtr.getOutputCurrent();
+	}
+	
+	private double getActualPercentVBus()
+	{
+		return Utilities.RoundDouble((_climberMtr.getOutputVoltage() / _climberMtr.getBusVoltage()), 2);
+	}
+}
