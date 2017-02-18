@@ -7,37 +7,48 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
+// This is a "data entity" class that hold the data to logged.
+//	Subsystem classes use the Add method to add data in their UpdateLogData method as Name/Value pairs
+//  Internally, this class holds the Names & Values in 2 arrays
+//  Therefore this class does not need to be changed to support addl data to be logged, it grows dynamically
 public class LogData 
 {
+	// define class level working variables
 	private List<String> _names;
 	private List<String> _values;
 	
-	
+	//============================================================================================
+	// constructors follow
+	//============================================================================================
 	public LogData()
 	{
 		_names = new ArrayList<String>();
 		_values = new ArrayList<String>();
 	}
 		
+	//============================================================================================
+	// Methods follow
+	//============================================================================================
 	public void AddData(String name, String value)
 	{
 		_names.add(name);
 		_values.add(value);
 	}
 	
+	// discard any data currently being held
 	public void ResetData()
 	{
 		_names = new ArrayList<String>();
 		_values = new ArrayList<String>();	
 	}
 
-	// build a TSV string for the header row
+	// build a TSV (tab separated value) string for the header row
 	public String BuildTSVHeader()
 	{
 		return BuildTSVString(_names);
 	}
 
-	// build a TSV string for a data row
+	// build a TSV (tab separated value) string for a data row
 	public String BuildTSVData()
 	{
 		return BuildTSVString(_values);
@@ -50,6 +61,7 @@ public class LogData
 		
 		for(String item : myList)
 		{
+			// add the item + a tab character
 			sb.append(item + "\t");
 		}
 		

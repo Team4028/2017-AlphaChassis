@@ -3,6 +3,12 @@ package org.usfirst.frc.team4028.robot.subsystems;
 import org.usfirst.frc.team4028.robot.LogData;
 
 //This class implements all functionality for the Infeed Subsystem
+//
+//------------------------------------------------------
+//	Rev		By		 	D/T			Desc
+//	===		========	===========	=================================
+//------------------------------------------------------
+//
 //=====> For Changes see TBD
 public class BallInfeed 
 {

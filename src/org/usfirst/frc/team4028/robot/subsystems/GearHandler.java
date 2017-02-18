@@ -9,6 +9,13 @@ import com.ctre.CANTalon.TalonControlMode;
 import edu.wpi.first.wpilibj.DriverStation;
 
 // This class implements all functionality for the GEAR Subsystem
+//
+//------------------------------------------------------
+//	Rev		By		 	D/T				Desc
+//	===		========	===========		=================================
+//	1		Nick		17.Feb.2017		Initial Version
+//------------------------------------------------------
+//
 // =====> For Changes see Nick Donahue (javadotmakeitwork)
 public class GearHandler 
 {
@@ -46,7 +53,6 @@ public class GearHandler
 	private enum GEAR_TILT_HOMING_STATE
 	{
 		UNDEFINED,
-		INITIAL,
 		MOVING_TO_HOME,
 		AT_HOME,
 		TIMEOUT,
@@ -108,37 +114,38 @@ public class GearHandler
 		_gearInfeedMotor.enableLimitSwitch(false, false);
     	//_gearInfeedMotor.reverseOutput(true);
 		
-		_gearTiltAxisZeroCurrentState = GEAR_TILT_HOMING_STATE.INITIAL;
-		_gearTiltMoveLastTargetPosition = GEAR_TILT_MOVE_LAST_TARGET_POSITION.UNDEFINED;
+		ZeroGearTiltAxisInit();
 	}
 
 	//============================================================================================
 	// Methods follow
 	//============================================================================================	
 	
+    public void ZeroGearTiltAxisInit()
+    {
+		_gearTiltMoveLastTargetPosition = GEAR_TILT_MOVE_LAST_TARGET_POSITION.UNDEFINED;   	
+		
+		// snapshot the current time so we can enforce the timeout
+		_gearTiltAxisStateStartTime = System.currentTimeMillis();
+    	
+    	// did we start on the limit switch? (remember switch is normally closed!)
+		if(getIsOnTiltHomeLimtSwitch())
+		{
+			_gearTiltAxisZeroCurrentState = GEAR_TILT_HOMING_STATE.AT_HOME;
+			DriverStation.reportWarning("TiltAxis (Zero State) [INITIAL] ==> [AT_HOME]", false);
+		}
+		else
+		{
+			_gearTiltAxisZeroCurrentState = GEAR_TILT_HOMING_STATE.MOVING_TO_HOME;
+			DriverStation.reportWarning("TiltAxis (Zero State) [INITIAL] ==> [MOVING_TO_HOME]", false);
+		}
+    }
+	
 	// Re-entrant method that will zero the Tilt Axis
     public void ZeroGearTiltAxisReentrant()
     {
     	switch(_gearTiltAxisZeroCurrentState)
-    	{
-    		case INITIAL:	
-    			// snapshot the current time so we can enforce the timeout
-        		_gearTiltAxisStateStartTime = System.currentTimeMillis();
-            	
-            	// did we start on the limit switch? (remember switch is normally closed!
-        		if(getIsOnTiltHomeLimtSwitch())
-        		{
-        			_gearTiltAxisZeroCurrentState = GEAR_TILT_HOMING_STATE.AT_HOME;
-        			DriverStation.reportWarning("TiltAxis (Zero State) [INITIAL] ==> [AT_HOME]", false);
-        		}
-        		else
-        		{
-        			_gearTiltAxisZeroCurrentState = GEAR_TILT_HOMING_STATE.MOVING_TO_HOME;
-        			DriverStation.reportWarning("TiltAxis (Zero State) [INITIAL] ==> [MOVING_TO_HOME]", false);
-        		}
-        		     		
-        		break;
-    					
+    	{    					
     		case MOVING_TO_HOME:
     			// are we on the limit switch? (remember switch is normally closed!
     			if(getIsOnTiltHomeLimtSwitch())
@@ -267,11 +274,8 @@ public class GearHandler
 		
 	public void FullStop()
 	{
-		if(_gearTiltMotor.getControlMode() == CANTalon.TalonControlMode.PercentVbus)
-		{
-			_gearTiltMotor.set(0.0);
-			_gearInfeedMotor.set(0.0);
-		}
+		MoveTiltAxisVBus(0.0);
+		_gearInfeedMotor.set(0.0);
 	}
 	
 	// update the Dashboard with any Climber specific data values

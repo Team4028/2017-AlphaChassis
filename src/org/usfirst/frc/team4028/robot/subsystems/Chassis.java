@@ -11,6 +11,12 @@ import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 
 //This class implements all functionality for the GEAR Subsystem
+//
+//------------------------------------------------------
+//	Rev		By		 	D/T			Desc
+//	===		========	===========	=================================
+//------------------------------------------------------
+//
 //=====> For Changes see Sebastian Rodriguez
 public class Chassis 
 {
@@ -69,7 +75,8 @@ public class Chassis
 	//============================================================================================
 	public Chassis(int talonLeftMasterCanBusAddr, int talonLeftSlave1CanBusAddr,
 					int talonRightMasterCanBusAddr, int talonRightSlave1CanBusAddr,
-					int pcmCanBusAddress, int shifterSolenoidHighGearPCMPort, int shifterSolenoidLowGearPCMPort)
+					int pcmCanBusAddress, 
+					int shifterSolenoidHighGearPCMPort, int shifterSolenoidLowGearPCMPort)
 		
 	{
     	// ===================
@@ -111,9 +118,7 @@ public class Chassis
 		_rightDriveSlave1Mtr.enableBrakeMode(false);							// default to brake mode DISABLED
 		_rightDriveSlave1Mtr.enableLimitSwitch(false, false);
 	   	//_rightDriveSlave1Mtr.reverseOutput(true);
-    	
-
-    	
+    	  	
     	//====================
     	// Shifter
     	//====================
@@ -122,7 +127,8 @@ public class Chassis
     	//====================
     	// Arcade Drive
     	//====================
-    	// Arcade Drive configured to drive in "N" motor setup, other motors follow master as slaves 
+    	// Arcade Drive configured to drive in "2 motor per side setup, 
+    	//	other motors follow master as slaves 
     	_robotDrive = new RobotDrive(_leftDriveMasterMtr,_rightDriveMasterMtr);
     
     	//set default scaling factor
@@ -185,8 +191,7 @@ public class Chassis
 		_arcadeDriveTurnCmdAdj = newTurnCmdScaled;
 		
 		// send cmd to mtr controllers
-		_robotDrive.arcadeDrive(_arcadeDriveThrottleCmdAdj, _arcadeDriveTurnCmdAdj);
-		
+		_robotDrive.arcadeDrive(_arcadeDriveThrottleCmdAdj, _arcadeDriveTurnCmdAdj);		
 	}
 	
 	// stop the motors

@@ -54,10 +54,15 @@ public class RobotMap
 	// ======================================
 	
 	// ======================================
+	// define constants for Sensor Ports on RoboRio
+	// ======================================
+	public static final SPI.Port NAVX_PORT = Port.kMXP;
+	
+	// ======================================
 	// define constants for usb cameras
 	// ======================================
 	public static final String SHOOTER_CAMERA_NAME = "cam0";
-	public static final String INFEED_CAMERA_NAME = "cam1";
+	public static final String BALL_INFEED_CAMERA_NAME = "cam1";
 	public static final String GEAR_CAMERA_NAME = "cam2";
 	
 	// ======================================
@@ -66,7 +71,9 @@ public class RobotMap
 	public static final int SHIFTER_SOLENOID_RETRACT_PCM_PORT = 7;
 	public static final int SHIFTER_SOLENOID_EXTEND_PCM_PORT = 6;
 	
-	public static final int INFEED_TILT_PCM_PORT = 0;
+	// TODO: update these
+	public static final int BALL_INFEED_TILT_RETRACT_PCM_PORT = 0;
+	public static final int BALL_INFEED_TILT_EXTEND_PCM_PORT = 0;
 	
 	// ======================================
 	// Define constants for solenoid positions 
@@ -74,7 +81,9 @@ public class RobotMap
 	public static final Value SHIFTER_SOLENOID_LOW_GEAR_POSITION = DoubleSolenoid.Value.kForward;
 	public static final Value SHIFTER_SOLENOID_HIGH_GEAR_POSITION = DoubleSolenoid.Value.kReverse;
 	
-	public static final SPI.Port NAVX_PORT = Port.kMXP;
+	// TODO: validate these
+	public static final Value BALL_INFEED_TILT_RETRACT_POSITION = DoubleSolenoid.Value.kForward;
+	public static final Value BALL_INFEED_TILT_EXTEND_POSITION = DoubleSolenoid.Value.kReverse;
 	
 	// ======================================
 	// define constants for logging

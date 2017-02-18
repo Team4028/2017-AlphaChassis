@@ -16,8 +16,12 @@ import org.usfirst.frc.team4028.robot.constants.RobotMap;
 
 import edu.wpi.first.wpilibj.DriverStation;
 
+// Thsi class contains general helper utility functions
 public class Utilities 
 {
+    /**
+    / This method writes general info about the build to the Operator's Console
+	**/
 	public static void WriteBuildInfoToDashboard(String robotName) 
 	{
 		try
@@ -92,7 +96,9 @@ public class Utilities
     	return dataLogger;
 	}
 	
-	// helper method
+    /**
+    / This method rounds a double to the specified # of decimal places
+	**/
 	public static double RoundDouble(Double originalValue, int decimalPlaces)
 	{
 		BigDecimal bd = new BigDecimal(originalValue).setScale(decimalPlaces, RoundingMode.HALF_EVEN);
@@ -100,6 +106,9 @@ public class Utilities
 		return bd.doubleValue();
 	}
 	
+    /**
+    / This method makes sure a value is between a max & min value
+	**/
 	public static double ClampValue(double originalValue, double minValue, double maxValue) 
 	{
 		double clampedValue = originalValue;
