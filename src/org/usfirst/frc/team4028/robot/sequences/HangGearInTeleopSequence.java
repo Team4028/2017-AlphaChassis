@@ -41,12 +41,12 @@ public class HangGearInTeleopSequence
 	private boolean _isStillRunning;
 	
 	// define class level constants
-	public static final long MAX_TIME_BEFORE_ABORT_IN_MSEC = 2000; 
-	public static final double DRIVE_BACKWARDS_SPEED = 00.50;
-	public static final double GEAR_OUTFEED_SPEED = -1.0;
-	public static final double GEAR_TILT_SPEED = 00.75;
-	public static final int MSEC_FIRST_CHANGE = 300;
-	public static final int MSEC_SECOND_CHANGE = 750;
+	private static final long MAX_TIME_BEFORE_ABORT_IN_MSEC = 2000; 
+	private static final double DRIVE_BACKWARDS_SPEED = 00.50;
+	private static final double GEAR_OUTFEED_SPEED = -1.0;
+	private static final double GEAR_TILT_SPEED = 00.75;
+	private static final int MSEC_FIRST_CHANGE = 300;
+	private static final int MSEC_SECOND_CHANGE = 750;
 	
 	//============================================================================================
 	// constructors follow

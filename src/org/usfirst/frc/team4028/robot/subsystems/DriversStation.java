@@ -60,7 +60,7 @@ public class DriversStation extends BaseDriversStation
 	OPERATOR_RED_BUTTON_B			Gear Tilt Score 
 	OPERATOR_BLUE_BUTTON_X			Gear Sequence Initiation
 	OPERATOR_YELLOW_BUTTON_Y		Gear Tilt Home
-	OPERATOR_LEFT_BUMPER
+	OPERATOR_LEFT_BUMPER			Fuel Infeed
 	OPERATOR_RIGHT_BUMPER			Camera Swap
 	OPERATOR_BACK_BUTTON
 	OPERATOR_START_BUTTON			Gear Tilt ReZero
@@ -172,6 +172,12 @@ public class DriversStation extends BaseDriversStation
 	// =====================================
 	// === operator Is Pressed buttons =====
 	// =====================================
+	
+	//Fuel Infeed
+	public boolean getIsOperator_FuelInfeed_BtnPressed()
+	{
+		return super.getIsOperatorLeftBumperBtnPressed();
+	}
 	
 	/*
 	// Gear Infeed

@@ -42,7 +42,7 @@ public class RobotMap
 	public static final int BLENDER_AGITATOR_CAN_BUS_ADDR = 0;
 	public static final int BLENDER_OUTFEED_CAN_BUS_ADDR = 0;
 	
-	public static final int INFEED_MTR_CAN_BUS_ADDR = 0;
+	public static final int INFEED_MTR_CAN_BUS_ADDR = 10;
 	
 	// ======================================
 	// define constants for PWM Ports on RobioRio
@@ -72,7 +72,7 @@ public class RobotMap
 	public static final int SHIFTER_SOLENOID_EXTEND_PCM_PORT = 6;
 	
 	// TODO: update these
-	public static final int BALL_INFEED_TILT_EXTEND_PCM_PORT = 0;
+	public static final int BALL_INFEED_TILT_EXTEND_PCM_PORT = 5;
 	
 	// ======================================
 	// Define constants for solenoid positions 
@@ -81,8 +81,9 @@ public class RobotMap
 	public static final Value SHIFTER_SOLENOID_HIGH_GEAR_POSITION = DoubleSolenoid.Value.kReverse;
 	
 	// TODO: validate these
-	public static final Value BALL_INFEED_TILT_RETRACT_POSITION = DoubleSolenoid.Value.kForward;
-	public static final Value BALL_INFEED_TILT_EXTEND_POSITION = DoubleSolenoid.Value.kReverse;
+	//2/18/17 Don't believe these are necessary Nick Donahue
+	//public static final Value BALL_INFEED_TILT_RETRACT_POSITION = DoubleSolenoid.Value.kForward;
+	//public static final Value BALL_INFEED_TILT_EXTEND_POSITION = DoubleSolenoid.Value.kReverse;
 	
 	// ======================================
 	// define constants for logging
