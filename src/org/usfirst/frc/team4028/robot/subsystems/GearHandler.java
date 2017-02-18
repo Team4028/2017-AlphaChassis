@@ -282,9 +282,9 @@ public class GearHandler
 	
 	public void UpdateLogData(LogData logData)
 	{
-		logData.AddData("Gear:TiltSpeed", String.format("%.2f", _gearTiltMotor.getSpeed()));
-		logData.AddData("Gear:TiltPos", String.format("%.4f", _gearTiltMotor.getPosition()));
-		logData.AddData("Gear:InfeedCmd", String.format("%.2f", _gearInfeedMotor.get()));
+		logData.AddData("Gear:TiltPos", String.format("%.2f", _gearTiltMotor.getPosition()));
+		logData.AddData("Gear:Tilt%VBus", String.format("%.4f", (_gearTiltMotor.getOutputVoltage()) / _gearTiltMotor.getBusVoltage()));
+		logData.AddData("Gear:Outfeed%Vbus", String.format("%.2f", _gearTiltMotor.get()));
 	}
 	
 	//============================================================================================

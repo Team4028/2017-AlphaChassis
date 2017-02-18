@@ -230,8 +230,11 @@ public class Chassis
 	
 	public void UpdateLogData(LogData logData)
 	{
-		logData.AddData("Chassis:LeftDriveMtr", String.format("%.2f", _leftDriveMasterMtr.getSpeed()));
-		logData.AddData("Chassis:RightDriveMtr", String.format("%.2f", _rightDriveMasterMtr.getSpeed()));
+		logData.AddData("Chassis:LeftDriveMtrSpd", String.format("%.2f", _leftDriveMasterMtr.getSpeed()));
+		logData.AddData("Chassis:RightDriveMtrSpd", String.format("%.2f", _rightDriveMasterMtr.getSpeed()));
+		logData.AddData("Chassis:LeftDriveMtr%VBus", String.format("%.2f", _leftDriveMasterMtr.getOutputVoltage()/_leftDriveMasterMtr.getBusVoltage()));
+		logData.AddData("Chassis:RightDriveMtr%VBus", String.format("%.2f", _rightDriveMasterMtr.getOutputVoltage()/_rightDriveMasterMtr.getBusVoltage()));
+
 	}
 	
 	//============================================================================================
