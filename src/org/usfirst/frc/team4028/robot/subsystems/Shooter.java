@@ -5,6 +5,7 @@ import org.usfirst.frc.team4028.robot.Utilities;
 import com.ctre.CANTalon;
 import com.ctre.CANTalon.FeedbackDevice;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PWM;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -29,7 +30,7 @@ public class Shooter
 	// 		I Linear Actuator		PWM				Slider
 	// =====================================================================
 	
-	// define class level variables for Robot objects
+	// define class level variables for Robot objects`
 	private CANTalon _firstStgMtr;
 	private CANTalon _secondStageMtr;
 	private CANTalon _blenderMtr;
@@ -54,15 +55,16 @@ public class Shooter
 	private static final double SECOND_STAGE_MTG_D_GAIN = 0.0;
 	
 	//define class level Actuator Constants
-	private static final double MAX_THRESHOLD = 0.7;
-	private static final double MIN_THRESHOLD = 0.4;
-	private static final double CHANGE_INTERVAL = 0.025;
+	private static final double MAX_THRESHOLD_ACTUATOR = 0.7; 
+	private static final double MIN_THRESHOLD_ACTUATOR = 0.4;
+	private static final double CHANGE_INTERVAL_ACTUATOR = 0.025;
+	private static final double INITIAL_POSITION_ACTUATOR = 0.4;
 	
 	//============================================================================================
 	// CONSTRUCTORS FOLLOW
 	//============================================================================================
-	public Shooter(int firstStgMtrCanBusAddr, int secondStageMtrCanBusAddr, 
-			int sliderPWMPort, int blenderMtrCanBusAddr, int feederMtrCanBusAddr)
+	public Shooter(int firstStgMtrCanBusAddr, int secondStageMtrCanBusAddr, int blenderMtrCanBusAddr, 
+				   int feederMtrCanBusAddr, int sliderPWMPort)
 	{
 		// First Stage Motor
 		_firstStgMtr = new CANTalon(firstStgMtrCanBusAddr);
@@ -104,18 +106,29 @@ public class Shooter
 		// Blender Motor
 		_blenderMtr = new CANTalon(blenderMtrCanBusAddr);
 		_blenderMtr.enableBrakeMode(false);
+		_blenderMtr.enableLimitSwitch(false, false);
 		
 		// Feeder Motor
 		_feederMtr = new CANTalon(feederMtrCanBusAddr);
 		_feederMtr.enableBrakeMode(false);
+		_feederMtr.enableLimitSwitch(false, false);
 		
 		// Slider
 		_linearActuator = new PWM(sliderPWMPort);
-		_currentSliderPosition = 0.4; 
 	}
 	
 	//============================================================================================
 	// METHODS FOLLOW
+	//============================================================================================
+	
+	public void FullStop() 
+	{
+		SpinStg1Wheel(0);
+		SpinStg2Wheel(0);
+		SpinBlender(0);
+		SpinFeeder(0);
+	}
+	
 	//============================================================================================
 	// Shooter Motors
 	//============================================================================================
@@ -134,14 +147,8 @@ public class Shooter
 		_secondStageMtr.set(_stg2MtrTargetRPM);
 	}
 	
-	public void FullStop() 
-	{
-		SpinStg1Wheel(0);
-		SpinStg2Wheel(0);
-	}
-	
 	//============================================================================================
-	// Blender Motors
+	// Blender/Feeder Motors
 	//============================================================================================
 	
 	public void SpinBlender(double blenderVbusCommand)
@@ -160,26 +167,36 @@ public class Shooter
 	
 	public void ActuatorInitialConfig()
 	{
-		_linearActuator.setPosition(_currentSliderPosition);
+		_linearActuator.setPosition(INITIAL_POSITION_ACTUATOR);
+		_currentSliderPosition = INITIAL_POSITION_ACTUATOR;
 	} 
+	
 	public void ActuatorUp()
 	{
-		if (_currentSliderPosition < MAX_THRESHOLD)
+		if (_currentSliderPosition < MAX_THRESHOLD_ACTUATOR)
 		{
-			_currentSliderPosition += CHANGE_INTERVAL;
+			_currentSliderPosition += CHANGE_INTERVAL_ACTUATOR;
 			_currentSliderPosition = Utilities.RoundDouble(_currentSliderPosition, 3); //rounds to 3 Decimal Places
 			_linearActuator.setPosition(_currentSliderPosition);
+		}
+		else
+		{
+			DriverStation.reportWarning("Actuator Already at Maximum Position", true);
 		}
 	}
 	
 	public void ActuatorDown()
 	{
-		if (_currentSliderPosition > MIN_THRESHOLD)
+		if (_currentSliderPosition > MIN_THRESHOLD_ACTUATOR)
 		{
-			_currentSliderPosition -= CHANGE_INTERVAL;
+			_currentSliderPosition -= CHANGE_INTERVAL_ACTUATOR;
 			_currentSliderPosition = Utilities.RoundDouble(_currentSliderPosition, 3); //rounds to 3 Decimal Places
 			_linearActuator.setPosition(_currentSliderPosition);
-		}			
+		}
+		else
+		{
+			DriverStation.reportWarning("Actuator Already at Minimum Position", true);
+		}
 	}
 	
 	//============================================================================================
@@ -191,16 +208,20 @@ public class Shooter
 		//Display Current Actuator Value
 		String outData = "?";
 		outData = String.format( "%.3f", _currentSliderPosition); //Outputs "Max" and "Min" at respective values
-		if(_currentSliderPosition == MAX_THRESHOLD)
+		if(_currentSliderPosition == MAX_THRESHOLD_ACTUATOR)
 		{
 			outData = outData + " (MAX)";
 		}
-		else if(_currentSliderPosition == MIN_THRESHOLD)
+		else if(_currentSliderPosition == MIN_THRESHOLD_ACTUATOR)
 		{
 			outData = outData + " (MIN)";
 		}
 		SmartDashboard.putString("Actuator Current Value", outData);
 	}
+	
+	//============================================================================================
+	// Update Logging File
+	//============================================================================================	
 	
 	public void UpdateLogData(LogData logData)
 	{
@@ -212,7 +233,7 @@ public class Shooter
 		logData.AddData("Stg2Mtr:Act_Rpm", String.format("%d", getStg2ActualRPM()));	
 		logData.AddData("Stg2Mtr:Err_%", String.format("%.2f%%", getStg2RPMErrorPercent()));
 		
-		logData.AddData("Actuator Position", String.format(".3f", _currentSliderPosition));
+		logData.AddData("Actuator Position", String.format("%.3f", _currentSliderPosition));
 	}
 	
 	//============================================================================================
