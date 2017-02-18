@@ -3,6 +3,15 @@ package org.usfirst.frc.team4028.robot.subsystems;
 import org.usfirst.frc.team4028.robot.LogData;
 import org.usfirst.frc.team4028.robot.constants.LogitechF310;
 
+//This class implements all functionality to read Operator & Driver Gamepads
+//
+//------------------------------------------------------
+//	Rev		By		 	D/T				Desc
+//	===		========	===========		=================================
+//	0		TomB		17.Feb.2017		Initial Version
+//	1		TomB		18.FEb.2018		added OPERATOR_START_BUTTON			Gear Tilt ReZero
+//------------------------------------------------------
+//
 public class DriversStation extends BaseDriversStation
 {
 	//============================================================================================
@@ -54,7 +63,7 @@ public class DriversStation extends BaseDriversStation
 	OPERATOR_LEFT_BUMPER
 	OPERATOR_RIGHT_BUMPER			Camera Swap
 	OPERATOR_BACK_BUTTON
-	OPERATOR_START_BUTTON			
+	OPERATOR_START_BUTTON			Gear Tilt ReZero
 	OPERATOR_LEFT_THUMBSTICK
 	OPERATOR_RIGHT_THUMBSTICK
 	==========================================================================
@@ -134,6 +143,12 @@ public class DriversStation extends BaseDriversStation
 	public boolean getIsOperator_GearGoToHome_BtnJustPressed()
 	{
 		return super.getIsOperatorYellowBtnYJustPressed();
+	}
+	
+	// Gear ReZero
+	public boolean getIsOperator_GearReZero_BtnJustPressed()
+	{
+		return super.getIsOperatorStartBtnJustPressed();
 	}
 	
 	// Gear Tilt Floor

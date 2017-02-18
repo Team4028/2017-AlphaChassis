@@ -7,8 +7,15 @@ import com.ctre.CANTalon.FeedbackDevice;
 
 import edu.wpi.first.wpilibj.PWM;
 
-//This class implements all functionality for the SHOOTER (& Blender) Subsystem
-//=====> For Changes see TBD
+//This class implements all functionality for the Shooter (& Blender) Subsystem
+//
+//------------------------------------------------------
+//	Rev		By		 	D/T				Desc
+//	===		========	===========		=================================
+//	1		Nick		17.Feb.2017		Initial Version
+//------------------------------------------------------
+//
+//=====> For Changes see Patrick
 public class Shooter 
 {
 	// =====================================================================

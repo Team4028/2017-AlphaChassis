@@ -10,13 +10,14 @@ import com.ctre.CANTalon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 //This class implements all functionality for the CLIMBER Subsystem
+//
+//------------------------------------------------------
+//	Rev		By		 	D/T			Desc
+//	===		========	===========	=================================
+//	0		Sydney	 	15.Feb.2017	Initial Version
+//------------------------------------------------------
+//
 //=====> For Changes see Sydney Sauer
-
-//------------------------------------------------------
-//Rev		By		 D/T			Desc
-//0		Sydney	 15.Feb.2017	Initial Version
-//------------------------------------------------------
-
 public class Climber 
 {
 	// =====================================================================

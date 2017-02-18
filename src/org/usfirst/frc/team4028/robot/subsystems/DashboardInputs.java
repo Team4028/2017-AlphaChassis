@@ -8,12 +8,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 //This class implements all functionality to read settings from the Dashboard
+//
+//------------------------------------------------------
+//	Rev		By		 	D/T			Desc
+//	===		========	===========	=================================
+//	0		Sydney	 	15.Feb.2017	Initial Version
+//------------------------------------------------------
+//
 //=====> For Changes see Sydney
-
-// ------------------------------------------------------
-//  Rev		By		 D/T			Desc
-//   0		Sydney	 15.Feb.2017	Initial Version
-// ------------------------------------------------------
 public class DashboardInputs
 { 
 	

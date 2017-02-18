@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 // this class contains the sequence code to hang a gear
 //	Assumptions:
 //		Initial State
-//			Robot is holding gear abotu x degree  tilt angle
+//			Robot is holding gear about x degree  tilt angle
 //			Spike is thru the gear
 //			Gear is almost all the way forward on the spike
 //
@@ -21,7 +21,15 @@ import edu.wpi.first.wpilibj.DriverStation;
 //		Final State
 //			Robot has backed off the spike
 //			gear infeed is stopped
-//			gear tile is at x degrees
+//			gear tilt is at x degrees
+//
+//------------------------------------------------------
+//	Rev		By		 	D/T			Desc
+//	===		========	===========	=================================
+//	0		Nick	 	17.Feb.2017	Initial Version
+//------------------------------------------------------
+//
+//=====> For Changes see Nick Donahue (javadotmakeitwork)
 public class HangGearInTeleopSequence  
 {
 	// define class level variables for Robot subsystems
@@ -63,26 +71,31 @@ public class HangGearInTeleopSequence
 		}
 		else
 		{
-		_seqStartedTimeStamp = System.currentTimeMillis();
-		_isStillRunning = true;
-		
-		DriverStation.reportWarning("===== Entering HangGearInTeleopSequence =====", false);
+			_seqStartedTimeStamp = System.currentTimeMillis();
+			_isStillRunning = true;
+			
+			DriverStation.reportWarning("===== Entering HangGearInTeleopSequence =====", false);
 		}
 	}
-		
-	
+			
 	// execute the sequence, return = true indicates sequence is still running
 	public boolean ExecuteSequenceRentrant()
 	{	
 		// safety valve since in this mode we take away operator control temporarily
 		long elapsedTimeInMSec = System.currentTimeMillis() - _seqStartedTimeStamp;
 		
+<<<<<<< HEAD
 		if(elapsedTimeInMSec <MSEC_FIRST_CHANGE)   //Initial State of Gear
+=======
+		if(elapsedTimeInMSec < MSEC_FIRST_CHANGE)   //Initial State of Gear
+>>>>>>> refs/remotes/origin/master
 		{
 			_gearHandler.MoveTiltAxisVBus(GEAR_TILT_SPEED);    //Sets gear tilt speed and outfeed speed, drives backwards
 			_gearHandler.SpinInfeedWheelsVBus(GEAR_OUTFEED_SPEED);
-			_chassis.Drive(DRIVE_BACKWARDS_SPEED, 0);
+			_chassis.Drive(DRIVE_BACKWARDS_SPEED, 0);			// 0 = no turn
+			_isStillRunning = true;
 		}
+<<<<<<< HEAD
 		
 		else if(elapsedTimeInMSec > MSEC_FIRST_CHANGE && elapsedTimeInMSec < MSEC_SECOND_CHANGE) // third state of gear Sequence
 		{
@@ -97,16 +110,47 @@ public class HangGearInTeleopSequence
 			_gearHandler.SpinInfeedWheelsVBus(0);
 			_chassis.Drive(0, 0);
 			_isStillRunning = false;			//ends sequence
+=======
+		else if((elapsedTimeInMSec >= MSEC_FIRST_CHANGE) 
+					&& (elapsedTimeInMSec < MSEC_SECOND_CHANGE))  //second stage of gear Sequence
+		{
+			_gearHandler.MoveTiltAxisVBus(GEAR_TILT_SPEED);     //sets tilt axis speed, outfeed speed, and drive speed
+			_gearHandler.SpinInfeedWheelsVBus(GEAR_OUTFEED_SPEED);
+			_chassis.Drive(DRIVE_BACKWARDS_SPEED, 0);
+			_isStillRunning = true;
+		}
+		else if((elapsedTimeInMSec >= MSEC_SECOND_CHANGE) 
+					&& (elapsedTimeInMSec < MSEC_THIRD_CHANGE)) // third state of gear Sequence
+		{
+			_gearHandler.MoveTiltAxisVBus(GEAR_TILT_SPEED);		//sets drive speed, starts zeroing of axis
+			_gearHandler.SpinInfeedWheelsVBus(0);				// stop wheels
+			_chassis.Drive(DRIVE_BACKWARDS_SPEED, 0);			// 0 = no turn
+			_isStillRunning = true;
+		}
+		else if((elapsedTimeInMSec >= MSEC_THIRD_CHANGE) 
+					&& (elapsedTimeInMSec < MAX_TIME_BEFORE_ABORT_IN_MSEC))	//final state of gear sequence
+		{
+			_gearHandler.ZeroGearTiltAxisReentrant();		//zeros tilt  <== goto Score??
+			_gearHandler.SpinInfeedWheelsVBus(0);			// stop wheels
+			_chassis.Drive(0, 0);							// stop driving
+			_isStillRunning = false;
+>>>>>>> refs/remotes/origin/master
 		}
 		
 		else if(elapsedTimeInMSec >= MAX_TIME_BEFORE_ABORT_IN_MSEC)  //timeout in order to end sequence
 		{
 			DriverStation.reportWarning("=!=!= HangGearInTeleopSequence Timeout ABORT =!=!=", false);
+<<<<<<< HEAD
 			return false;
 
 		}
 		
 		
+=======
+			_isStillRunning = false;
+		}
+				
+>>>>>>> refs/remotes/origin/master
 		return _isStillRunning;
 	}
 

@@ -31,6 +31,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class Robot extends IterativeRobot 
 {
+	// this value is printed on the Driver's Station message window on startup
 	private static final String ROBOT_NAME = "ALPHA Chassis";
 	
 	// ===========================================================
@@ -51,20 +52,26 @@ public class Robot extends IterativeRobot
 	private NavXGyro _navX;
 	private SwitchableCameraServer _switchableCameraServer;
 	
-	// Wrapper around data logging (if it is enabled)
+	// Wrapper around data logging (will be null if logging is not enabled)
 	private DataLogger _dataLogger;
-	// DTO (Data Transfer Object) holding all live Robot Data Values
-	//private LogData _liveLogData;
 	
 	// ===========================================================
-	//   Define class level instance variables for Robot Runtime Sequences 
+	//   Define class level instance variables for Robot State
 	// ===========================================================
 	private TELEOP_MODE _telopMode;
+	
+	// ===========================================================
+	//   Define class level instance variables for Robot Telep Sequences 
+	// ===========================================================
 	private HangGearInTeleopSequence _hangGearInTeleopSeq;
 	
-	// -----------------------------------
+	// ===========================================================
+	//   Define class level instance variables for Robot Auton Routines 
+	// ===========================================================
+	
+	// ----------------------------------------------------------------------
 	// Code executed 1x at robot startup
-	// -----------------------------------
+	// ----------------------------------------------------------------------
 	@Override
 	public void robotInit() 
 	{
@@ -108,7 +115,7 @@ public class Robot extends IterativeRobot
 		// telop sequences follow
 		_hangGearInTeleopSeq = new HangGearInTeleopSequence(_gearHandler, _chassis);
 		
-		
+		// auton routines follow
 		
 	}
 	
@@ -118,6 +125,7 @@ public class Robot extends IterativeRobot
 	@Override
 	public void disabledInit() 
 	{
+		// if logging was enabled make sure we close the file
     	if(_dataLogger != null)
     	{
 	    	_dataLogger.close();
@@ -131,6 +139,15 @@ public class Robot extends IterativeRobot
 	@Override
 	public void autonomousInit() 
 	{
+		// TODO: add logic to read from Dashboard Choosers to select the Auton routine to run
+		
+    	// #### GearHandler ####
+    	_gearHandler.FullStop();
+    	if(!_gearHandler.hasTiltAxisBeenZeroed())
+    	{
+    		_gearHandler.ZeroGearTiltAxisInit();
+    	}
+		
     	// =====================================
     	// Step N: Optionally Configure Logging
     	// =====================================
@@ -143,6 +160,20 @@ public class Robot extends IterativeRobot
 	@Override
 	public void autonomousPeriodic() 
 	{
+		// this can run concurrently with all auton routines
+      	if(!_gearHandler.hasTiltAxisBeenZeroed())
+    	{
+      		// 	Note: Zeroing will take longer than 1 scan cycle to complete so
+      		//			we must treat it as a Reentrant function
+      		//			and automatically recall it until complete
+    		_gearHandler.ZeroGearTiltAxisReentrant();
+    	}
+      	
+      	
+		// TODO: add logic to call the correct Auton routine to run
+		
+		
+		
     	// =====================================
     	// Step N: Optionally Log Data
     	// =====================================
@@ -180,7 +211,7 @@ public class Robot extends IterativeRobot
     	_gearHandler.FullStop();
     	if(!_gearHandler.hasTiltAxisBeenZeroed())
     	{
-    		_gearHandler.ZeroGearTiltAxisReentrant();
+    		_gearHandler.ZeroGearTiltAxisInit();
     	}
     	
     	// #### Shooter ####
@@ -190,7 +221,7 @@ public class Robot extends IterativeRobot
     	_ballInfeed.FullStop();
     	
     	// #### Cameras ####
-    	
+    	_switchableCameraServer.ChgToCamera(RobotMap.BALL_INFEED_CAMERA_NAME);
     	
     	// #### Telop Sequences ####
     	_telopMode = TELEOP_MODE.STANDARD;	// default to std mode
@@ -237,15 +268,15 @@ public class Robot extends IterativeRobot
 		    	// Acc/Dec Mode Toggle
 				//=====================
 		    	if(_driversStation.getIsDriver_AccDecModeToggle_BtnJustPressed())
-		    	{
-		    		
+		    	{    		
 		    		_chassis.setIsAccDecModeEnabled(!_chassis.getIsAccDecModeEnabled());
 		    	}
 		    	
 		    	//=====================
 		    	// Chassis Throttle Cmd
 				//=====================
-		    	_chassis.Drive(_driversStation.getDriver_ChassisThrottle_JoystickCmd(), _driversStation.getDriver_ChassisTurn_JoystickCmd());
+		    	_chassis.Drive(_driversStation.getDriver_ChassisThrottle_JoystickCmd(), 
+		    					_driversStation.getDriver_ChassisTurn_JoystickCmd());
 		    	
 		    	//=====================
 		    	// Climber Throttle Cmd
@@ -254,51 +285,49 @@ public class Robot extends IterativeRobot
 		    	  
 		    	//=====================
 		    	// Gear Tilt Cmd
+		    	//	Note: All of the Gear Handler sequences are interruptable except for Zero!
 				//=====================
 		      	if(!_gearHandler.hasTiltAxisBeenZeroed())
 		    	{
 		      		// 1st priority is zeroing
+		      		// 	Note: Zeroing will take longer than 1 scan cycle to complete so
+		      		//			we must treat it as a Reentrant function
+		      		//			and automatically recall it until complete
 		    		_gearHandler.ZeroGearTiltAxisReentrant();
 		    	}
+		      	else if (_driversStation.getIsOperator_GearReZero_BtnJustPressed())
+		      	{
+		      		// 2nd priority is operator request to rezero
+		      		_gearHandler.ZeroGearTiltAxisInit();	// zeroing will start on next scan
+		      	}
 		      	else if (Math.abs(_driversStation.getOperator_GearTiltFeed_JoystickCmd()) > 0.0)
 		      	{
-		      		// 2nd priority is joystick control
+		      		// 3rd priority is joystick control
 		      		_gearHandler.MoveTiltAxisVBus(_driversStation.getOperator_GearTiltFeed_JoystickCmd());
 		      	}
 		      	else if (_driversStation.getIsOperator_GearGoToHome_BtnJustPressed())
 		      	{
-		      		// 3rd priority is Home
+		      		// 4th priority is Goto Home
 		      		_gearHandler.MoveGearToHomePosition();
 		      	}
 		      	else if (_driversStation.getIsOperator_GearGoToScore_BtnJustPressed())
 		      	{
-		      		// 4th priority is Score
+		      		// 5th priority is Goto Score
 		      		_gearHandler.MoveGearToScorePosition();
 		      	}
 		      	else if (_driversStation.getIsOperator_GearGoToFloor_BtnJustPressed()
 		      				|| !_gearHandler.getIsLastTiltMoveToFloorCallComplete())
 		      	{
-		      		// 5th priority is Floor
+		      		// 6th priority is Goto Floor
+		      		// 	Note: MoveToFloor will take longer than 1 scan cycle to complete so
+		      		//			we must treat it as a Reentrant function
+		      		//			and automatically recall it until complete
 		      		_gearHandler.MoveGearToFloorPositionReentrant();
 		      	}  
 		      	
 		    	//=====================
 		    	// Gear Infeed Cmd
 				//=====================
-		    	/*if(_driversStation.getIsOperator_GearInfeed_BtnAPressed() && !_driversStation.getIsOperator_GearOutfeed_BtnBPressed())
-		    	{
-		    		_gearHandler.SpinInfeed(GearHandler.INFEED_TARGET_CMD);
-		    	}
-		    	else if (!_driversStation.getIsOperator_GearInfeed_BtnAPressed() && _driversStation.getIsOperator_GearOutfeed_BtnBPressed())
-		    	{
-		    		_gearHandler.SpinOutFeed(GearHandler.OUTFEED_TARGET_CMD);
-		
-		    	}
-		    	else
-		    	{
-		    		_gearHandler.SpinInfeed(0);
-		    	}
-		    	*/
 		      	_gearHandler.SpinInfeedWheelsVBus(_driversStation.getOperator_GearInfeedOutFeed_JoystickCmd());
 		      	
 				//=====================
@@ -346,17 +375,17 @@ public class Robot extends IterativeRobot
     	{
         	if(_switchableCameraServer.getCurrentCameraName() == RobotMap.GEAR_CAMERA_NAME)
         	{
-        		_switchableCameraServer.SwapCamera(RobotMap.SHOOTER_CAMERA_NAME);
+        		_switchableCameraServer.ChgToCamera(RobotMap.SHOOTER_CAMERA_NAME);
         	}
         	
         	else if(_switchableCameraServer.getCurrentCameraName() == RobotMap.SHOOTER_CAMERA_NAME)
         	{
-        		_switchableCameraServer.SwapCamera(RobotMap.INFEED_CAMERA_NAME);
+        		_switchableCameraServer.ChgToCamera(RobotMap.BALL_INFEED_CAMERA_NAME);
         	}
         	
-        	else if(_switchableCameraServer.getCurrentCameraName() == RobotMap.INFEED_CAMERA_NAME)
+        	else if(_switchableCameraServer.getCurrentCameraName() == RobotMap.BALL_INFEED_CAMERA_NAME)
         	{
-        		_switchableCameraServer.SwapCamera(RobotMap.GEAR_CAMERA_NAME);
+        		_switchableCameraServer.ChgToCamera(RobotMap.GEAR_CAMERA_NAME);
         	}
     	}
       	
@@ -439,10 +468,10 @@ public class Robot extends IterativeRobot
     {    	
     	if(_dataLogger != null)
     	{    	
-	    	// clear out data from last scan
+	    	// create a new, empty logging class
         	LogData logData = new LogData();
 	    	
-	    	// tell each subsystem that exists to add its data	    	
+	    	// ask each subsystem that exists to add its data	    	
 	    	if(_chassis != null)
 	    	{
 	    		_chassis.UpdateLogData(logData);
