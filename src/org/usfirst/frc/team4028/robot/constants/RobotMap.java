@@ -39,8 +39,8 @@ public class RobotMap
 	
 	public static final int SHOOTER_STG1_CAN_BUS_ADDR = 8;
 	public static final int SHOOTER_STG2_CAN_BUS_ADDR = 9;
-	public static final int BLENDER_AGITATOR_CAN_BUS_ADDR = 0;
-	public static final int BLENDER_OUTFEED_CAN_BUS_ADDR = 0;
+	public static final int BLENDER_CAN_BUS_ADDR = 0;
+	public static final int FEEDER_CAN_BUS_ADDR = 0;
 	
 	public static final int INFEED_MTR_CAN_BUS_ADDR = 10;
 	

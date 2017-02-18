@@ -1,9 +1,6 @@
 package org.usfirst.frc.team4028.robot;
 
-import java.util.Date;
-
 import org.usfirst.frc.team4028.robot.constants.GeneralEnums.TELEOP_MODE;
-import org.usfirst.frc.team4028.robot.constants.LogitechF310;
 import org.usfirst.frc.team4028.robot.constants.RobotMap;
 import org.usfirst.frc.team4028.robot.sensors.Lidar;
 import org.usfirst.frc.team4028.robot.sensors.NavXGyro;
@@ -20,8 +17,6 @@ import org.usfirst.frc.team4028.robot.subsystems.Shooter;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobot;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * The is the main code for:
@@ -105,6 +100,8 @@ public class Robot extends IterativeRobot
 		
 		_shooter = new Shooter(RobotMap.SHOOTER_STG1_CAN_BUS_ADDR, 
 								RobotMap.SHOOTER_STG2_CAN_BUS_ADDR,
+								RobotMap.BLENDER_CAN_BUS_ADDR,
+								RobotMap.FEEDER_CAN_BUS_ADDR,
 								RobotMap.SHOOTER_SLIDER_PWM_PORT);
 		
 		// sensors follow
