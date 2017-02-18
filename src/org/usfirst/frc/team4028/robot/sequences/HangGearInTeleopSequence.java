@@ -36,10 +36,9 @@ public class HangGearInTeleopSequence
 	public static final long MAX_TIME_BEFORE_ABORT_IN_MSEC = 2000; 
 	public static final double DRIVE_BACKWARDS_SPEED = 00.50;
 	public static final double GEAR_OUTFEED_SPEED = -1.0;
-	public static final double GEAR_TILT_SPEED = 1.0;
+	public static final double GEAR_TILT_SPEED = 00.75;
 	public static final int MSEC_FIRST_CHANGE = 300;
-	public static final int MSEC_SECOND_CHANGE = 350;
-	public static final int MSEC_THIRD_CHANGE = 750;
+	public static final int MSEC_SECOND_CHANGE = 750;
 	
 	//============================================================================================
 	// constructors follow
@@ -78,39 +77,35 @@ public class HangGearInTeleopSequence
 		// safety valve since in this mode we take away operator control temporarily
 		long elapsedTimeInMSec = System.currentTimeMillis() - _seqStartedTimeStamp;
 		
-		if(elapsedTimeInMSec <MSEC_FIRST_CHANGE)   //Intial State of Gear
+		if(elapsedTimeInMSec <MSEC_FIRST_CHANGE)   //Initial State of Gear
 		{
-			_gearHandler.MoveTiltAxisVBus(GEAR_TILT_SPEED);    //Sets gear tilt speed and outfeed speed
+			_gearHandler.MoveTiltAxisVBus(GEAR_TILT_SPEED);    //Sets gear tilt speed and outfeed speed, drives backwards
 			_gearHandler.SpinInfeedWheelsVBus(GEAR_OUTFEED_SPEED);
 			_chassis.Drive(DRIVE_BACKWARDS_SPEED, 0);
 		}
-		else if(elapsedTimeInMSec > MSEC_FIRST_CHANGE && elapsedTimeInMSec < MSEC_SECOND_CHANGE)  //second stage of gear Sequence
+		
+		else if(elapsedTimeInMSec > MSEC_FIRST_CHANGE && elapsedTimeInMSec < MSEC_SECOND_CHANGE) // third state of gear Sequence
 		{
-			_gearHandler.MoveTiltAxisVBus(GEAR_TILT_SPEED);     //sets tilt axis speed, outfeed speed, and drive speed
-			_gearHandler.SpinInfeedWheelsVBus(GEAR_OUTFEED_SPEED);
-			_chassis.Drive(DRIVE_BACKWARDS_SPEED, 0);
-		}
-		else if(elapsedTimeInMSec > MSEC_SECOND_CHANGE && elapsedTimeInMSec < MSEC_THIRD_CHANGE) // third state of gear Sequence
-		{
-			_gearHandler.MoveTiltAxisVBus(GEAR_TILT_SPEED);		//sets drive speed, starts zeroing of axis
+			_gearHandler.MoveTiltAxisVBus(0);		//sets drive speed, starts zeroing of axis
 			_gearHandler.SpinInfeedWheelsVBus(0);
 			_chassis.Drive(DRIVE_BACKWARDS_SPEED, 0);
-			//_gearHandler.ZeroGearTiltAxisReentrant();
 		}
-		else if(elapsedTimeInMSec > MSEC_THIRD_CHANGE && elapsedTimeInMSec < MAX_TIME_BEFORE_ABORT_IN_MSEC)	//final state of gear sequence
+		
+		else if(elapsedTimeInMSec > MSEC_SECOND_CHANGE && elapsedTimeInMSec < MAX_TIME_BEFORE_ABORT_IN_MSEC)	//final state of gear sequence
 		{
-			_gearHandler.ZeroGearTiltAxisReentrant();		//zeros tilt
+			_gearHandler.MoveGearToHomePosition();
 			_gearHandler.SpinInfeedWheelsVBus(0);
 			_chassis.Drive(0, 0);
+			_isStillRunning = false;			//ends sequence
 		}
-		else if(elapsedTimeInMSec >= MAX_TIME_BEFORE_ABORT_IN_MSEC)  //timeout sequence
+		
+		else if(elapsedTimeInMSec >= MAX_TIME_BEFORE_ABORT_IN_MSEC)  //timeout in order to end sequence
 		{
 			DriverStation.reportWarning("=!=!= HangGearInTeleopSequence Timeout ABORT =!=!=", false);
 			return false;
+
 		}
 		
-		//TODO: Implement (probably) elapsed time based functionality
-		//			set _isStillRunning to false when complete!
 		
 		return _isStillRunning;
 	}
