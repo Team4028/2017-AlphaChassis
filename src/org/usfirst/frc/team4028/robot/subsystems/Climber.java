@@ -41,6 +41,7 @@ public class Climber
 	// define class level constants
 	private static final double CLIMBER_MAX_CURRENT = 20.0;
 	private static final double MAX_TIME_OVER_THRESHHOLD = 315;
+	private static final double CLIMBER_MOTOR_VBUS = 0.55;
 	
 
 	
@@ -61,6 +62,14 @@ public class Climber
 	//============================================================================================
 	// Methods follow
 	//============================================================================================
+	
+	public void StartClimber(boolean isMyButtonPressed)
+	{
+		if (isMyButtonPressed)
+		{
+			RunMotor(CLIMBER_MOTOR_VBUS);
+		}
+	}
 	
 	// This is the main drive method
 	public void RunMotor(double percentVBusCmd)
@@ -96,12 +105,6 @@ public class Climber
 			_currentPercentVBusCmd = percentVBusCmd;
 			_climberMtr.set(percentVBusCmd);
 		}	
-	}
-	
-	// stop the motor
-	public void FullStop()
-	{
-		RunMotor(0.0);
 	}
 	
 	public void SetUpClimberStatus()
