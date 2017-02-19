@@ -63,9 +63,10 @@ public class Climber
 	// Methods follow
 	//============================================================================================
 	
-	public void StartClimber(boolean isMyButtonPressed)
+	// This method starts the climber when the button is pressed
+	public void StartClimber(boolean isOperatorBackButtonJustPressed)
 	{
-		if (isMyButtonPressed)
+		if (isOperatorBackButtonJustPressed)
 		{
 			RunMotor(CLIMBER_MOTOR_VBUS);
 		}
