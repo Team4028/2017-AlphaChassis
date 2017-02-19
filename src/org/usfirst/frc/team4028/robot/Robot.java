@@ -293,6 +293,40 @@ public class Robot extends IterativeRobot
     				_ballInfeed.FullStop();
     			}
 		    	  
+    			//=====================
+    			// Run Shooter Motors (TEST)
+    			//=====================
+    			
+    			if(_driversStation.getIsDriver_ShooterStg1Up_BtnJustPressed())
+    			{
+    				_shooter.Stg1RPMUp();
+    			}
+    			if(_driversStation.getIsDriver_ShooterStg1Down_BtnJustPressed())
+    			{
+    				_shooter.Stg1RPMDown();
+    			}
+    			if(_driversStation.getIsDriver_ShooterStg2Up_BtnJustPressed())
+    			{
+    				_shooter.Stg2RPMUp();
+    			}
+    			if(_driversStation.getIsDriver_ShooterStg2Down_BtnJustPressed())
+    			{
+    				_shooter.Stg2RPMDown();		
+    			}
+    			
+    			//=====================
+    			// Handle Actuator
+    			//=====================
+    			
+    			if(_driversStation.getIsDriver_ActuatorUp_BtnJustPressed())
+    			{
+    				_shooter.ActuatorUp();
+    			}
+    			if(_driversStation.getIsDriver_ActuatorDown_BtnJustPressed())
+    			{
+    				_shooter.ActuatorDown();
+    			}
+    			
 		    	//=====================
 		    	// Gear Tilt Cmd
 		    	//	Note: All of the Gear Handler sequences are interruptable except for Zero!

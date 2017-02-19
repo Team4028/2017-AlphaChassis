@@ -35,13 +35,13 @@ public class DriversStation extends BaseDriversStation
 	
 	--- Driver Buttons --------
 	DRIVER_GREEN_BUTTON_A			AccDecModeToggle_Btn
-	DRIVER_RED_BUTTON_B
-	DRIVER_BLUE_BUTTON_X
-	DRIVER_YELLOW_BUTTON_Y			GearShiftToggle_Btn
-	DRIVER_LEFT_BUMPER
-	DRIVER_RIGHT_BUMPER
-	DRIVER_BACK_BUTTON
-	DRIVER_START_BUTTON
+	DRIVER_RED_BUTTON_B				Actuator Down
+	DRIVER_BLUE_BUTTON_X			GearShiftToggle_Btn
+	DRIVER_YELLOW_BUTTON_Y			Actuator Up
+	DRIVER_LEFT_BUMPER				Shooter Stage 1 Motor RPM Up 100
+	DRIVER_RIGHT_BUMPER				Shooter Stage 2 Motor RPM Down 100
+	DRIVER_BACK_BUTTON				Shooter Stage 1 Motor RPM Up 100
+	DRIVER_START_BUTTON				Shooter Stage 2 Motor RPM Down 100
 	DRIVER_LEFT_THUMBSTICK
 	DRIVER_RIGHT_THUMBSTICK
 		
@@ -88,13 +88,49 @@ public class DriversStation extends BaseDriversStation
 	// ShifterToggleBtn
 	public boolean getIsDriver_GearShiftToggle_BtnJustPressed()
 	{
-		return super.getIsDriverYellowBtnYJustPressed();
+		return super.getIsDriverBlueBtnXJustPressed();
 	}
 	
 	// AccDec Mode
 	public boolean getIsDriver_AccDecModeToggle_BtnJustPressed()
 	{
 		return super.getIsDriverGreenBtnAJustPressed();
+	}
+	
+	//ShooterStg1Up
+	public boolean getIsDriver_ShooterStg1Up_BtnJustPressed()
+	{
+		return super.getIsDriverLeftBumperBtnJustPressed();
+	}
+	
+	//ShooterStg2Up
+	public boolean getIsDriver_ShooterStg2Up_BtnJustPressed()
+	{
+		return super.getIsDriverRightBumperBtnJustPressed();
+	}
+	
+	//ShooterStg1Down
+	public boolean getIsDriver_ShooterStg1Down_BtnJustPressed()
+	{
+		return super.getIsDriverBackBtnJustPressed();
+	}
+	
+	//ShooterStg2Down
+	public boolean getIsDriver_ShooterStg2Down_BtnJustPressed()
+	{
+		return super.getIsDriverStartBtnJustPressed();
+	}
+	
+	//ActuatorUp
+	public boolean getIsDriver_ActuatorUp_BtnJustPressed()
+	{
+		return super.getIsDriverYellowBtnYJustPressed();
+	}
+	
+	//ActuatorDown
+	public boolean getIsDriver_ActuatorDown_BtnJustPressed()
+	{
+		return super.getIsDriverRedBtnBJustPressed();
 	}
 	
 	// ===================================
