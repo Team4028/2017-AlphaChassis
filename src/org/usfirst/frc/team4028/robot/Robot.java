@@ -109,8 +109,8 @@ public class Robot extends IterativeRobot
 		
 		// sensors follow
 		_lidar = new Lidar();
-		_navX = new NavXGyro(RobotMap.NAVX_PORT);
-		// = new SwitchableCameraServer(RobotMap.GEAR_CAMERA_NAME);
+		//_navX = new NavXGyro(RobotMap.NAVX_PORT);
+		_switchableCameraServer = new SwitchableCameraServer(RobotMap.GEAR_CAMERA_NAME);
 		
 		// telop sequences follow
 		_hangGearInTeleopSeq = new HangGearInTeleopSequence(_gearHandler, _chassis);
@@ -299,6 +299,28 @@ public class Robot extends IterativeRobot
     			if(_driversStation.getIsOperator_ToggleInfeed_Solenoid_BtnJustPressed())
     			{
     				_ballInfeed.ToggleSolenoid();
+    			}
+    			
+    			//===========================================================================
+    			//Switchable Cameras
+    			//=======================================================================
+    			
+    			if(_driversStation.getIsOperator_CameraSwap_BtnJustPressed())
+    			{
+    				
+    				if(_switchableCameraServer.getCurrentCameraName() == RobotMap.GEAR_CAMERA_NAME)
+    				{
+    					_switchableCameraServer.ChgToCamera(RobotMap.SHOOTER_CAMERA_NAME);
+    				}
+    				else if(_switchableCameraServer.getCurrentCameraName() == RobotMap.SHOOTER_CAMERA_NAME)
+    				{
+    					_switchableCameraServer.ChgToCamera(RobotMap.BALL_INFEED_CAMERA_NAME);
+    				}
+    				else if(_switchableCameraServer.getCurrentCameraName() == RobotMap.BALL_INFEED_CAMERA_NAME)
+    				{
+    					_switchableCameraServer.ChgToCamera(RobotMap.GEAR_CAMERA_NAME);
+    				}
+    				
     			}
 		    	  
 		    	//=====================
