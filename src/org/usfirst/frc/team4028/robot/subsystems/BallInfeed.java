@@ -1,6 +1,14 @@
 package org.usfirst.frc.team4028.robot.subsystems;
 
+import java.io.WriteAbortedException;
+
 import org.usfirst.frc.team4028.robot.LogData;
+import org.usfirst.frc.team4028.robot.constants.RobotMap;
+
+import com.ctre.CANTalon;
+import com.ctre.CANTalon.FeedbackDevice;
+
+import edu.wpi.first.wpilibj.Solenoid;
 
 //This class implements all functionality for the Infeed Subsystem
 //
@@ -20,13 +28,26 @@ public class BallInfeed
 	// 		1 Single Action/Spring Return 	Tilt
 	// =====================================================================
 	
+	CANTalon _fuelInfeedMtr;
+	Solenoid _fuelInfeedSolenoid;
+	
+	//======================================
+	//define class level constants
+	//=======================================
+	
+	private static final double FUEL_INFEED_MOTOR_SPEED = 1.0;
 	
 	//============================================================================================
 	// constructors follow
 	//============================================================================================
-	public BallInfeed()
+	public BallInfeed(int fuelInfeedMtrCanBusAddr, int PCMCanAddr, int fuelInfeedSolenoidPort)
 	{
+		_fuelInfeedMtr = new CANTalon(fuelInfeedMtrCanBusAddr);
+		_fuelInfeedMtr.changeControlMode(CANTalon.TalonControlMode.PercentVbus);	// open loop throttle
+		_fuelInfeedMtr.enableBrakeMode(false);							// default to brake mode DISABLED
+		_fuelInfeedMtr.enableLimitSwitch(false, false);					//no limit switches
 		
+		_fuelInfeedSolenoid = new Solenoid(PCMCanAddr, fuelInfeedSolenoidPort);
 	}
 	
 	//============================================================================================
@@ -34,7 +55,16 @@ public class BallInfeed
 	//============================================================================================	
 
 	public void FullStop() 
-	{		
+	{
+		_fuelInfeedSolenoid.set(false);				//retract Solenoid
+		_fuelInfeedMtr.set(0);						//stop motors
+		
+	}
+	
+	public void InfeedFuelAndExtendSolenoid()
+	{
+		_fuelInfeedSolenoid.set(true);				//engage tilt
+		_fuelInfeedMtr.set(FUEL_INFEED_MOTOR_SPEED);
 	}
 	
 	// update the Dashboard with any Climber specific data values
