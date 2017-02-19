@@ -282,8 +282,7 @@ public class Robot extends IterativeRobot
 		    	
     			//============================================================================
     			// Fuel Infeed Cmd
-    			//===========================================================================
-    			
+    			//===========================================================================   			
     			if(_driversStation.getIsOperator_FuelInfeed_BtnPressed())
     			{
     				_ballInfeed.InfeedFuelAndExtendSolenoid();
