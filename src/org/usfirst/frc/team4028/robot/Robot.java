@@ -285,11 +285,16 @@ public class Robot extends IterativeRobot
     			//===========================================================================   			
     			if(_driversStation.getIsOperator_FuelInfeed_BtnPressed())
     			{
-    				_ballInfeed.InfeedFuelAndExtendSolenoid();
+    				_ballInfeed.InfeedNoSolenoid();
     			}
     			else
     			{
     				_ballInfeed.FullStop();
+    			}
+    			
+    			if(_driversStation.getIsOperator_ToggleInfeed_Solenoid_BtnJustPressed())
+    			{
+    				_ballInfeed.ToggleSolenoid();
     			}
 		    	  
 		    	//=====================

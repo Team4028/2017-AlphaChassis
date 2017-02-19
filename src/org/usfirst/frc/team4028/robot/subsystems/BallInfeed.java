@@ -56,7 +56,7 @@ public class BallInfeed
 
 	public void FullStop() 
 	{
-		_fuelInfeedSolenoid.set(false);				//retract Solenoid
+		//_fuelInfeedSolenoid.set(false);				//retract Solenoid
 		_fuelInfeedMtr.set(0);						//stop motors
 		
 	}
@@ -65,6 +65,25 @@ public class BallInfeed
 	{
 		_fuelInfeedSolenoid.set(true);				//engage tilt
 		_fuelInfeedMtr.set(FUEL_INFEED_MOTOR_SPEED);
+	}
+	
+	public void InfeedNoSolenoid()
+	{
+		//_fuelInfeedSolenoid.set(false);
+		_fuelInfeedMtr.set(FUEL_INFEED_MOTOR_SPEED);
+	}
+	
+	public void ToggleSolenoid()
+	{
+		if(_fuelInfeedSolenoid.get() == false)
+		{
+			_fuelInfeedSolenoid.set(true);
+		}
+		else if(_fuelInfeedSolenoid.get() == true)
+		{
+			_fuelInfeedSolenoid.set(false);
+		}
+		
 	}
 	
 	// update the Dashboard with any Climber specific data values

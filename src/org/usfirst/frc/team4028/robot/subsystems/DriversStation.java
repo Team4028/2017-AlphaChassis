@@ -62,7 +62,7 @@ public class DriversStation extends BaseDriversStation
 	OPERATOR_YELLOW_BUTTON_Y		Gear Tilt Home
 	OPERATOR_LEFT_BUMPER			Fuel Infeed
 	OPERATOR_RIGHT_BUMPER			Camera Swap
-	OPERATOR_BACK_BUTTON
+	OPERATOR_BACK_BUTTON			Solenoid Toggle
 	OPERATOR_START_BUTTON			Gear Tilt ReZero
 	OPERATOR_LEFT_THUMBSTICK
 	OPERATOR_RIGHT_THUMBSTICK
@@ -167,6 +167,12 @@ public class DriversStation extends BaseDriversStation
 	public boolean getIsOperator_CameraSwap_BtnJustPressed()
 	{
 		return super.getIsOperatorRightBumperBtnJustPressed();
+	}
+	
+	//Toggle Infeed Solenoids
+	public boolean getIsOperator_ToggleInfeed_Solenoid_BtnJustPressed()
+	{
+		return super.getIsOperatorBackBtnJustPressed();
 	}
 	
 	// =====================================
