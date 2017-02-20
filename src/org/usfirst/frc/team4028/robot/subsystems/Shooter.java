@@ -6,7 +6,7 @@ import com.ctre.CANTalon;
 import com.ctre.CANTalon.FeedbackDevice;
 
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.PWM;
+import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 //This class implements all functionality for the SHOOTER (& Blender) Subsystem
@@ -37,7 +37,7 @@ public class Shooter
 	private CANTalon _blenderMtr;
 	private CANTalon _feederMtr;
 	
-	private PWM _linearActuator;
+	private Servo _linearActuator;
 	private double _currentSliderPosition;
 	
 	// define class level working variables
@@ -59,7 +59,7 @@ public class Shooter
 	private static final double MAX_THRESHOLD_ACTUATOR = 0.7; 
 	private static final double MIN_THRESHOLD_ACTUATOR = 0.4;
 	private static final double CHANGE_INTERVAL_ACTUATOR = 0.025;
-	private static final double INITIAL_POSITION_ACTUATOR = 0.4;
+	private static final double INITIAL_POSITION_ACTUATOR = 0;
 	
 	//define class level Shooter Motor Constants
 	private static final double MAX_SHOOTER_RPM = 4100;
@@ -119,7 +119,7 @@ public class Shooter
 		_feederMtr.enableLimitSwitch(false, false);
 		
 		// Slider
-		_linearActuator = new PWM(sliderPWMPort);
+		_linearActuator = new Servo(sliderPWMPort);
 	}
 	
 	//============================================================================================
@@ -162,26 +162,40 @@ public class Shooter
 	{
 		if(_stg1MtrTargetRPM < MAX_SHOOTER_RPM)
 		{
-			SpinStg1Wheel(_stg1MtrTargetRPM += 100);
+			if(_stg1MtrTargetRPM > 0)
+			{
+				SpinStg1Wheel(_stg1MtrTargetRPM += 100);
+			}
+			else
+			{
+				SpinStg1Wheel(3000);
+			}
 		}
 	}
 	public void Stg2RPMUp()
 	{
-		if(_stg1MtrTargetRPM < MAX_SHOOTER_RPM)
+		if(_stg2MtrTargetRPM < MAX_SHOOTER_RPM)
 		{
-			SpinStg2Wheel(_stg2MtrTargetRPM += 100);
+			if(_stg2MtrTargetRPM > 0)
+			{
+				SpinStg2Wheel(_stg2MtrTargetRPM += 100);
+			}
+			else
+			{
+				SpinStg2Wheel(3000);
+			}
 		}
 	}
 	public void Stg1RPMDown()
 	{
-		if(_stg1MtrTargetRPM < MAX_SHOOTER_RPM)
+		if(_stg1MtrTargetRPM > MIN_SHOOTER_RPM)
 		{
 			SpinStg1Wheel(_stg1MtrTargetRPM -= 100);
 		}
 	}
 	public void Stg2RPMDown()
 	{
-		if(_stg1MtrTargetRPM < MAX_SHOOTER_RPM)
+		if(_stg2MtrTargetRPM > MIN_SHOOTER_RPM)
 		{
 			SpinStg2Wheel(_stg2MtrTargetRPM -= 100);
 		}
@@ -209,6 +223,7 @@ public class Shooter
 	{
 		_linearActuator.setPosition(INITIAL_POSITION_ACTUATOR);
 		_currentSliderPosition = INITIAL_POSITION_ACTUATOR;
+		DriverStation.reportWarning("Actuator Configured", true);
 	} 
 	
 	public void ActuatorUp()

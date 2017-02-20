@@ -213,6 +213,7 @@ public class Robot extends IterativeRobot
     	
     	// #### Shooter ####
     	_shooter.FullStop();
+    	_shooter.ActuatorInitialConfig();
     	
     	// #### Ball Infeed ####
     	_ballInfeed.FullStop();
@@ -309,15 +310,19 @@ public class Robot extends IterativeRobot
     			{
     				_shooter.Stg2RPMUp();
     			}
-    			if(_driversStation.getIsDriver_ShooterStg2Down_BtnJustPressed())
+    			if(_driversStation.getIsDriver_ShooterStg2Down_BtnJustPressed()) 
     			{
     				_shooter.Stg2RPMDown();		
+    			}
+    			if(_driversStation.getIsDriver_MotorFullStop_BtnJustPressed())
+    			{
+    				_shooter.FullStop();
     			}
     			
     			//=====================
     			// Handle Actuator
     			//=====================
-    			
+    			    			
     			if(_driversStation.getIsDriver_ActuatorUp_BtnJustPressed())
     			{
     				_shooter.ActuatorUp();
