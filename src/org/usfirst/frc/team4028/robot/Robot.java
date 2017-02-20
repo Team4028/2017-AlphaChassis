@@ -106,8 +106,8 @@ public class Robot extends IterativeRobot
 		
 		// sensors follow
 		_lidar = new Lidar();
-		_navX = new NavXGyro(RobotMap.NAVX_PORT);
-		// = new SwitchableCameraServer(RobotMap.GEAR_CAMERA_NAME);
+		//_navX = new NavXGyro(RobotMap.NAVX_PORT);
+		_switchableCameraServer = new SwitchableCameraServer(RobotMap.GEAR_CAMERA_NAME);
 		
 		// telop sequences follow
 		_hangGearInTeleopSeq = new HangGearInTeleopSequence(_gearHandler, _chassis);
@@ -213,6 +213,7 @@ public class Robot extends IterativeRobot
     	
     	// #### Shooter ####
     	_shooter.FullStop();
+    	_shooter.ActuatorInitialConfig();
     	
     	// #### Ball Infeed ####
     	_ballInfeed.FullStop();
@@ -275,28 +276,88 @@ public class Robot extends IterativeRobot
 		    	_chassis.Drive(_driversStation.getDriver_ChassisThrottle_JoystickCmd(), 
 		    					_driversStation.getDriver_ChassisTurn_JoystickCmd());
 		    	
-		    	//=====================
-		    	// Climber Throttle Cmd
-				//=====================
-		    	_climber.RunMotor(_driversStation.getOperator_Winch_JoystickCmd());
-		    	
     			//============================================================================
     			// Fuel Infeed Cmd
     			//===========================================================================   			
     			if(_driversStation.getIsOperator_FuelInfeed_BtnPressed())
     			{
-    				_ballInfeed.InfeedNoSolenoid();
+    				_ballInfeed.InfeedFuelAndExtendSolenoid();
     			}
     			else
     			{
     				_ballInfeed.FullStop();
     			}
     			
-    			if(_driversStation.getIsOperator_ToggleInfeed_Solenoid_BtnJustPressed())
+    			
+    			//===========================================================================
+    			//Switchable Cameras
+    			//=======================================================================
+    			
+    			if(_driversStation.getIsOperator_CameraSwap_BtnJustPressed())
     			{
-    				_ballInfeed.ToggleSolenoid();
+    				
+    				if(_switchableCameraServer.getCurrentCameraName() == RobotMap.GEAR_CAMERA_NAME)
+    				{
+    					_switchableCameraServer.ChgToCamera(RobotMap.SHOOTER_CAMERA_NAME);
+    				}
+    				else if(_switchableCameraServer.getCurrentCameraName() == RobotMap.SHOOTER_CAMERA_NAME)
+    				{
+    					_switchableCameraServer.ChgToCamera(RobotMap.BALL_INFEED_CAMERA_NAME);
+    				}
+    				else if(_switchableCameraServer.getCurrentCameraName() == RobotMap.BALL_INFEED_CAMERA_NAME)
+    				{
+    					_switchableCameraServer.ChgToCamera(RobotMap.GEAR_CAMERA_NAME);
+    				}
+    				
     			}
 		    	  
+    			//=====================
+    			// Run Shooter Motors (TEST)
+    			//=====================
+    			
+    			if(_driversStation.getIsDriver_ShooterStg1Up_BtnJustPressed())
+    			{
+    				_shooter.Stg1RPMUp();
+    			}
+    			if(_driversStation.getIsDriver_ShooterStg1Down_BtnJustPressed())
+    			{
+    				_shooter.Stg1RPMDown();
+    			}
+    			if(_driversStation.getIsDriver_ShooterStg2Up_BtnJustPressed())
+    			{
+    				_shooter.Stg2RPMUp();
+    			}
+    			if(_driversStation.getIsDriver_ShooterStg2Down_BtnJustPressed()) 
+    			{
+    				_shooter.Stg2RPMDown();		
+    			}
+    			//if(_driversStation.getIsDriver_MotorFullStop_BtnJustPressed())
+    			//{
+    			//	_shooter.FullStop();
+    			//}
+    			
+    			//=====================
+    			// Blender and Feeder Motors
+    			//=====================
+    			if(_driversStation.getIsDriver_AccDecModeToggle_BtnJustPressed())
+    			{
+    				_shooter.SpinBlender();
+    				_shooter.SpinFeeder();
+    			}
+    			
+    			//=====================
+    			// Handle Actuator
+    			//=====================
+    			    			
+    			if(_driversStation.getIsDriver_ActuatorUp_BtnJustPressed())
+    			{
+    				_shooter.ActuatorUp();
+    			}
+    			if(_driversStation.getIsDriver_ActuatorDown_BtnJustPressed())
+    			{
+    				_shooter.ActuatorDown();
+    			}
+    			
 		    	//=====================
 		    	// Gear Tilt Cmd
 		    	//	Note: All of the Gear Handler sequences are interruptable except for Zero!
@@ -405,6 +466,29 @@ public class Robot extends IterativeRobot
         		_switchableCameraServer.ChgToCamera(RobotMap.GEAR_CAMERA_NAME);
         	}
     	}
+    	
+    	// =====================================
+    	// Step 5: Check the climber
+    	// =====================================
+    	
+    	if (_driversStation.getIsOperator_StartClimb_ButtonJustPressed())
+    	{
+    		if (!_climber.getIsClimbing())
+    		{
+    			_climber.StartClimber();
+    		}
+    		else 
+    		{
+    			_climber.FullStop();
+    		}	
+    	}
+    	else 
+    	{
+    		if (_climber.getIsClimbing())
+    		{
+    			_climber.StartClimber();
+    		}
+    	}
       	
     	// =====================================
     	// Step N: Finish up 
@@ -461,7 +545,7 @@ public class Robot extends IterativeRobot
     	
     	if(_ballInfeed != null)
     	{
-    		_ballInfeed.OutputToSmartDashboard();
+    		//_ballInfeed.OutputToSmartDashboard();			//TODO fix this, smart dashboard throwing unhandled exceptions
     	}
     	
     	if(_lidar != null)
@@ -497,7 +581,7 @@ public class Robot extends IterativeRobot
 	    	if(_climber != null)
 	    	{
 	    		// TODO: Temporarily commented out
-	    		//_climber.UpdateLogData(logData);
+	    		_climber.UpdateLogData(logData);
 	    	}
 	    	
 	    	if(_driversStation != null)
@@ -527,8 +611,7 @@ public class Robot extends IterativeRobot
 	    	
 	    	if(_shooter != null)
 	    	{
-	    		//TODO:16 Feb 2017 Nick Donahue temporarily commented out for lack of shooter
-	    		//_shooter.UpdateLogData(logData);
+	    		_shooter.UpdateLogData(logData);
 	    	}
     	
 	    	// now write to the log file
