@@ -114,6 +114,8 @@ public class Robot extends IterativeRobot
 		
 		// auton routines follow
 		
+		//Update Dashboard Fields
+		OutputAllToSmartDashboard();
 	}
 	
 	// ----------------------------------------------------------------------
