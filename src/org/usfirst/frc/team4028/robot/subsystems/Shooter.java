@@ -275,18 +275,29 @@ public class Shooter
 	
 	public void OutputToSmartDashboard()
 	{
+		String outDataStg1 = "?";
+		String outDataStg2 = "?";
+		String outDataActuator = "?";
+		
+		//Display Current Shooter Motor RPM + Error
+		outDataStg1 = String.format( "%.0f RPM (%.2f%%)", getStg1ActualRPM(), getStg1RPMErrorPercent());
+		outDataStg2 = String.format("%.0f RPM (%.2f%%)", getStg2ActualRPM(), getStg2RPMErrorPercent());
+		
+		SmartDashboard.putString("Current Stage 1 RPM (Error)", outDataStg1);
+		SmartDashboard.putString("Current Stage 2 RPM (Error)", outDataStg2);
+
+		
 		//Display Current Actuator Value
-		String outData = "?";
-		outData = String.format( "%.3f", _currentSliderPosition); //Outputs "Max" and "Min" at respective values
+		outDataActuator = String.format( "%.3f", _currentSliderPosition); //Outputs "Max" and "Min" at respective values
 		if(_currentSliderPosition == MAX_THRESHOLD_ACTUATOR)
 		{
-			outData = outData + " (MAX)";
+			outDataActuator = outDataActuator + " (MAX)";
 		}
 		else if(_currentSliderPosition == MIN_THRESHOLD_ACTUATOR)
 		{
-			outData = outData + " (MIN)";
+			outDataActuator = outDataActuator + " (MIN)";
 		}
-		SmartDashboard.putString("Actuator Current Value", outData);
+		SmartDashboard.putString("Actuator Current Value", outDataActuator);
 	}
 	
 	//============================================================================================
