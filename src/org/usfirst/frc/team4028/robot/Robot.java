@@ -340,9 +340,18 @@ public class Robot extends IterativeRobot
     			{
     				_shooter.Stg2RPMDown();		
     			}
-    			if(_driversStation.getIsDriver_MotorFullStop_BtnJustPressed())
+    			//if(_driversStation.getIsDriver_MotorFullStop_BtnJustPressed())
+    			//{
+    			//	_shooter.FullStop();
+    			//}
+    			
+    			//=====================
+    			// Blender and Feeder Motors
+    			//=====================
+    			if(_driversStation.getIsDriver_AccDecModeToggle_BtnJustPressed())
     			{
-    				_shooter.FullStop();
+    				_shooter.SpinBlender();
+    				_shooter.SpinFeeder();
     			}
     			
     			//=====================
@@ -589,7 +598,7 @@ public class Robot extends IterativeRobot
 	    	if(_shooter != null)
 	    	{
 	    		//TODO:16 Feb 2017 Nick Donahue temporarily commented out for lack of shooter
-	    		//_shooter.UpdateLogData(logData);
+	    		_shooter.UpdateLogData(logData);
 	    	}
     	
 	    	// now write to the log file

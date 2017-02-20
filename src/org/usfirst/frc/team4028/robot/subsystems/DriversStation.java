@@ -34,7 +34,7 @@ public class DriversStation extends BaseDriversStation
 	DRIVER_RIGHT_Y_AXIS
 	
 	--- Driver Buttons --------
-	DRIVER_GREEN_BUTTON_A			AccDecModeToggle_Btn
+	DRIVER_GREEN_BUTTON_A			Feeder And Blender (AccDecModeToggle_Btn)
 	DRIVER_RED_BUTTON_B				Actuator Down
 	DRIVER_BLUE_BUTTON_X			GearShiftToggle_Btn
 	DRIVER_YELLOW_BUTTON_Y			Actuator Up
@@ -42,7 +42,7 @@ public class DriversStation extends BaseDriversStation
 	DRIVER_RIGHT_BUMPER				Shooter Stage 2 Motor RPM Down 100
 	DRIVER_BACK_BUTTON				Shooter Stage 1 Motor RPM Up 100
 	DRIVER_START_BUTTON				Shooter Stage 2 Motor RPM Down 100
-	DRIVER_LEFT_THUMBSTICK
+	DRIVER_LEFT_THUMBSTICK		
 	DRIVER_RIGHT_THUMBSTICK
 		
 	==========================================================================
@@ -132,7 +132,7 @@ public class DriversStation extends BaseDriversStation
 	{
 		return super.getIsDriverRedBtnBJustPressed();
 	}
-	
+		
 	// ===================================
 	// === driver Is Pressed buttons =====
 	// ===================================

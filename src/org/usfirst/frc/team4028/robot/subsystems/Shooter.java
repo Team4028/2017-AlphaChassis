@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //	Rev		By			D/T				Description
 //	0		Patrick		2/16 8:47		Enabling Blender and Feeder Motors
 //	1		Patrick		2/18 5:36		Code Review
+//	2		Patrick		2/20 10:02		Code Review on Shooter Testing
 //-------------------------------------------------------------
 public class Shooter 
 {
@@ -45,13 +46,13 @@ public class Shooter
 	private double _stg2MtrTargetRPM;
 	
 	//define class level PID constants
-	private static final double FIRST_STAGE_MTG_FF_GAIN = 0.035;
+	private static final double FIRST_STAGE_MTG_FF_GAIN = 0.036;
 	private static final double FIRST_STAGE_MTG_P_GAIN = 0.075;
 	private static final double FIRST_STAGE_MTG_I_GAIN = 0.0;
 	private static final double FIRST_STAGE_MTG_D_GAIN = 0.0;
 	
-	private static final double SECOND_STAGE_MTG_FF_GAIN = 0.029;
-	private static final double SECOND_STAGE_MTG_P_GAIN = 0.075;
+	private static final double SECOND_STAGE_MTG_FF_GAIN = 0.03125;
+	private static final double SECOND_STAGE_MTG_P_GAIN = 0.033;
 	private static final double SECOND_STAGE_MTG_I_GAIN = 0.0;
 	private static final double SECOND_STAGE_MTG_D_GAIN = 0.0;
 	
@@ -59,11 +60,13 @@ public class Shooter
 	private static final double MAX_THRESHOLD_ACTUATOR = 0.7; 
 	private static final double MIN_THRESHOLD_ACTUATOR = 0.4;
 	private static final double CHANGE_INTERVAL_ACTUATOR = 0.025;
-	private static final double INITIAL_POSITION_ACTUATOR = 0;
+	private static final double INITIAL_POSITION_ACTUATOR = 0.55;
 	
 	//define class level Shooter Motor Constants
-	private static final double MAX_SHOOTER_RPM = 4100;
-	private static final double MIN_SHOOTER_RPM = 3000;
+	private static final double MAX_SHOOTER_RPM = -4400;
+	private static final double MIN_SHOOTER_RPM = -3000;
+	private static final double FEEDER_PERCENTVBUS_COMMAND = -0.7; //This Motor Needs to Run in Reverse
+	private static final double BLENDER_PERCENTVBUS_COMMAND = 0.5;
 
 	//============================================================================================
 	// CONSTRUCTORS FOLLOW
@@ -80,7 +83,7 @@ public class Shooter
 		_firstStgMtr.enableLimitSwitch(false, false);
         // set the peak and nominal outputs, 12V means full 
 		_firstStgMtr.configNominalOutputVoltage(+0.0f, -0.0f);
-		_firstStgMtr.configPeakOutputVoltage(12.0f, 0.0f);
+		_firstStgMtr.configPeakOutputVoltage(0.0f, -12.0f);
     	
 		// set closed loop gains in slot0 
 		_firstStgMtr.setProfile(0);
@@ -99,7 +102,7 @@ public class Shooter
     	//_secondStageMtr.reverseOutput(true);
         // set the peak and nominal outputs, 12V means full
 		_secondStgMtr.configNominalOutputVoltage(+0.0f, -0.0f);
-		_secondStgMtr.configPeakOutputVoltage(12.0f, 0.0f);
+		_secondStgMtr.configPeakOutputVoltage(0.0f, -12.0f);
 		
 		// set closed loop gains in slot0
 		_secondStgMtr.setProfile(0);
@@ -160,44 +163,44 @@ public class Shooter
 	
 	public void Stg1RPMUp()
 	{
-		if(_stg1MtrTargetRPM < MAX_SHOOTER_RPM)
+		if(_stg1MtrTargetRPM > MAX_SHOOTER_RPM)
 		{
-			if(_stg1MtrTargetRPM > 0)
+			if(_stg1MtrTargetRPM < 0)
 			{
-				SpinStg1Wheel(_stg1MtrTargetRPM += 100);
+				SpinStg1Wheel(_stg1MtrTargetRPM -= 100);
 			}
 			else
 			{
-				SpinStg1Wheel(3000);
+				SpinStg1Wheel(-3000);
 			}
 		}
 	}
 	public void Stg2RPMUp()
 	{
-		if(_stg2MtrTargetRPM < MAX_SHOOTER_RPM)
+		if(_stg2MtrTargetRPM > MAX_SHOOTER_RPM)
 		{
-			if(_stg2MtrTargetRPM > 0)
+			if(_stg2MtrTargetRPM < 0)
 			{
-				SpinStg2Wheel(_stg2MtrTargetRPM += 100);
+				SpinStg2Wheel(_stg2MtrTargetRPM -= 100);
 			}
 			else
 			{
-				SpinStg2Wheel(3000);
+				SpinStg2Wheel(-3000);
 			}
 		}
 	}
 	public void Stg1RPMDown()
 	{
-		if(_stg1MtrTargetRPM > MIN_SHOOTER_RPM)
+		if(_stg1MtrTargetRPM < MIN_SHOOTER_RPM)
 		{
-			SpinStg1Wheel(_stg1MtrTargetRPM -= 100);
+			SpinStg1Wheel(_stg1MtrTargetRPM += 100);
 		}
 	}
 	public void Stg2RPMDown()
 	{
-		if(_stg2MtrTargetRPM > MIN_SHOOTER_RPM)
+		if(_stg2MtrTargetRPM < MIN_SHOOTER_RPM)
 		{
-			SpinStg2Wheel(_stg2MtrTargetRPM -= 100);
+			SpinStg2Wheel(_stg2MtrTargetRPM += 100);
 		}
 	}
 	
@@ -205,25 +208,35 @@ public class Shooter
 	// Blender/Feeder Motors
 	//============================================================================================
 	
-	public void SpinBlender(double blenderVbusCommand)
+	public void SpinBlender()
+	{
+		SpinBlender(BLENDER_PERCENTVBUS_COMMAND);
+	}
+	
+	public void SpinFeeder()
+	{
+		SpinFeeder(FEEDER_PERCENTVBUS_COMMAND);
+	}
+	
+	private void SpinBlender(double blenderVbusCommand)
 	{
 		_blenderMtr.set(blenderVbusCommand);
 	}
 	
-	public void SpinFeeder(double feederVbusCommand)
+	private void SpinFeeder(double feederVbusCommand)
 	{
 		_feederMtr.set(feederVbusCommand);
 	}
-		
+	
 	//============================================================================================
 	// Linear Actuator
 	//============================================================================================
 	
 	public void ActuatorInitialConfig()
 	{
-		_linearActuator.setPosition(INITIAL_POSITION_ACTUATOR);
 		_currentSliderPosition = INITIAL_POSITION_ACTUATOR;
-		DriverStation.reportWarning("Actuator Configured", true);
+		_linearActuator.setPosition(_currentSliderPosition);
+		DriverStation.reportWarning("Actuator Configured to " + _currentSliderPosition, false);
 	} 
 	
 	public void ActuatorUp()
@@ -233,10 +246,11 @@ public class Shooter
 			_currentSliderPosition += CHANGE_INTERVAL_ACTUATOR;
 			_currentSliderPosition = Utilities.RoundDouble(_currentSliderPosition, 3); //rounds to 3 Decimal Places
 			_linearActuator.setPosition(_currentSliderPosition);
+			DriverStation.reportWarning("Actuator Position " + _currentSliderPosition, false);
 		}
 		else
 		{
-			DriverStation.reportWarning("Actuator Already at Maximum Position", true);
+			DriverStation.reportWarning("!=!=!=!=! Actuator Already at Maximum Position", false);
 		}
 	}
 	
@@ -247,10 +261,11 @@ public class Shooter
 			_currentSliderPosition -= CHANGE_INTERVAL_ACTUATOR;
 			_currentSliderPosition = Utilities.RoundDouble(_currentSliderPosition, 3); //rounds to 3 Decimal Places
 			_linearActuator.setPosition(_currentSliderPosition);
+			DriverStation.reportWarning("Actuator Position " + _currentSliderPosition, false);
 		}
 		else
 		{
-			DriverStation.reportWarning("Actuator Already at Minimum Position", true);
+			DriverStation.reportWarning("!=!=!=!=! Actuator Already at Minimum Position", false);
 		}
 	}
 	
@@ -280,13 +295,16 @@ public class Shooter
 	
 	public void UpdateLogData(LogData logData)
 	{
-		logData.AddData("Stg1Mtr:Cmd_Rpm", String.format("%d", _stg1MtrTargetRPM));
-		logData.AddData("Stg1Mtr:Act_Rpm", String.format("%d", getStg1ActualRPM()));
+		logData.AddData("Stg1Mtr:Cmd_Rpm", String.format("%f", _stg1MtrTargetRPM));
+		logData.AddData("Stg1Mtr:Act_Rpm", String.format("%f", getStg1ActualRPM()));
 		logData.AddData("Stg1Mtr:Err_%", String.format("%.2f%%", getStg1RPMErrorPercent()));
-		
-		logData.AddData("Stg2Mtr:Cmd_Rpm", String.format("%d", _stg2MtrTargetRPM));
-		logData.AddData("Stg2Mtr:Act_Rpm", String.format("%d", getStg2ActualRPM()));	
+		logData.AddData("Stg1Mtr: %VBus", String.format("%.2f%%", getStg1CurrentPercentVBus()));
+			
+		logData.AddData("Stg2Mtr:Cmd_Rpm", String.format("%f", _stg2MtrTargetRPM));
+		logData.AddData("Stg2Mtr:Act_Rpm", String.format("%f", getStg2ActualRPM()));	
 		logData.AddData("Stg2Mtr:Err_%", String.format("%.2f%%", getStg2RPMErrorPercent()));
+		logData.AddData("Stg2Mtr: %VBus", String.format("%.2f%%", getStg2CurrentPercentVBus()));
+
 		
 		logData.AddData("Actuator Position", String.format("%.3f", _currentSliderPosition));
 	}
@@ -310,6 +328,15 @@ public class Shooter
 			return 0.0;
 		}
 	}
+	public double getStg1CurrentPercentVBus()
+	{
+		double currentOutputVoltage = _firstStgMtr.getOutputVoltage();
+		double currentBusVoltage = _firstStgMtr.getBusVoltage();
+		
+		double currentActualSpeed = (currentOutputVoltage / currentBusVoltage);
+		
+		return Utilities.RoundDouble(currentActualSpeed, 2);
+	}
 	
 	private double getStg2ActualRPM()
 	{
@@ -326,5 +353,14 @@ public class Shooter
 		{
 			return 0.0;
 		}
+	}
+	public double getStg2CurrentPercentVBus()
+	{
+		double currentOutputVoltage = _secondStgMtr.getOutputVoltage();
+		double currentBusVoltage = _secondStgMtr.getBusVoltage();
+		
+		double currentActualSpeed = (currentOutputVoltage / currentBusVoltage);
+		
+		return Utilities.RoundDouble(currentActualSpeed, 2);
 	}
 }
