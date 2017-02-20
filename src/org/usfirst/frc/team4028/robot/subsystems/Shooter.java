@@ -59,7 +59,7 @@ public class Shooter
 	private static final double MAX_THRESHOLD_ACTUATOR = 0.7; 
 	private static final double MIN_THRESHOLD_ACTUATOR = 0.4;
 	private static final double CHANGE_INTERVAL_ACTUATOR = 0.025;
-	private static final double INITIAL_POSITION_ACTUATOR = 0;
+	private static final double INITIAL_POSITION_ACTUATOR = 0.4;
 	
 	//define class level Shooter Motor Constants
 	private static final double MAX_SHOOTER_RPM = 4100;
@@ -233,6 +233,7 @@ public class Shooter
 			_currentSliderPosition += CHANGE_INTERVAL_ACTUATOR;
 			_currentSliderPosition = Utilities.RoundDouble(_currentSliderPosition, 3); //rounds to 3 Decimal Places
 			_linearActuator.setPosition(_currentSliderPosition);
+			DriverStation.reportWarning("Actuator Position " + _currentSliderPosition, true);
 		}
 		else
 		{
@@ -247,6 +248,7 @@ public class Shooter
 			_currentSliderPosition -= CHANGE_INTERVAL_ACTUATOR;
 			_currentSliderPosition = Utilities.RoundDouble(_currentSliderPosition, 3); //rounds to 3 Decimal Places
 			_linearActuator.setPosition(_currentSliderPosition);
+			DriverStation.reportWarning("Actuator Position " + _currentSliderPosition, true);
 		}
 		else
 		{

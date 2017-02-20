@@ -340,9 +340,18 @@ public class Robot extends IterativeRobot
     			{
     				_shooter.Stg2RPMDown();		
     			}
-    			if(_driversStation.getIsDriver_MotorFullStop_BtnJustPressed())
+    			//if(_driversStation.getIsDriver_MotorFullStop_BtnJustPressed())
+    			//{
+    			//	_shooter.FullStop();
+    			//}
+    			
+    			//=====================
+    			// Blender and Feeder Motors
+    			//=====================
+    			if(_driversStation.getIsDriver_AccDecModeToggle_BtnJustPressed())
     			{
-    				_shooter.FullStop();
+    				_shooter.SpinBlender(.5);
+    				_shooter.SpinFeeder(.7);
     			}
     			
     			//=====================
