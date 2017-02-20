@@ -46,23 +46,13 @@ public class Shooter
 	private double _stg2MtrTargetRPM;
 	
 	//define class level PID constants
-<<<<<<< HEAD
-	private static final double FIRST_STAGE_MTG_FF_GAIN = 0.036;
-	private static final double FIRST_STAGE_MTG_P_GAIN = 0.0; //0.075;
-=======
 	private static final double FIRST_STAGE_MTG_FF_GAIN = 0.0278;
 	private static final double FIRST_STAGE_MTG_P_GAIN = 0.05;
->>>>>>> refs/remotes/origin/master
 	private static final double FIRST_STAGE_MTG_I_GAIN = 0.0;
 	private static final double FIRST_STAGE_MTG_D_GAIN = 0.5;
-	
-<<<<<<< HEAD
-	private static final double SECOND_STAGE_MTG_FF_GAIN = 0.03125;
-	private static final double SECOND_STAGE_MTG_P_GAIN = 0.0115; //0.0; //0.033;
-=======
+
 	private static final double SECOND_STAGE_MTG_FF_GAIN = 0.0274;
 	private static final double SECOND_STAGE_MTG_P_GAIN = 0.0;
->>>>>>> refs/remotes/origin/master
 	private static final double SECOND_STAGE_MTG_I_GAIN = 0.0;
 	private static final double SECOND_STAGE_MTG_D_GAIN = 0.115;
 	
