@@ -304,9 +304,9 @@ public class GearHandler
 	// update the Dashboard with any Climber specific data values
 	public void OutputToSmartDashboard()
 	{
-		/*SmartDashboard.putNumber(String.format("%.3f", "Gear Tilt Position"), _gearTiltMotor.getPosition());
+		SmartDashboard.putString("Gear Tilt Position", String.format("%.3f", _gearTiltMotor.getPosition()));
 		SmartDashboard.putString("Gear Tilt State", getTiltPosition());
-		SmartDashboard.putNumber(String.format("%.3f", "Gear In/OutFeed Cmd"), _gearInfeedMotor.getOutputVoltage()/_gearInfeedMotor.getBusVoltage());	*/	
+		SmartDashboard.putString("Gear In/OutFeed Cmd", String.format("%.3f", _gearInfeedMotor.getOutputVoltage()/_gearInfeedMotor.getBusVoltage()));		
 	}
 	
 	public void UpdateLogData(LogData logData)
