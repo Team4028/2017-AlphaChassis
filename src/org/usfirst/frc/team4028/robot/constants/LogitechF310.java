@@ -14,7 +14,7 @@ package org.usfirst.frc.team4028.robot.constants;
 public class LogitechF310 
 {
 	// Constants for buttons on a Gamepad controller
-	public static final int GREEN_BUTTON_A =1;
+	public static final int GREEN_BUTTON_A = 1;
 	public static final int RED_BUTTON_B = 2;
 	public static final int BLUE_BUTTON_X = 3;
 	public static final int YELLOW_BUTTON_Y = 4;
@@ -34,7 +34,7 @@ public class LogitechF310
 	public static final int RIGHT_Y_AXIS = 5;		//-1 to +1
 	
 	// Constants for POV (dpad)
-	public static final int POV_UP_0 = 0;//Up
+	public static final int POV_UP_0 = 10;//Up
 	public static final int POV_UP_RIGHT_1 = 1;//Up-Right
 	public static final int POV_RIGHT_2 = 2;//Right
 	public static final int POV_DOWN_RIGHT_3 = 3;//Down-Right
