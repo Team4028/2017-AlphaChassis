@@ -35,9 +35,9 @@ public class DriversStation extends BaseDriversStation
 	
 	--- Driver Buttons --------
 	DRIVER_GREEN_BUTTON_A			Feeder And Blender (AccDecModeToggle_Btn)
-	DRIVER_RED_BUTTON_B				Actuator Down
+	DRIVER_RED_BUTTON_B				Shooter Slider Down
 	DRIVER_BLUE_BUTTON_X			GearShiftToggle_Btn
-	DRIVER_YELLOW_BUTTON_Y			Actuator Up
+	DRIVER_YELLOW_BUTTON_Y			Shooter Slider Up
 	DRIVER_LEFT_BUMPER				Shooter Stage 1 Motor RPM Up 100
 	DRIVER_RIGHT_BUMPER				Shooter Stage 2 Motor RPM Down 100
 	DRIVER_BACK_BUTTON				Shooter Stage 1 Motor RPM Up 100
@@ -60,15 +60,15 @@ public class DriversStation extends BaseDriversStation
 	OPERATOR_RED_BUTTON_B			Gear Tilt Score 
 	OPERATOR_BLUE_BUTTON_X			Gear Sequence Initiation
 	OPERATOR_YELLOW_BUTTON_Y		Gear Tilt Home
-	OPERATOR_LEFT_BUMPER			Fuel Infeed
+	OPERATOR_LEFT_BUMPER			Fuel Infeed Motor
 	OPERATOR_RIGHT_BUMPER			Camera Swap
-	OPERATOR_BACK_BUTTON			Solenoid Toggle
+	OPERATOR_BACK_BUTTON			Ball Infeed Tilt Toggle
 	OPERATOR_START_BUTTON			Gear Tilt ReZero
 	OPERATOR_LEFT_THUMBSTICK
 	OPERATOR_RIGHT_THUMBSTICK
 	==========================================================================
 	*/
-	
+		
 	// ======================================================
 	// Public Property Accessors
 	//		Implement calls into base class property accessors with 
@@ -209,6 +209,12 @@ public class DriversStation extends BaseDriversStation
 	public boolean getIsOperator_ToggleInfeed_Solenoid_BtnJustPressed()
 	{
 		return super.getIsOperatorBackBtnJustPressed();
+	}
+	
+	public boolean getIsOperator_StartClimb_ButtonJustPressed()
+	{
+		// TODO: Need to map to a button
+		return false;
 	}
 	
 	// =====================================
