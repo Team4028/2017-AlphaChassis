@@ -60,7 +60,7 @@ public class Climber
 		_climberMtr.enableLimitSwitch(false, false);
     	//_climberMtr.reverseOutput(true);
 		
-		_isClimbing = false;
+		//_isClimbing = false;
 	}
 	
 	//============================================================================================
