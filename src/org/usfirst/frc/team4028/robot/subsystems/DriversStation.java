@@ -39,8 +39,8 @@ public class DriversStation extends BaseDriversStation
 	DRIVER_BLUE_BUTTON_X			GearShiftToggle_Btn
 	DRIVER_YELLOW_BUTTON_Y			Shooter Slider Up
 	DRIVER_LEFT_BUMPER				Shooter Stage 1 Motor RPM Up 100
-	DRIVER_RIGHT_BUMPER				Shooter Stage 2 Motor RPM Down 100
-	DRIVER_BACK_BUTTON				Shooter Stage 1 Motor RPM Up 100
+	DRIVER_RIGHT_BUMPER				Shooter Stage 2 Motor RPM Up 100
+	DRIVER_BACK_BUTTON				Shooter Stage 1 Motor RPM Down 100
 	DRIVER_START_BUTTON				Shooter Stage 2 Motor RPM Down 100
 	DRIVER_LEFT_THUMBSTICK		
 	DRIVER_RIGHT_THUMBSTICK
@@ -205,16 +205,9 @@ public class DriversStation extends BaseDriversStation
 		return super.getIsOperatorRightBumperBtnJustPressed();
 	}
 	
-	//Toggle Infeed Solenoids
-	public boolean getIsOperator_ToggleInfeed_Solenoid_BtnJustPressed()
-	{
-		return super.getIsOperatorBackBtnJustPressed();
-	}
-	
 	public boolean getIsOperator_StartClimb_ButtonJustPressed()
 	{
-		// TODO: Need to map to a button
-		return false;
+		return super.getIsOperatorBackBtnJustPressed();
 	}
 	
 	// =====================================

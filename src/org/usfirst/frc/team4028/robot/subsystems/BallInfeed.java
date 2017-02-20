@@ -9,6 +9,7 @@ import com.ctre.CANTalon;
 import com.ctre.CANTalon.FeedbackDevice;
 
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 //This class implements all functionality for the Infeed Subsystem
 //
@@ -89,6 +90,8 @@ public class BallInfeed
 	// update the Dashboard with any Climber specific data values
 	public void OutputToSmartDashboard()
 	{
+		SmartDashboard.putBoolean("Is Fuel Infeed Tilt Extended", _fuelInfeedSolenoid.get());
+		SmartDashboard.putNumber(String.format("%.3f", "Ball Infeed Cmd"), _fuelInfeedMtr.getOutputVoltage()/_fuelInfeedMtr.getBusVoltage());
 	}
 	
 	public void UpdateLogData(LogData logData)
