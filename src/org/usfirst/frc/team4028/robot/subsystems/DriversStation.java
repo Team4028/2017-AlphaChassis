@@ -133,12 +133,6 @@ public class DriversStation extends BaseDriversStation
 		return super.getIsDriverRedBtnBJustPressed();
 	}
 	
-	//MotorFullStop
-	public boolean getIsDriver_MotorFullStop_BtnJustPressed() //here
-	{
-		return super.getIsDriverPovUpBtnJustPressed();
-	}
-	
 	// ===================================
 	// === driver Is Pressed buttons =====
 	// ===================================

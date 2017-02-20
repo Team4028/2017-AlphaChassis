@@ -114,12 +114,6 @@ abstract class BaseDriversStation
     				&& !_previousValues.getIsDriverStartBtnPressed());
 	}
 	
-	protected boolean getIsDriverPovUpBtnJustPressed() //here
-	{
-		return (_currentValues.getIsDriverPovUpBtnPressed()
-					&& !_previousValues.getIsDriverPovUpBtnPressed());
-	}
-	
 	// Instantaneous Driver Buttons
 	protected boolean getIsDriverGreenBtnAPressed()
 	{
@@ -160,7 +154,7 @@ abstract class BaseDriversStation
 	{
 		return _currentValues.getIsDriverStartBtnPressed();
 	}
-		
+	
 	// === operator buttons ===============================================
 	
 	protected boolean getIsOperatorGreenBtnAJustPressed()
@@ -335,8 +329,6 @@ abstract class BaseDriversStation
     	private final boolean _isDriverRightBumperBtnPressed;
     	private final boolean _isDriverBackBtnPressed;
     	private final boolean _isDriverStartBtnPressed;
-    	private final boolean _isDriverPovUpBtnPressed; //Here
-    	
     	
     	private final boolean _isOperatorGreenBtnAPressed;
     	private final boolean _isOperatorRedBtnBPressed;
@@ -382,7 +374,6 @@ abstract class BaseDriversStation
 	    	_isDriverRightBumperBtnPressed = _driverGamepad.getRawButton(LogitechF310.RIGHT_BUMPER);
 	    	_isDriverBackBtnPressed = _driverGamepad.getRawButton(LogitechF310.BACK_BUTTON);
 	    	_isDriverStartBtnPressed = _driverGamepad.getRawButton(LogitechF310.START_BUTTON);
-	    	_isDriverPovUpBtnPressed = _driverGamepad.getRawButton(LogitechF310.POV_UP_0); //Here
 	    	
 			_isOperatorGreenBtnAPressed = _operatorGamepad.getRawButton(LogitechF310.GREEN_BUTTON_A);
 	    	_isOperatorRedBtnBPressed = _operatorGamepad.getRawButton(LogitechF310.RED_BUTTON_B);
@@ -451,11 +442,6 @@ abstract class BaseDriversStation
     	{
     		return _isDriverStartBtnPressed;
     	}
-		
-		public boolean getIsDriverPovUpBtnPressed()//here
-		{
-			return _isDriverPovUpBtnPressed;
-		}
 		
 		// === operator buttons ====================================
 		public boolean getIsOperatorGreenBtnAPressed()
