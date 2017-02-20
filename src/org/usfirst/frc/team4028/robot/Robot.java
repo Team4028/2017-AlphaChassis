@@ -281,17 +281,13 @@ public class Robot extends IterativeRobot
     			//===========================================================================   			
     			if(_driversStation.getIsOperator_FuelInfeed_BtnPressed())
     			{
-    				_ballInfeed.InfeedNoSolenoid();
+    				_ballInfeed.InfeedFuelAndExtendSolenoid();
     			}
     			else
     			{
     				_ballInfeed.FullStop();
     			}
     			
-    			if(_driversStation.getIsOperator_ToggleInfeed_Solenoid_BtnJustPressed())
-    			{
-    				_ballInfeed.ToggleSolenoid();
-    			}
     			
     			//===========================================================================
     			//Switchable Cameras
@@ -549,7 +545,7 @@ public class Robot extends IterativeRobot
     	
     	if(_ballInfeed != null)
     	{
-    		_ballInfeed.OutputToSmartDashboard();
+    		//_ballInfeed.OutputToSmartDashboard();			//TODO fix this, smart dashboard throwing unhandled exceptions
     	}
     	
     	if(_lidar != null)
@@ -615,7 +611,6 @@ public class Robot extends IterativeRobot
 	    	
 	    	if(_shooter != null)
 	    	{
-	    		//TODO:16 Feb 2017 Nick Donahue temporarily commented out for lack of shooter
 	    		_shooter.UpdateLogData(logData);
 	    	}
     	
