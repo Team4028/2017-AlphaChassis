@@ -91,7 +91,7 @@ public class BallInfeed
 	public void OutputToSmartDashboard()
 	{
 		SmartDashboard.putBoolean("Is Fuel Infeed Tilt Extended", _fuelInfeedSolenoid.get());
-		SmartDashboard.putNumber(String.format("%.3f", "Ball Infeed Cmd"), _fuelInfeedMtr.getOutputVoltage()/_fuelInfeedMtr.getBusVoltage());
+		SmartDashboard.putString( "Ball Infeed Cmd", String.format("%.3f", _fuelInfeedMtr.getOutputVoltage()/_fuelInfeedMtr.getBusVoltage()));
 	}
 	
 	public void UpdateLogData(LogData logData)

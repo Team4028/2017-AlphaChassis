@@ -545,7 +545,7 @@ public class Robot extends IterativeRobot
     	
     	if(_ballInfeed != null)
     	{
-    		//_ballInfeed.OutputToSmartDashboard();			//TODO fix this, smart dashboard throwing unhandled exceptions
+    		_ballInfeed.OutputToSmartDashboard();			
     	}
     	
     	if(_lidar != null)
