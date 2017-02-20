@@ -169,6 +169,12 @@ public class DriversStation extends BaseDriversStation
 		return super.getIsOperatorRightBumperBtnJustPressed();
 	}
 	
+	// Start Climber
+	public boolean getIsOperator_StartClimb_ButtonJustPressed()
+	{
+		return super.getIsOperatorBackBtnJustPressed();
+	}
+	
 	// =====================================
 	// === operator Is Pressed buttons =====
 	// =====================================

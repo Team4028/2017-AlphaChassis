@@ -275,11 +275,6 @@ public class Robot extends IterativeRobot
 		    	_chassis.Drive(_driversStation.getDriver_ChassisThrottle_JoystickCmd(), 
 		    					_driversStation.getDriver_ChassisTurn_JoystickCmd());
 		    	
-		    	//=====================
-		    	// Climber Throttle Cmd
-				//=====================
-		    	_climber.RunMotor(_driversStation.getOperator_Winch_JoystickCmd());
-		    	
     			//============================================================================
     			// Fuel Infeed Cmd
     			//===========================================================================
@@ -401,6 +396,29 @@ public class Robot extends IterativeRobot
         		_switchableCameraServer.ChgToCamera(RobotMap.GEAR_CAMERA_NAME);
         	}
     	}
+    	
+    	// =====================================
+    	// Step 5: Check the climber
+    	// =====================================
+    	
+    	if (_driversStation.getIsOperator_StartClimb_ButtonJustPressed())
+    	{
+    		if (!_climber.getIsClimbing())
+    		{
+    			_climber.StartClimber();
+    		}
+    		else 
+    		{
+    			_climber.FullStop();
+    		}	
+    	}
+    	else 
+    	{
+    		if (_climber.getIsClimbing())
+    		{
+    			_climber.StartClimber();
+    		}
+    	}
       	
     	// =====================================
     	// Step N: Finish up 
@@ -493,7 +511,7 @@ public class Robot extends IterativeRobot
 	    	if(_climber != null)
 	    	{
 	    		// TODO: Temporarily commented out
-	    		//_climber.UpdateLogData(logData);
+	    		_climber.UpdateLogData(logData);
 	    	}
 	    	
 	    	if(_driversStation != null)

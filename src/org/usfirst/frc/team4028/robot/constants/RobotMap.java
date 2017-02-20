@@ -32,13 +32,13 @@ public class RobotMap
 	public static final int RIGHT_MASTER_CAN_BUS_ADDR = 3;
 	public static final int RIGHT_SLAVE1_CAN_BUS_ADDR = 4;
 	
-	public static final int CLIMBER_CAN_BUS_ADDR = 5;
+	public static final int CLIMBER_CAN_BUS_ADDR = 9;
 	
 	public static final int GEAR_TILT_CAN_BUS_ADDR = 6;
 	public static final int GEAR_INFEED_CAN_BUS_ADDR = 7;
 	
 	public static final int SHOOTER_STG1_CAN_BUS_ADDR = 8;
-	public static final int SHOOTER_STG2_CAN_BUS_ADDR = 9;
+	public static final int SHOOTER_STG2_CAN_BUS_ADDR = 5;
 	public static final int BLENDER_CAN_BUS_ADDR = 0;
 	public static final int FEEDER_CAN_BUS_ADDR = 0;
 	

@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //	Rev		By		 	D/T			Desc
 //	===		========	===========	=================================
 //	0		Sydney	 	15.Feb.2017	Initial Version
+//	1		Sydney		19.Feb.2017	Fixed time and changed constants
 //------------------------------------------------------
 //
 //=====> For Changes see Sydney Sauer
@@ -33,15 +34,16 @@ public class Climber
 	// define class level working variables
 	private double _currentPercentVBusCmd;
 	private double _climberMotorCurrent;
-	private Date _timeWhenMotorExceededThreshhold;
+	private long _timeWhenMotorExceededThreshhold;
 	private long _elapsedTimeSinceMotorCurrentExceededMaxThreshholdInMSec;
 	private boolean _isClimberMotorStalled;
 	private boolean _wasLastCycleOverMax;
+	private boolean _isClimbing;
 	
 	// define class level constants
-	private static final double CLIMBER_MAX_CURRENT = 20.0;
+	private static final double CLIMBER_MAX_CURRENT = 10.0;
 	private static final double MAX_TIME_OVER_THRESHHOLD = 315;
-	private static final double CLIMBER_MOTOR_VBUS = 0.55;
+	private static final double CLIMBER_MOTOR_VBUS = -0.55;
 	
 
 	
@@ -57,6 +59,8 @@ public class Climber
     	//_climberMtr.reverseSensor(false);  							// do not invert encoder feedback
 		_climberMtr.enableLimitSwitch(false, false);
     	//_climberMtr.reverseOutput(true);
+		
+		_isClimbing = false;
 	}
 	
 	//============================================================================================
@@ -64,31 +68,34 @@ public class Climber
 	//============================================================================================
 	
 	// This method starts the climber when the button is pressed
-	public void StartClimber(boolean isOperatorBackButtonJustPressed)
+	public void StartClimber()
 	{
-		if (isOperatorBackButtonJustPressed)
-		{
 			RunMotor(CLIMBER_MOTOR_VBUS);
-		}
+			_isClimbing = true;
 	}
 	
 	// This is the main drive method
-	public void RunMotor(double percentVBusCmd)
+	private void RunMotor(double percentVBusCmd)
 	{
 		_climberMotorCurrent = _climberMtr.getOutputCurrent();
+		System.out.println("In RunMotor");
+		System.out.println("Time " + _elapsedTimeSinceMotorCurrentExceededMaxThreshholdInMSec
+				+  "  i: " + _climberMotorCurrent);
 		
-		if (_climberMotorCurrent >= CLIMBER_MAX_CURRENT)
+		if (Math.abs(_climberMotorCurrent) >= CLIMBER_MAX_CURRENT)
 		{	
 			
 			if (_wasLastCycleOverMax == false)
 			{
 				_wasLastCycleOverMax = true;
-				_timeWhenMotorExceededThreshhold = new Date();
+				_timeWhenMotorExceededThreshhold = System.currentTimeMillis();
 			}
 			// Time you've been in this part of the code equals duration between time when motor exceeded and now
-				Date now = new Date();
-				_elapsedTimeSinceMotorCurrentExceededMaxThreshholdInMSec = _timeWhenMotorExceededThreshhold.getTime() - now.getTime();
 		
+			_elapsedTimeSinceMotorCurrentExceededMaxThreshholdInMSec = System.currentTimeMillis() - _timeWhenMotorExceededThreshhold;
+			System.out.println("Time " + _elapsedTimeSinceMotorCurrentExceededMaxThreshholdInMSec
+								+  "  i: " + _climberMotorCurrent);
+			
 			if (_elapsedTimeSinceMotorCurrentExceededMaxThreshholdInMSec >= MAX_TIME_OVER_THRESHHOLD)
 			{
 				_climberMtr.set(0.0);
@@ -106,6 +113,12 @@ public class Climber
 			_currentPercentVBusCmd = percentVBusCmd;
 			_climberMtr.set(percentVBusCmd);
 		}	
+	}
+	
+	public void FullStop()
+	{
+		_climberMtr.set(0.0);
+		_isClimbing = false;
 	}
 	
 	public void SetUpClimberStatus()
@@ -133,6 +146,11 @@ public class Climber
 	//============================================================================================
 	// Property Accessors follow
 	//============================================================================================
+	
+	public boolean getIsClimbing()
+	{
+		return _isClimbing;
+	}
 	
 	private double getActualMotorCurrent()
 	{
