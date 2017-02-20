@@ -1,9 +1,6 @@
 package org.usfirst.frc.team4028.robot;
 
-import java.util.Date;
-
 import org.usfirst.frc.team4028.robot.constants.GeneralEnums.TELEOP_MODE;
-import org.usfirst.frc.team4028.robot.constants.LogitechF310;
 import org.usfirst.frc.team4028.robot.constants.RobotMap;
 import org.usfirst.frc.team4028.robot.sensors.Lidar;
 import org.usfirst.frc.team4028.robot.sensors.NavXGyro;
@@ -20,8 +17,6 @@ import org.usfirst.frc.team4028.robot.subsystems.Shooter;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobot;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * The is the main code for:
@@ -105,6 +100,8 @@ public class Robot extends IterativeRobot
 		
 		_shooter = new Shooter(RobotMap.SHOOTER_STG1_CAN_BUS_ADDR, 
 								RobotMap.SHOOTER_STG2_CAN_BUS_ADDR,
+								RobotMap.BLENDER_CAN_BUS_ADDR,
+								RobotMap.FEEDER_CAN_BUS_ADDR,
 								RobotMap.SHOOTER_SLIDER_PWM_PORT);
 		
 		// sensors follow
@@ -216,6 +213,7 @@ public class Robot extends IterativeRobot
     	
     	// #### Shooter ####
     	_shooter.FullStop();
+    	_shooter.ActuatorInitialConfig();
     	
     	// #### Ball Infeed ####
     	_ballInfeed.FullStop();
@@ -278,15 +276,9 @@ public class Robot extends IterativeRobot
 		    	_chassis.Drive(_driversStation.getDriver_ChassisThrottle_JoystickCmd(), 
 		    					_driversStation.getDriver_ChassisTurn_JoystickCmd());
 		    	
-		    	//=====================
-		    	// Climber Throttle Cmd
-				//=====================
-		    	_climber.RunMotor(_driversStation.getOperator_Winch_JoystickCmd());
-		    	
     			//============================================================================
     			// Fuel Infeed Cmd
-    			//===========================================================================
-    			
+    			//===========================================================================   			
     			if(_driversStation.getIsOperator_FuelInfeed_BtnPressed())
     			{
     				_ballInfeed.InfeedNoSolenoid();
@@ -323,6 +315,53 @@ public class Robot extends IterativeRobot
     				
     			}
 		    	  
+    			//=====================
+    			// Run Shooter Motors (TEST)
+    			//=====================
+    			
+    			if(_driversStation.getIsDriver_ShooterStg1Up_BtnJustPressed())
+    			{
+    				_shooter.Stg1RPMUp();
+    			}
+    			if(_driversStation.getIsDriver_ShooterStg1Down_BtnJustPressed())
+    			{
+    				_shooter.Stg1RPMDown();
+    			}
+    			if(_driversStation.getIsDriver_ShooterStg2Up_BtnJustPressed())
+    			{
+    				_shooter.Stg2RPMUp();
+    			}
+    			if(_driversStation.getIsDriver_ShooterStg2Down_BtnJustPressed()) 
+    			{
+    				_shooter.Stg2RPMDown();		
+    			}
+    			//if(_driversStation.getIsDriver_MotorFullStop_BtnJustPressed())
+    			//{
+    			//	_shooter.FullStop();
+    			//}
+    			
+    			//=====================
+    			// Blender and Feeder Motors
+    			//=====================
+    			if(_driversStation.getIsDriver_AccDecModeToggle_BtnJustPressed())
+    			{
+    				_shooter.SpinBlender();
+    				_shooter.SpinFeeder();
+    			}
+    			
+    			//=====================
+    			// Handle Actuator
+    			//=====================
+    			    			
+    			if(_driversStation.getIsDriver_ActuatorUp_BtnJustPressed())
+    			{
+    				_shooter.ActuatorUp();
+    			}
+    			if(_driversStation.getIsDriver_ActuatorDown_BtnJustPressed())
+    			{
+    				_shooter.ActuatorDown();
+    			}
+    			
 		    	//=====================
 		    	// Gear Tilt Cmd
 		    	//	Note: All of the Gear Handler sequences are interruptable except for Zero!
@@ -431,6 +470,29 @@ public class Robot extends IterativeRobot
         		_switchableCameraServer.ChgToCamera(RobotMap.GEAR_CAMERA_NAME);
         	}
     	}
+    	
+    	// =====================================
+    	// Step 5: Check the climber
+    	// =====================================
+    	
+    	if (_driversStation.getIsOperator_StartClimb_ButtonJustPressed())
+    	{
+    		if (!_climber.getIsClimbing())
+    		{
+    			_climber.StartClimber();
+    		}
+    		else 
+    		{
+    			_climber.FullStop();
+    		}	
+    	}
+    	else 
+    	{
+    		if (_climber.getIsClimbing())
+    		{
+    			_climber.StartClimber();
+    		}
+    	}
       	
     	// =====================================
     	// Step N: Finish up 
@@ -523,7 +585,7 @@ public class Robot extends IterativeRobot
 	    	if(_climber != null)
 	    	{
 	    		// TODO: Temporarily commented out
-	    		//_climber.UpdateLogData(logData);
+	    		_climber.UpdateLogData(logData);
 	    	}
 	    	
 	    	if(_driversStation != null)
@@ -554,7 +616,7 @@ public class Robot extends IterativeRobot
 	    	if(_shooter != null)
 	    	{
 	    		//TODO:16 Feb 2017 Nick Donahue temporarily commented out for lack of shooter
-	    		//_shooter.UpdateLogData(logData);
+	    		_shooter.UpdateLogData(logData);
 	    	}
     	
 	    	// now write to the log file
