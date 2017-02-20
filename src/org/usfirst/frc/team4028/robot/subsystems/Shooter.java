@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //	Rev		By			D/T				Description
 //	0		Patrick		2/16 8:47		Enabling Blender and Feeder Motors
 //	1		Patrick		2/18 5:36		Code Review
+//	2		Patrick		2/19 8:58		Enabling Shooter
 //-------------------------------------------------------------
 public class Shooter 
 {
