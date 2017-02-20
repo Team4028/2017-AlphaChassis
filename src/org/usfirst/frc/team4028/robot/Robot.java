@@ -350,8 +350,8 @@ public class Robot extends IterativeRobot
     			//=====================
     			if(_driversStation.getIsDriver_AccDecModeToggle_BtnJustPressed())
     			{
-    				_shooter.SpinBlender(.5);
-    				_shooter.SpinFeeder(.7);
+    				_shooter.SpinBlender();
+    				_shooter.SpinFeeder();
     			}
     			
     			//=====================
@@ -598,7 +598,7 @@ public class Robot extends IterativeRobot
 	    	if(_shooter != null)
 	    	{
 	    		//TODO:16 Feb 2017 Nick Donahue temporarily commented out for lack of shooter
-	    		//_shooter.UpdateLogData(logData);
+	    		_shooter.UpdateLogData(logData);
 	    	}
     	
 	    	// now write to the log file
