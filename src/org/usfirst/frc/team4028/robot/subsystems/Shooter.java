@@ -6,7 +6,7 @@ import com.ctre.CANTalon;
 import com.ctre.CANTalon.FeedbackDevice;
 
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.PWM;
+import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 //This class implements all functionality for the SHOOTER (& Blender) Subsystem
@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //	Rev		By			D/T				Description
 //	0		Patrick		2/16 8:47		Enabling Blender and Feeder Motors
 //	1		Patrick		2/18 5:36		Code Review
+//	2		Patrick		2/20 10:02		Code Review on Shooter Testing
 //-------------------------------------------------------------
 public class Shooter 
 {
@@ -33,25 +34,25 @@ public class Shooter
 	
 	// define class level variables for Robot objects`
 	private CANTalon _firstStgMtr;
-	private CANTalon _secondStageMtr;
+	private CANTalon _secondStgMtr;
 	private CANTalon _blenderMtr;
 	private CANTalon _feederMtr;
 	
-	private PWM _linearActuator;
+	private Servo _linearActuator;
 	private double _currentSliderPosition;
 	
 	// define class level working variables
-	private int _stg1MtrTargetRPM;
-	private int _stg2MtrTargetRPM;
+	private double _stg1MtrTargetRPM;
+	private double _stg2MtrTargetRPM;
 	
 	//define class level PID constants
-	private static final double FIRST_STAGE_MTG_FF_GAIN = 0.035;
+	private static final double FIRST_STAGE_MTG_FF_GAIN = 0.036;
 	private static final double FIRST_STAGE_MTG_P_GAIN = 0.075;
 	private static final double FIRST_STAGE_MTG_I_GAIN = 0.0;
 	private static final double FIRST_STAGE_MTG_D_GAIN = 0.0;
 	
-	private static final double SECOND_STAGE_MTG_FF_GAIN = 0.029;
-	private static final double SECOND_STAGE_MTG_P_GAIN = 0.075;
+	private static final double SECOND_STAGE_MTG_FF_GAIN = 0.03125;
+	private static final double SECOND_STAGE_MTG_P_GAIN = 0.033;
 	private static final double SECOND_STAGE_MTG_I_GAIN = 0.0;
 	private static final double SECOND_STAGE_MTG_D_GAIN = 0.0;
 	
@@ -59,8 +60,14 @@ public class Shooter
 	private static final double MAX_THRESHOLD_ACTUATOR = 0.7; 
 	private static final double MIN_THRESHOLD_ACTUATOR = 0.4;
 	private static final double CHANGE_INTERVAL_ACTUATOR = 0.025;
-	private static final double INITIAL_POSITION_ACTUATOR = 0.4;
+	private static final double INITIAL_POSITION_ACTUATOR = 0.55;
 	
+	//define class level Shooter Motor Constants
+	private static final double MAX_SHOOTER_RPM = -4400;
+	private static final double MIN_SHOOTER_RPM = -3000;
+	private static final double FEEDER_PERCENTVBUS_COMMAND = -0.7; //This Motor Needs to Run in Reverse
+	private static final double BLENDER_PERCENTVBUS_COMMAND = 0.5;
+
 	//============================================================================================
 	// CONSTRUCTORS FOLLOW
 	//============================================================================================
@@ -76,7 +83,7 @@ public class Shooter
 		_firstStgMtr.enableLimitSwitch(false, false);
         // set the peak and nominal outputs, 12V means full 
 		_firstStgMtr.configNominalOutputVoltage(+0.0f, -0.0f);
-		_firstStgMtr.configPeakOutputVoltage(12.0f, 0.0f);
+		_firstStgMtr.configPeakOutputVoltage(0.0f, -12.0f);
     	
 		// set closed loop gains in slot0 
 		_firstStgMtr.setProfile(0);
@@ -86,23 +93,23 @@ public class Shooter
 		_firstStgMtr.setD(FIRST_STAGE_MTG_D_GAIN);
 				
 		// Second Stage Motor
-		_secondStageMtr = new CANTalon(secondStageMtrCanBusAddr);
-		_secondStageMtr.changeControlMode(CANTalon.TalonControlMode.Speed);	// open loop throttle
-		_secondStageMtr.enableBrakeMode(false);							// default to brake mode DISABLED
-    	_secondStageMtr.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Relative);	// set encoder to be feedback device
-    	_secondStageMtr.reverseSensor(true);  							// do not invert encoder feedback
-		_secondStageMtr.enableLimitSwitch(false, false);
+		_secondStgMtr = new CANTalon(secondStageMtrCanBusAddr);
+		_secondStgMtr.changeControlMode(CANTalon.TalonControlMode.Speed);	// open loop throttle
+		_secondStgMtr.enableBrakeMode(false);							// default to brake mode DISABLED
+    	_secondStgMtr.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Relative);	// set encoder to be feedback device
+    	_secondStgMtr.reverseSensor(true);  							// do not invert encoder feedback
+		_secondStgMtr.enableLimitSwitch(false, false);
     	//_secondStageMtr.reverseOutput(true);
         // set the peak and nominal outputs, 12V means full
-		_secondStageMtr.configNominalOutputVoltage(+0.0f, -0.0f);
-		_secondStageMtr.configPeakOutputVoltage(12.0f, 0.0f);
+		_secondStgMtr.configNominalOutputVoltage(+0.0f, -0.0f);
+		_secondStgMtr.configPeakOutputVoltage(0.0f, -12.0f);
 		
 		// set closed loop gains in slot0
-		_secondStageMtr.setProfile(0);
-		_secondStageMtr.setF(SECOND_STAGE_MTG_FF_GAIN); 
-		_secondStageMtr.setP(SECOND_STAGE_MTG_P_GAIN); 
-		_secondStageMtr.setI(SECOND_STAGE_MTG_I_GAIN); 
-		_secondStageMtr.setD(SECOND_STAGE_MTG_D_GAIN);
+		_secondStgMtr.setProfile(0);
+		_secondStgMtr.setF(SECOND_STAGE_MTG_FF_GAIN); 
+		_secondStgMtr.setP(SECOND_STAGE_MTG_P_GAIN); 
+		_secondStgMtr.setI(SECOND_STAGE_MTG_I_GAIN); 
+		_secondStgMtr.setD(SECOND_STAGE_MTG_D_GAIN);
 		
 		// Blender Motor
 		_blenderMtr = new CANTalon(blenderMtrCanBusAddr);
@@ -115,7 +122,7 @@ public class Shooter
 		_feederMtr.enableLimitSwitch(false, false);
 		
 		// Slider
-		_linearActuator = new PWM(sliderPWMPort);
+		_linearActuator = new Servo(sliderPWMPort);
 	}
 	
 	//============================================================================================
@@ -134,42 +141,102 @@ public class Shooter
 	// Shooter Motors
 	//============================================================================================
 
-	public void SpinStg1Wheel(int targetRPM)
+	public void SpinStg1Wheel(double targetRPM)
 	{
 		_stg1MtrTargetRPM = targetRPM;
 		
 		_firstStgMtr.set(_stg1MtrTargetRPM);
+		DriverStation.reportWarning("Stage 1 Target RPM = " + targetRPM, true);
 	}
 	
-	public void SpinStg2Wheel(int targetRPM)
+	public void SpinStg2Wheel(double targetRPM)
 	{
 		_stg2MtrTargetRPM = targetRPM;
 		
-		_secondStageMtr.set(_stg2MtrTargetRPM);
+		_secondStgMtr.set(_stg2MtrTargetRPM);
+		DriverStation.reportWarning("Stage 2 Target RPM = " + targetRPM, true);
+	}
+	
+	//============================================================================================
+	// Set Up Shooter Testing
+	//============================================================================================
+	
+	public void Stg1RPMUp()
+	{
+		if(_stg1MtrTargetRPM > MAX_SHOOTER_RPM)
+		{
+			if(_stg1MtrTargetRPM < 0)
+			{
+				SpinStg1Wheel(_stg1MtrTargetRPM -= 100);
+			}
+			else
+			{
+				SpinStg1Wheel(-3000);
+			}
+		}
+	}
+	public void Stg2RPMUp()
+	{
+		if(_stg2MtrTargetRPM > MAX_SHOOTER_RPM)
+		{
+			if(_stg2MtrTargetRPM < 0)
+			{
+				SpinStg2Wheel(_stg2MtrTargetRPM -= 100);
+			}
+			else
+			{
+				SpinStg2Wheel(-3000);
+			}
+		}
+	}
+	public void Stg1RPMDown()
+	{
+		if(_stg1MtrTargetRPM < MIN_SHOOTER_RPM)
+		{
+			SpinStg1Wheel(_stg1MtrTargetRPM += 100);
+		}
+	}
+	public void Stg2RPMDown()
+	{
+		if(_stg2MtrTargetRPM < MIN_SHOOTER_RPM)
+		{
+			SpinStg2Wheel(_stg2MtrTargetRPM += 100);
+		}
 	}
 	
 	//============================================================================================
 	// Blender/Feeder Motors
 	//============================================================================================
 	
-	public void SpinBlender(double blenderVbusCommand)
+	public void SpinBlender()
+	{
+		SpinBlender(BLENDER_PERCENTVBUS_COMMAND);
+	}
+	
+	public void SpinFeeder()
+	{
+		SpinFeeder(FEEDER_PERCENTVBUS_COMMAND);
+	}
+	
+	private void SpinBlender(double blenderVbusCommand)
 	{
 		_blenderMtr.set(blenderVbusCommand);
 	}
 	
-	public void SpinFeeder(double feederVbusCommand)
+	private void SpinFeeder(double feederVbusCommand)
 	{
 		_feederMtr.set(feederVbusCommand);
 	}
-		
+	
 	//============================================================================================
 	// Linear Actuator
 	//============================================================================================
 	
 	public void ActuatorInitialConfig()
 	{
-		_linearActuator.setPosition(INITIAL_POSITION_ACTUATOR);
 		_currentSliderPosition = INITIAL_POSITION_ACTUATOR;
+		_linearActuator.setPosition(_currentSliderPosition);
+		DriverStation.reportWarning("Actuator Configured to " + _currentSliderPosition, false);
 	} 
 	
 	public void ActuatorUp()
@@ -179,10 +246,11 @@ public class Shooter
 			_currentSliderPosition += CHANGE_INTERVAL_ACTUATOR;
 			_currentSliderPosition = Utilities.RoundDouble(_currentSliderPosition, 3); //rounds to 3 Decimal Places
 			_linearActuator.setPosition(_currentSliderPosition);
+			DriverStation.reportWarning("Actuator Position " + _currentSliderPosition, false);
 		}
 		else
 		{
-			DriverStation.reportWarning("Actuator Already at Maximum Position", true);
+			DriverStation.reportWarning("!=!=!=!=! Actuator Already at Maximum Position", false);
 		}
 	}
 	
@@ -193,10 +261,11 @@ public class Shooter
 			_currentSliderPosition -= CHANGE_INTERVAL_ACTUATOR;
 			_currentSliderPosition = Utilities.RoundDouble(_currentSliderPosition, 3); //rounds to 3 Decimal Places
 			_linearActuator.setPosition(_currentSliderPosition);
+			DriverStation.reportWarning("Actuator Position " + _currentSliderPosition, false);
 		}
 		else
 		{
-			DriverStation.reportWarning("Actuator Already at Minimum Position", true);
+			DriverStation.reportWarning("!=!=!=!=! Actuator Already at Minimum Position", false);
 		}
 	}
 	
@@ -226,13 +295,16 @@ public class Shooter
 	
 	public void UpdateLogData(LogData logData)
 	{
-		logData.AddData("Stg1Mtr:Cmd_Rpm", String.format("%d", _stg1MtrTargetRPM));
-		logData.AddData("Stg1Mtr:Act_Rpm", String.format("%d", getStg1ActualRPM()));
+		logData.AddData("Stg1Mtr:Cmd_Rpm", String.format("%f", _stg1MtrTargetRPM));
+		logData.AddData("Stg1Mtr:Act_Rpm", String.format("%f", getStg1ActualRPM()));
 		logData.AddData("Stg1Mtr:Err_%", String.format("%.2f%%", getStg1RPMErrorPercent()));
-		
-		logData.AddData("Stg2Mtr:Cmd_Rpm", String.format("%d", _stg2MtrTargetRPM));
-		logData.AddData("Stg2Mtr:Act_Rpm", String.format("%d", getStg2ActualRPM()));	
+		logData.AddData("Stg1Mtr: %VBus", String.format("%.2f%%", getStg1CurrentPercentVBus()));
+			
+		logData.AddData("Stg2Mtr:Cmd_Rpm", String.format("%f", _stg2MtrTargetRPM));
+		logData.AddData("Stg2Mtr:Act_Rpm", String.format("%f", getStg2ActualRPM()));	
 		logData.AddData("Stg2Mtr:Err_%", String.format("%.2f%%", getStg2RPMErrorPercent()));
+		logData.AddData("Stg2Mtr: %VBus", String.format("%.2f%%", getStg2CurrentPercentVBus()));
+
 		
 		logData.AddData("Actuator Position", String.format("%.3f", _currentSliderPosition));
 	}
@@ -256,10 +328,19 @@ public class Shooter
 			return 0.0;
 		}
 	}
+	public double getStg1CurrentPercentVBus()
+	{
+		double currentOutputVoltage = _firstStgMtr.getOutputVoltage();
+		double currentBusVoltage = _firstStgMtr.getBusVoltage();
+		
+		double currentActualSpeed = (currentOutputVoltage / currentBusVoltage);
+		
+		return Utilities.RoundDouble(currentActualSpeed, 2);
+	}
 	
 	private double getStg2ActualRPM()
 	{
-		return _secondStageMtr.getSpeed();
+		return _secondStgMtr.getSpeed();
 	}
 	
 	private double getStg2RPMErrorPercent()
@@ -272,5 +353,14 @@ public class Shooter
 		{
 			return 0.0;
 		}
+	}
+	public double getStg2CurrentPercentVBus()
+	{
+		double currentOutputVoltage = _secondStgMtr.getOutputVoltage();
+		double currentBusVoltage = _secondStgMtr.getBusVoltage();
+		
+		double currentActualSpeed = (currentOutputVoltage / currentBusVoltage);
+		
+		return Utilities.RoundDouble(currentActualSpeed, 2);
 	}
 }

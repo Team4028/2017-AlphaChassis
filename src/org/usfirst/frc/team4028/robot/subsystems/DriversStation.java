@@ -34,15 +34,15 @@ public class DriversStation extends BaseDriversStation
 	DRIVER_RIGHT_Y_AXIS
 	
 	--- Driver Buttons --------
-	DRIVER_GREEN_BUTTON_A			AccDecModeToggle_Btn
-	DRIVER_RED_BUTTON_B
-	DRIVER_BLUE_BUTTON_X
-	DRIVER_YELLOW_BUTTON_Y			GearShiftToggle_Btn
-	DRIVER_LEFT_BUMPER
-	DRIVER_RIGHT_BUMPER
-	DRIVER_BACK_BUTTON
-	DRIVER_START_BUTTON
-	DRIVER_LEFT_THUMBSTICK
+	DRIVER_GREEN_BUTTON_A			Feeder And Blender (AccDecModeToggle_Btn)
+	DRIVER_RED_BUTTON_B				Shooter Slider Down
+	DRIVER_BLUE_BUTTON_X			GearShiftToggle_Btn
+	DRIVER_YELLOW_BUTTON_Y			Shooter Slider Up
+	DRIVER_LEFT_BUMPER				Shooter Stage 1 Motor RPM Up 100
+	DRIVER_RIGHT_BUMPER				Shooter Stage 2 Motor RPM Down 100
+	DRIVER_BACK_BUTTON				Shooter Stage 1 Motor RPM Up 100
+	DRIVER_START_BUTTON				Shooter Stage 2 Motor RPM Down 100
+	DRIVER_LEFT_THUMBSTICK		
 	DRIVER_RIGHT_THUMBSTICK
 		
 	==========================================================================
@@ -60,15 +60,15 @@ public class DriversStation extends BaseDriversStation
 	OPERATOR_RED_BUTTON_B			Gear Tilt Score 
 	OPERATOR_BLUE_BUTTON_X			Gear Sequence Initiation
 	OPERATOR_YELLOW_BUTTON_Y		Gear Tilt Home
-	OPERATOR_LEFT_BUMPER			Fuel Infeed
+	OPERATOR_LEFT_BUMPER			Fuel Infeed Motor
 	OPERATOR_RIGHT_BUMPER			Camera Swap
-	OPERATOR_BACK_BUTTON			Start Climb
+	OPERATOR_BACK_BUTTON			Ball Infeed Tilt Toggle
 	OPERATOR_START_BUTTON			Gear Tilt ReZero
 	OPERATOR_LEFT_THUMBSTICK
 	OPERATOR_RIGHT_THUMBSTICK
 	==========================================================================
 	*/
-	
+		
 	// ======================================================
 	// Public Property Accessors
 	//		Implement calls into base class property accessors with 
@@ -88,7 +88,7 @@ public class DriversStation extends BaseDriversStation
 	// ShifterToggleBtn
 	public boolean getIsDriver_GearShiftToggle_BtnJustPressed()
 	{
-		return super.getIsDriverYellowBtnYJustPressed();
+		return super.getIsDriverBlueBtnXJustPressed();
 	}
 	
 	// AccDec Mode
@@ -97,6 +97,42 @@ public class DriversStation extends BaseDriversStation
 		return super.getIsDriverGreenBtnAJustPressed();
 	}
 	
+	//ShooterStg1Up
+	public boolean getIsDriver_ShooterStg1Up_BtnJustPressed()
+	{
+		return super.getIsDriverLeftBumperBtnJustPressed();
+	}
+	
+	//ShooterStg2Up
+	public boolean getIsDriver_ShooterStg2Up_BtnJustPressed()
+	{
+		return super.getIsDriverRightBumperBtnJustPressed();
+	}
+	
+	//ShooterStg1Down
+	public boolean getIsDriver_ShooterStg1Down_BtnJustPressed()
+	{
+		return super.getIsDriverBackBtnJustPressed();
+	}
+	
+	//ShooterStg2Down
+	public boolean getIsDriver_ShooterStg2Down_BtnJustPressed()
+	{
+		return super.getIsDriverStartBtnJustPressed();
+	}
+	
+	//ActuatorUp
+	public boolean getIsDriver_ActuatorUp_BtnJustPressed()
+	{
+		return super.getIsDriverYellowBtnYJustPressed();
+	}
+	
+	//ActuatorDown
+	public boolean getIsDriver_ActuatorDown_BtnJustPressed()
+	{
+		return super.getIsDriverRedBtnBJustPressed();
+	}
+		
 	// ===================================
 	// === driver Is Pressed buttons =====
 	// ===================================
@@ -169,10 +205,16 @@ public class DriversStation extends BaseDriversStation
 		return super.getIsOperatorRightBumperBtnJustPressed();
 	}
 	
-	// Start Climber
-	public boolean getIsOperator_StartClimb_ButtonJustPressed()
+	//Toggle Infeed Solenoids
+	public boolean getIsOperator_ToggleInfeed_Solenoid_BtnJustPressed()
 	{
 		return super.getIsOperatorBackBtnJustPressed();
+	}
+	
+	public boolean getIsOperator_StartClimb_ButtonJustPressed()
+	{
+		// TODO: Need to map to a button
+		return false;
 	}
 	
 	// =====================================

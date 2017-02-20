@@ -106,8 +106,8 @@ public class Robot extends IterativeRobot
 		
 		// sensors follow
 		_lidar = new Lidar();
-		_navX = new NavXGyro(RobotMap.NAVX_PORT);
-		// = new SwitchableCameraServer(RobotMap.GEAR_CAMERA_NAME);
+		//_navX = new NavXGyro(RobotMap.NAVX_PORT);
+		_switchableCameraServer = new SwitchableCameraServer(RobotMap.GEAR_CAMERA_NAME);
 		
 		// telop sequences follow
 		_hangGearInTeleopSeq = new HangGearInTeleopSequence(_gearHandler, _chassis);
@@ -213,6 +213,7 @@ public class Robot extends IterativeRobot
     	
     	// #### Shooter ####
     	_shooter.FullStop();
+    	_shooter.ActuatorInitialConfig();
     	
     	// #### Ball Infeed ####
     	_ballInfeed.FullStop();
@@ -277,17 +278,90 @@ public class Robot extends IterativeRobot
 		    	
     			//============================================================================
     			// Fuel Infeed Cmd
-    			//===========================================================================
-    			
+    			//===========================================================================   			
     			if(_driversStation.getIsOperator_FuelInfeed_BtnPressed())
     			{
-    				_ballInfeed.InfeedFuelAndExtendSolenoid();
+    				_ballInfeed.InfeedNoSolenoid();
     			}
     			else
     			{
     				_ballInfeed.FullStop();
     			}
+    			
+    			if(_driversStation.getIsOperator_ToggleInfeed_Solenoid_BtnJustPressed())
+    			{
+    				_ballInfeed.ToggleSolenoid();
+    			}
+    			
+    			//===========================================================================
+    			//Switchable Cameras
+    			//=======================================================================
+    			
+    			if(_driversStation.getIsOperator_CameraSwap_BtnJustPressed())
+    			{
+    				
+    				if(_switchableCameraServer.getCurrentCameraName() == RobotMap.GEAR_CAMERA_NAME)
+    				{
+    					_switchableCameraServer.ChgToCamera(RobotMap.SHOOTER_CAMERA_NAME);
+    				}
+    				else if(_switchableCameraServer.getCurrentCameraName() == RobotMap.SHOOTER_CAMERA_NAME)
+    				{
+    					_switchableCameraServer.ChgToCamera(RobotMap.BALL_INFEED_CAMERA_NAME);
+    				}
+    				else if(_switchableCameraServer.getCurrentCameraName() == RobotMap.BALL_INFEED_CAMERA_NAME)
+    				{
+    					_switchableCameraServer.ChgToCamera(RobotMap.GEAR_CAMERA_NAME);
+    				}
+    				
+    			}
 		    	  
+    			//=====================
+    			// Run Shooter Motors (TEST)
+    			//=====================
+    			
+    			if(_driversStation.getIsDriver_ShooterStg1Up_BtnJustPressed())
+    			{
+    				_shooter.Stg1RPMUp();
+    			}
+    			if(_driversStation.getIsDriver_ShooterStg1Down_BtnJustPressed())
+    			{
+    				_shooter.Stg1RPMDown();
+    			}
+    			if(_driversStation.getIsDriver_ShooterStg2Up_BtnJustPressed())
+    			{
+    				_shooter.Stg2RPMUp();
+    			}
+    			if(_driversStation.getIsDriver_ShooterStg2Down_BtnJustPressed()) 
+    			{
+    				_shooter.Stg2RPMDown();		
+    			}
+    			//if(_driversStation.getIsDriver_MotorFullStop_BtnJustPressed())
+    			//{
+    			//	_shooter.FullStop();
+    			//}
+    			
+    			//=====================
+    			// Blender and Feeder Motors
+    			//=====================
+    			if(_driversStation.getIsDriver_AccDecModeToggle_BtnJustPressed())
+    			{
+    				_shooter.SpinBlender();
+    				_shooter.SpinFeeder();
+    			}
+    			
+    			//=====================
+    			// Handle Actuator
+    			//=====================
+    			    			
+    			if(_driversStation.getIsDriver_ActuatorUp_BtnJustPressed())
+    			{
+    				_shooter.ActuatorUp();
+    			}
+    			if(_driversStation.getIsDriver_ActuatorDown_BtnJustPressed())
+    			{
+    				_shooter.ActuatorDown();
+    			}
+    			
 		    	//=====================
 		    	// Gear Tilt Cmd
 		    	//	Note: All of the Gear Handler sequences are interruptable except for Zero!
@@ -542,7 +616,7 @@ public class Robot extends IterativeRobot
 	    	if(_shooter != null)
 	    	{
 	    		//TODO:16 Feb 2017 Nick Donahue temporarily commented out for lack of shooter
-	    		//_shooter.UpdateLogData(logData);
+	    		_shooter.UpdateLogData(logData);
 	    	}
     	
 	    	// now write to the log file
