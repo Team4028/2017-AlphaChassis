@@ -278,27 +278,18 @@ public class Robot extends IterativeRobot
 		    	_chassis.Drive(_driversStation.getDriver_ChassisThrottle_JoystickCmd(), 
 		    					_driversStation.getDriver_ChassisTurn_JoystickCmd());
 		    	
-		    	//=====================
-		    	// Climber Throttle Cmd
-				//=====================
-		    	_climber.RunMotor(_driversStation.getOperator_Winch_JoystickCmd());
-		    	
     			//============================================================================
     			// Fuel Infeed Cmd
     			//===========================================================================   			
     			if(_driversStation.getIsOperator_FuelInfeed_BtnPressed())
     			{
-    				_ballInfeed.InfeedNoSolenoid();
+    				_ballInfeed.InfeedFuelAndExtendSolenoid();
     			}
     			else
     			{
     				_ballInfeed.FullStop();
     			}
     			
-    			if(_driversStation.getIsOperator_ToggleInfeed_Solenoid_BtnJustPressed())
-    			{
-    				_ballInfeed.ToggleSolenoid();
-    			}
     			
     			//===========================================================================
     			//Switchable Cameras
@@ -477,6 +468,29 @@ public class Robot extends IterativeRobot
         		_switchableCameraServer.ChgToCamera(RobotMap.GEAR_CAMERA_NAME);
         	}
     	}
+    	
+    	// =====================================
+    	// Step 5: Check the climber
+    	// =====================================
+    	
+    	if (_driversStation.getIsOperator_StartClimb_ButtonJustPressed())
+    	{
+    		if (!_climber.getIsClimbing())
+    		{
+    			_climber.StartClimber();
+    		}
+    		else 
+    		{
+    			_climber.FullStop();
+    		}	
+    	}
+    	else 
+    	{
+    		if (_climber.getIsClimbing())
+    		{
+    			_climber.StartClimber();
+    		}
+    	}
       	
     	// =====================================
     	// Step N: Finish up 
@@ -533,7 +547,7 @@ public class Robot extends IterativeRobot
     	
     	if(_ballInfeed != null)
     	{
-    		_ballInfeed.OutputToSmartDashboard();
+    		//_ballInfeed.OutputToSmartDashboard();			//TODO fix this, smart dashboard throwing unhandled exceptions
     	}
     	
     	if(_lidar != null)
@@ -569,7 +583,7 @@ public class Robot extends IterativeRobot
 	    	if(_climber != null)
 	    	{
 	    		// TODO: Temporarily commented out
-	    		//_climber.UpdateLogData(logData);
+	    		_climber.UpdateLogData(logData);
 	    	}
 	    	
 	    	if(_driversStation != null)
@@ -599,7 +613,6 @@ public class Robot extends IterativeRobot
 	    	
 	    	if(_shooter != null)
 	    	{
-	    		//TODO:16 Feb 2017 Nick Donahue temporarily commented out for lack of shooter
 	    		_shooter.UpdateLogData(logData);
 	    	}
     	

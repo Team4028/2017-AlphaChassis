@@ -7,6 +7,7 @@ import com.ctre.CANTalon.FeedbackDevice;
 import com.ctre.CANTalon.TalonControlMode;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 // This class implements all functionality for the GEAR Subsystem
 //
@@ -74,6 +75,7 @@ public class GearHandler
 	
 	private static final double GEAR_MOVE_TO_HOME_VELOCITY_CMD = -0.25;   //set
 	private static final long GEAR_MAXIMUM_MOVE_TO_HOME_TIME_IN_MSEC = 5000;
+	private String _gearTiltState;
 
 	private long _gearTiltAxisStateStartTime;
 	private GEAR_TILT_HOMING_STATE _gearTiltAxisZeroCurrentState;
@@ -271,6 +273,27 @@ public class GearHandler
 		// limit max speed to 50%	=>  * 0.50
 		_gearInfeedMotor.set(percentVBusCmd * -1.0 * 0.50);
 	}
+	
+	private  String getTiltPosition()
+	{
+		if(Math.abs(_gearTiltMotor.getPosition()) <= TARGET_DEADBAND)
+		{
+			_gearTiltState = "Zeroed";
+		}
+		else if(Math.abs(_gearTiltMotor.getPosition() - GEAR_TILT_SCORING_POSITION_IN_ROTATIONS) <= TARGET_DEADBAND)
+		{
+			_gearTiltState = "Scoring Position";
+		}
+		else if(Math.abs(_gearTiltMotor.getPosition() - GEAR_TILT_CHANGE_TO_V_BUS_POSITION_IN_ROTATIONS) <= TARGET_DEADBAND)
+		{
+			_gearTiltState = "On Floor";
+		}
+		else
+		{
+			_gearTiltState = "Moving Between States";
+		}
+		return _gearTiltState;
+	}
 		
 	public void FullStop()
 	{
@@ -281,7 +304,9 @@ public class GearHandler
 	// update the Dashboard with any Climber specific data values
 	public void OutputToSmartDashboard()
 	{
-		
+		/*SmartDashboard.putNumber(String.format("%.3f", "Gear Tilt Position"), _gearTiltMotor.getPosition());
+		SmartDashboard.putString("Gear Tilt State", getTiltPosition());
+		SmartDashboard.putNumber(String.format("%.3f", "Gear In/OutFeed Cmd"), _gearInfeedMotor.getOutputVoltage()/_gearInfeedMotor.getBusVoltage());	*/	
 	}
 	
 	public void UpdateLogData(LogData logData)

@@ -1,3 +1,4 @@
+
 package org.usfirst.frc.team4028.robot.sensors;
 
 import java.nio.file.Files;
@@ -129,8 +130,9 @@ public class SwitchableCameraServer
         			if(isCam0Present)
         			{
 		                cvSink0.setEnabled(true);
-	                	cam0.setFPS(16);
+	                	cam0.setFPS(60);
 	               		cam0.setResolution(640, 480);
+	               		cam0.setExposureManual(30);
 	            		cvSink0.grabFrame(image);	     		// grab the current frame from this camera and put it into the 2D array
 	            		isImageAvailable = true;
         			}
@@ -152,8 +154,9 @@ public class SwitchableCameraServer
         			if(isCam1Present)
         			{
 		                cvSink1.setEnabled(true);
-	                	cam1.setFPS(16);
+	                	cam1.setFPS(60);
 	               		cam1.setResolution(640, 480);
+	               		cam1.setExposureManual(30);
 	            		cvSink1.grabFrame(image);	     		// grab the current frame from this camera and put it into the 2D array
 	            		isImageAvailable = true;
         			}
@@ -174,8 +177,9 @@ public class SwitchableCameraServer
         			if(isCam2Present)
         			{
 		                cvSink2.setEnabled(true);
-	                	cam2.setFPS(16);
+	                	cam2.setFPS(60);
 	               		cam2.setResolution(640, 480);
+	               		cam2.setExposureManual(30);
 	            		cvSink2.grabFrame(image);	     		// grab the current frame from this camera and put it into the 2D array
 	            		isImageAvailable = true;
 
