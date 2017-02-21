@@ -96,7 +96,7 @@ public class Robot extends IterativeRobot
 		_gearHandler = new GearHandler(RobotMap.GEAR_TILT_CAN_BUS_ADDR, 
 										RobotMap.GEAR_INFEED_CAN_BUS_ADDR);
 		
-		_ballInfeed = new BallInfeed(RobotMap.INFEED_MTR_CAN_BUS_ADDR, RobotMap.PCM_CAN_BUS_ADDR, RobotMap.BALL_INFEED_TILT_EXTEND_PCM_PORT);
+		_ballInfeed = new BallInfeed(RobotMap.FUEL_INFEED_MTR_CAN_BUS_ADDR, RobotMap.PCM_CAN_BUS_ADDR, RobotMap.BALL_INFEED_TILT_EXTEND_PCM_PORT);
 		
 		_shooter = new Shooter(RobotMap.SHOOTER_STG1_CAN_BUS_ADDR, 
 								RobotMap.SHOOTER_STG2_CAN_BUS_ADDR,
