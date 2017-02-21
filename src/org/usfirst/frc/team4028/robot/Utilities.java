@@ -16,7 +16,7 @@ import org.usfirst.frc.team4028.robot.constants.RobotMap;
 
 import edu.wpi.first.wpilibj.DriverStation;
 
-// Thsi class contains general helper utility functions
+// This class contains general helper utility functions
 public class Utilities 
 {
     /**
@@ -69,6 +69,7 @@ public class Utilities
 		
 		// see if the USB stick is plugged into to RoboRIO
 		Path path = Paths.get(RobotMap.LOG_FILE_PATH);
+		Path alternatePath = Paths.get(RobotMap.ALTERNATE_LOG_FILE_PATH);
     	if (Files.exists(path)) 
     	{
     		try 
@@ -85,6 +86,23 @@ public class Utilities
 	    		
 	    		System.out.println("..Error configuring Logging to: " + RobotMap.LOG_FILE_PATH);
 			}
+    	}
+    	else if (Files.exists(alternatePath))
+    	{
+    		try 
+    		{
+				dataLogger = new DataLogger(RobotMap.ALTERNATE_LOG_FILE_PATH, mode);
+					    		
+	    		System.out.println("..Logging enabled to: " + dataLogger.getLogFilePathName());
+			} 
+    		catch (IOException e) 
+    		{
+				e.printStackTrace();
+				
+	    		dataLogger = null;
+	    		
+	    		System.out.println("..Error configuring Logging to: " + RobotMap.ALTERNATE_LOG_FILE_PATH);
+    		}
     	}
     	else
     	{
