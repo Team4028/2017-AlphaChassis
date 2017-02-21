@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //	0		Patrick		2/16 8:47		Enabling Blender and Feeder Motors
 //	1		Patrick		2/18 5:36		Code Review
 //	2		Patrick		2/20 10:02		Code Review on Shooter Testing
+//	3		Patrick		2/20 18:47		Updating Values Written to SmartDashboard
 //-------------------------------------------------------------
 public class Shooter 
 {
@@ -39,22 +40,23 @@ public class Shooter
 	private CANTalon _feederMtr;
 	
 	private Servo _linearActuator;
-	private double _currentSliderPosition;
 	
 	// define class level working variables
 	private double _stg1MtrTargetRPM;
 	private double _stg2MtrTargetRPM;
+	
+	private double _currentSliderPosition;
 	
 	//define class level PID constants
 	private static final double FIRST_STAGE_MTG_FF_GAIN = 0.0278;
 	private static final double FIRST_STAGE_MTG_P_GAIN = 0.05;
 	private static final double FIRST_STAGE_MTG_I_GAIN = 0.0;
 	private static final double FIRST_STAGE_MTG_D_GAIN = 0.5;
-	
+
 	private static final double SECOND_STAGE_MTG_FF_GAIN = 0.0274;
 	private static final double SECOND_STAGE_MTG_P_GAIN = 0.0;
 	private static final double SECOND_STAGE_MTG_I_GAIN = 0.0;
-	private static final double SECOND_STAGE_MTG_D_GAIN = 0.0;
+	private static final double SECOND_STAGE_MTG_D_GAIN = 0.115;
 	
 	//define class level Actuator Constants
 	private static final double MAX_THRESHOLD_ACTUATOR = 0.7; 
@@ -275,18 +277,28 @@ public class Shooter
 	
 	public void OutputToSmartDashboard()
 	{
+		String outDataStg1 = "?";
+		String outDataStg2 = "?";
+		String outDataActuator = "?";
+		
+		//Display Current Shooter Motor RPM + Error
+		outDataStg1 = String.format( "%.0f RPM (%.2f%%)", getStg1ActualRPM(), getStg1RPMErrorPercent());
+		outDataStg2 = String.format("%.0f RPM (%.2f%%)", getStg2ActualRPM(), getStg2RPMErrorPercent());
+		
+		SmartDashboard.putString("Current Stage 1 RPM (Error)", outDataStg1);
+		SmartDashboard.putString("Current Stage 2 RPM (Error)", outDataStg2);
+
 		//Display Current Actuator Value
-		String outData = "?";
-		outData = String.format( "%.3f", _currentSliderPosition); //Outputs "Max" and "Min" at respective values
+		outDataActuator = String.format( "%.3f", _currentSliderPosition); //Outputs "Max" and "Min" at respective values
 		if(_currentSliderPosition == MAX_THRESHOLD_ACTUATOR)
 		{
-			outData = outData + " (MAX)";
+			outDataActuator = outDataActuator + " (MAX)";
 		}
 		else if(_currentSliderPosition == MIN_THRESHOLD_ACTUATOR)
 		{
-			outData = outData + " (MIN)";
+			outDataActuator = outDataActuator + " (MIN)";
 		}
-		SmartDashboard.putString("Actuator Current Value", outData);
+		SmartDashboard.putString("Actuator Current Value", outDataActuator);
 	}
 	
 	//============================================================================================

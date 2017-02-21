@@ -114,6 +114,8 @@ public class Robot extends IterativeRobot
 		
 		// auton routines follow
 		
+		//Update Dashboard Fields
+		OutputAllToSmartDashboard();
 	}
 	
 	// ----------------------------------------------------------------------
@@ -331,10 +333,10 @@ public class Robot extends IterativeRobot
     			{
     				_shooter.Stg2RPMDown();		
     			}
-    			//if(_driversStation.getIsDriver_MotorFullStop_BtnJustPressed())
-    			//{
-    			//	_shooter.FullStop();
-    			//}
+    			if(_driversStation.getIsDriver_FullShooterStop_BtnJustPressed())
+    			{
+    				_shooter.FullStop();
+    			}
     			
     			//=====================
     			// Blender and Feeder Motors
@@ -545,7 +547,7 @@ public class Robot extends IterativeRobot
     	
     	if(_ballInfeed != null)
     	{
-    		//_ballInfeed.OutputToSmartDashboard();			//TODO fix this, smart dashboard throwing unhandled exceptions
+    		_ballInfeed.OutputToSmartDashboard();			
     	}
     	
     	if(_lidar != null)

@@ -1,11 +1,7 @@
 package org.usfirst.frc.team4028.robot;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 
 // This is a "data entity" class that hold the data to logged.
 //	Subsystem classes use the Add method to add data in their UpdateLogData method as Name/Value pairs
