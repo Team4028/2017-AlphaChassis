@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //	0		Patrick		2/16 8:47		Enabling Blender and Feeder Motors
 //	1		Patrick		2/18 5:36		Code Review
 //	2		Patrick		2/20 10:02		Code Review on Shooter Testing
+//	3		Patrick		2/20 18:47		Updating Values Written to SmartDashboard
 //-------------------------------------------------------------
 public class Shooter 
 {
@@ -39,11 +40,12 @@ public class Shooter
 	private CANTalon _feederMtr;
 	
 	private Servo _linearActuator;
-	private double _currentSliderPosition;
 	
 	// define class level working variables
 	private double _stg1MtrTargetRPM;
 	private double _stg2MtrTargetRPM;
+	
+	private double _currentSliderPosition;
 	
 	//define class level PID constants
 	private static final double FIRST_STAGE_MTG_FF_GAIN = 0.0278;
@@ -286,7 +288,6 @@ public class Shooter
 		SmartDashboard.putString("Current Stage 1 RPM (Error)", outDataStg1);
 		SmartDashboard.putString("Current Stage 2 RPM (Error)", outDataStg2);
 
-		
 		//Display Current Actuator Value
 		outDataActuator = String.format( "%.3f", _currentSliderPosition); //Outputs "Max" and "Min" at respective values
 		if(_currentSliderPosition == MAX_THRESHOLD_ACTUATOR)

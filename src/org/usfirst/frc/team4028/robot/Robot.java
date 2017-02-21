@@ -333,10 +333,10 @@ public class Robot extends IterativeRobot
     			{
     				_shooter.Stg2RPMDown();		
     			}
-    			//if(_driversStation.getIsDriver_MotorFullStop_BtnJustPressed())
-    			//{
-    			//	_shooter.FullStop();
-    			//}
+    			if(_driversStation.getIsDriver_FullShooterStop_BtnJustPressed())
+    			{
+    				_shooter.FullStop();
+    			}
     			
     			//=====================
     			// Blender and Feeder Motors
