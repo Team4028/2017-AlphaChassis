@@ -333,7 +333,7 @@ public class Robot extends IterativeRobot
     			{
     				_shooter.Stg2RPMDown();		
     			}
-    			if(_driversStation.getIsDriver_FullShooterStop_BtnJustPressed())
+    			if(_driversStation.getDriver_ShooterFullStop_JoystickCmd() >= 100)
     			{
     				_shooter.FullStop();
     			}

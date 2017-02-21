@@ -132,13 +132,7 @@ public class DriversStation extends BaseDriversStation
 	{
 		return super.getIsDriverRedBtnBJustPressed();
 	}
-	
-	//FullStop
-	public boolean getIsDriver_FullShooterStop_BtnJustPressed() //HERE
-	{
-		return super.getIsDriverPovUpBtnJustPressed();
-	}
-		
+			
 	// ===================================
 	// === driver Is Pressed buttons =====
 	// ===================================
@@ -169,6 +163,12 @@ public class DriversStation extends BaseDriversStation
 	public double getDriver_ChassisTurn_JoystickCmd()
 	{
 		return super.getDriverRightXAxisCmd();
+	}
+	
+	//ShooterFullStop
+	public double getDriver_ShooterFullStop_JoystickCmd()
+	{
+		return super.getDriverDirectionalPadCmd();
 	}
 	
 	// =====================================

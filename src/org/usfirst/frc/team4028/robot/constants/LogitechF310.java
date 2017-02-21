@@ -32,6 +32,7 @@ public class LogitechF310
 	public static final int RIGHT_TRIGGER = 3;		//0 to +1
 	public static final int RIGHT_X_AXIS = 4;		//-1 to +1
 	public static final int RIGHT_Y_AXIS = 5;		//-1 to +1
+	public static final int DIRECTIONAL_PAD = 6;
 	
 	// Constants for POV (dpad)
 	public static final int POV_UP_0 = 0;//Up

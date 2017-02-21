@@ -113,13 +113,7 @@ abstract class BaseDriversStation
 		return (_currentValues.getIsDriverStartBtnPressed()
     				&& !_previousValues.getIsDriverStartBtnPressed());
 	}
-	
-	protected boolean getIsDriverPovUpBtnJustPressed()
-	{
-		return (_currentValues.getIsDriverPovUpBtnPressed()
-    				&& !_previousValues.getIsDriverPovUpBtnPressed());
-	}
-	
+		
 	// Instantaneous Driver Buttons
 	protected boolean getIsDriverGreenBtnAPressed()
 	{
@@ -283,6 +277,11 @@ abstract class BaseDriversStation
 		return _currentValues.getDriverRightYAxisCmd();
 	}
 	
+	protected double getDriverDirectionalPadCmd() 																			//HERE
+	{
+		return _currentValues.getDriverDirectionalPadCmd();
+	}
+	
 	// === operator joysticks ===============================================
 	protected double getOperatorLeftXAxisCmd()
 	{
@@ -335,7 +334,6 @@ abstract class BaseDriversStation
     	private final boolean _isDriverRightBumperBtnPressed;
     	private final boolean _isDriverBackBtnPressed;
     	private final boolean _isDriverStartBtnPressed;
-    	private final boolean _isDriverPovUpBtnPressed; //HERE
     	
     	private final boolean _isOperatorGreenBtnAPressed;
     	private final boolean _isOperatorRedBtnBPressed;
@@ -354,6 +352,7 @@ abstract class BaseDriversStation
     	private final double _driverRightTriggerCmd;
     	private final double _driverRightXAxisCmd;
     	private final double _driverRightYAxisCmd;
+    	private final double _driverDirectionalPadCmd; 																		//HERE
     	
     	private final double _operatorLeftXAxisCmd;
     	private final double _operatorLeftYAxisCmd;
@@ -381,7 +380,6 @@ abstract class BaseDriversStation
 	    	_isDriverRightBumperBtnPressed = _driverGamepad.getRawButton(LogitechF310.RIGHT_BUMPER);
 	    	_isDriverBackBtnPressed = _driverGamepad.getRawButton(LogitechF310.BACK_BUTTON);
 	    	_isDriverStartBtnPressed = _driverGamepad.getRawButton(LogitechF310.START_BUTTON);
-	    	_isDriverPovUpBtnPressed = _driverGamepad.getRawButton(LogitechF310.POV_UP_0); //HERE
 	    	
 			_isOperatorGreenBtnAPressed = _operatorGamepad.getRawButton(LogitechF310.GREEN_BUTTON_A);
 	    	_isOperatorRedBtnBPressed = _operatorGamepad.getRawButton(LogitechF310.RED_BUTTON_B);
@@ -400,6 +398,7 @@ abstract class BaseDriversStation
 	    	_driverRightTriggerCmd = _driverGamepad.getRawAxis(LogitechF310.RIGHT_TRIGGER);
 	    	_driverRightXAxisCmd = _driverGamepad.getRawAxis(LogitechF310.RIGHT_X_AXIS);
 	    	_driverRightYAxisCmd = _driverGamepad.getRawAxis(LogitechF310.RIGHT_Y_AXIS);
+	    	_driverDirectionalPadCmd = _driverGamepad.getPOV(LogitechF310.DIRECTIONAL_PAD); 								//HERE
 	    	
 	    	_operatorLeftXAxisCmd = _operatorGamepad.getRawAxis(LogitechF310.LEFT_X_AXIS);
 	    	_operatorLeftYAxisCmd = _operatorGamepad.getRawAxis(LogitechF310.LEFT_Y_AXIS);
@@ -450,11 +449,7 @@ abstract class BaseDriversStation
     	{
     		return _isDriverStartBtnPressed;
     	}
-		
-		public boolean getIsDriverPovUpBtnPressed() //HERE
-		{
-			return _isDriverPovUpBtnPressed;
-		}
+
 		// === operator buttons ====================================
 		public boolean getIsOperatorGreenBtnAPressed()
     	{
@@ -564,6 +559,18 @@ abstract class BaseDriversStation
     		if(Math.abs(_driverRightYAxisCmd) > JOYSTICK_THRESHHOLD)
     		{
     			return _driverRightYAxisCmd;
+    		}
+    		else
+    		{
+    			return 0.0;
+    		}
+    	}
+    	
+     	public double getDriverDirectionalPadCmd() 																		//HERE
+    	{
+    		if(Math.abs(_driverDirectionalPadCmd) > JOYSTICK_THRESHHOLD)
+    		{
+    			return _driverDirectionalPadCmd;
     		}
     		else
     		{
