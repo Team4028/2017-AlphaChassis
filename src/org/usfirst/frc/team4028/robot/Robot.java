@@ -267,7 +267,7 @@ public class Robot extends IterativeRobot
 		    	//=====================
 		    	// Acc/Dec Mode Toggle
 				//=====================
-		    	if(_driversStation.getIsDriver_AccDecModeToggle_BtnJustPressed())
+		    	if(_driversStation.getIsDriver_ToggleBlenderAndFeederMtrs_BtnJustPressed())
 		    	{    		
 		    		_chassis.setIsAccDecModeEnabled(!_chassis.getIsAccDecModeEnabled());
 		    	}
@@ -289,7 +289,6 @@ public class Robot extends IterativeRobot
     			{
     				_ballInfeed.FullStop();
     			}
-    			
     			
     			//===========================================================================
     			//Switchable Cameras
@@ -337,15 +336,16 @@ public class Robot extends IterativeRobot
     			{
     				_shooter.FullStop();
     			}
-    			
+       			
     			//=====================
     			// Blender and Feeder Motors
     			//=====================
-    			if(_driversStation.getIsDriver_AccDecModeToggle_BtnJustPressed())
+    			if(_driversStation.getIsDriver_ToggleBlenderAndFeederMtrs_BtnJustPressed())
     			{
-    				_shooter.SpinBlender();
-    				_shooter.SpinFeeder();
+    				_shooter.ToggleSpinBlender();
+    				_shooter.ToggleSpinFeeder();
     			}
+    			
     			
     			//=====================
     			// Handle Actuator

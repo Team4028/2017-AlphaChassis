@@ -1,7 +1,5 @@
 package org.usfirst.frc.team4028.robot.subsystems;
 
-import java.util.Date;
-
 import org.usfirst.frc.team4028.robot.LogData;
 import org.usfirst.frc.team4028.robot.Utilities;
 
@@ -41,7 +39,7 @@ public class Climber
 	private boolean _isClimbing;
 	
 	// define class level constants
-	private static final double CLIMBER_MAX_CURRENT = 10.0;
+	private static final double CLIMBER_MAX_CURRENT = 20.0;
 	private static final double MAX_TIME_OVER_THRESHHOLD = 315;
 	private static final double CLIMBER_MOTOR_VBUS = -0.55;
 	
