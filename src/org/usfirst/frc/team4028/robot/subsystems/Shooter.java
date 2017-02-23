@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //	1		Patrick		2/18 5:36		Code Review
 //	2		Patrick		2/20 10:02		Code Review on Shooter Testing
 //	3		Patrick		2/20 18:47		Updating Values Written to SmartDashboard
+//	4		Patrick		2/22 12:34		Making toggle button for Blender/Feeder
 //-------------------------------------------------------------
 public class Shooter 
 {
@@ -67,8 +68,8 @@ public class Shooter
 	//define class level Shooter Motor Constants
 	private static final double MAX_SHOOTER_RPM = -4400;
 	private static final double MIN_SHOOTER_RPM = -3000;
-	private static final double FEEDER_PERCENTVBUS_COMMAND = -0.7; //This Motor Needs to Run in Reverse
-	private static final double BLENDER_PERCENTVBUS_COMMAND = 0.5;
+	private static final double FEEDER_PERCENTVBUS_COMMAND = -0.7; //This Mo tor Needs to Run in Reverse
+	private static final double BLENDER_PERCENTVBUS_COMMAND = 0.35;
 
 	//============================================================================================
 	// CONSTRUCTORS FOLLOW
@@ -210,14 +211,28 @@ public class Shooter
 	// Blender/Feeder Motors
 	//============================================================================================
 	
-	public void SpinBlender()
+	public void ToggleSpinBlender()
 	{
-		SpinBlender(BLENDER_PERCENTVBUS_COMMAND);
+		if(_blenderMtr.get() == 0)
+		{
+			SpinBlender(BLENDER_PERCENTVBUS_COMMAND);
+		}
+		else
+		{
+			SpinBlender(0);
+		}
 	}
 	
-	public void SpinFeeder()
+	public void ToggleSpinFeeder()
 	{
-		SpinFeeder(FEEDER_PERCENTVBUS_COMMAND);
+		if(_feederMtr.get() == 0)
+		{
+			SpinFeeder(FEEDER_PERCENTVBUS_COMMAND);
+		}
+		else
+		{
+			SpinFeeder(0);
+		}
 	}
 	
 	private void SpinBlender(double blenderVbusCommand)
@@ -277,16 +292,22 @@ public class Shooter
 	
 	public void OutputToSmartDashboard()
 	{
-		String outDataStg1 = "?";
-		String outDataStg2 = "?";
+		String outDataStg1Actual = "?";
+		String outDataStg2Actual = "?";
+		String outDataStg1Command = "?";
+		String outDataStg2Command = "?";
 		String outDataActuator = "?";
 		
 		//Display Current Shooter Motor RPM + Error
-		outDataStg1 = String.format( "%.0f RPM (%.2f%%)", getStg1ActualRPM(), getStg1RPMErrorPercent());
-		outDataStg2 = String.format("%.0f RPM (%.2f%%)", getStg2ActualRPM(), getStg2RPMErrorPercent());
+		outDataStg1Actual = String.format( "%.0f RPM (%.2f%%)", getStg1ActualRPM(), getStg1RPMErrorPercent());
+		outDataStg2Actual = String.format("%.0f RPM (%.2f%%)", getStg2ActualRPM(), getStg2RPMErrorPercent());
+		//outDataStg1Command = String.format("%.0f RPM", _stg1MtrTargetRPM);
+		//outDataStg2Command = String.format("%.0f RPM", _stg2MtrTargetRPM);
 		
-		SmartDashboard.putString("Current Stage 1 RPM (Error)", outDataStg1);
-		SmartDashboard.putString("Current Stage 2 RPM (Error)", outDataStg2);
+		SmartDashboard.putString("Current Stage 1 RPM (Error)", outDataStg1Actual);
+		SmartDashboard.putString("Current Stage 2 RPM (Error)", outDataStg2Actual);
+		//SmartDashboard.putString("Current Stage 1 Command RPM", outDataStg1Command);
+		//SmartDashboard.putString("Current Stage 2 Command RPM", outDataStg2Command);
 
 		//Display Current Actuator Value
 		outDataActuator = String.format( "%.3f", _currentSliderPosition); //Outputs "Max" and "Min" at respective values

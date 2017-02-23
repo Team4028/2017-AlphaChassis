@@ -1,7 +1,8 @@
 package org.usfirst.frc.team4028.robot.subsystems;
 
 import org.usfirst.frc.team4028.robot.LogData;
-import org.usfirst.frc.team4028.robot.constants.LogitechF310;
+
+import edu.wpi.first.wpilibj.DriverStation;
 
 //This class implements all functionality to read Operator & Driver Gamepads
 //
@@ -92,7 +93,7 @@ public class DriversStation extends BaseDriversStation
 	}
 	
 	// AccDec Mode
-	public boolean getIsDriver_AccDecModeToggle_BtnJustPressed()
+	public boolean getIsDriver_ToggleBlenderAndFeederMtrs_BtnJustPressed()
 	{
 		return super.getIsDriverGreenBtnAJustPressed();
 	}
