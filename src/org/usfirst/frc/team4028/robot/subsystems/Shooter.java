@@ -57,7 +57,7 @@ public class Shooter
 	private static final double SECOND_STAGE_MTG_FF_GAIN = 0.0274;
 	private static final double SECOND_STAGE_MTG_P_GAIN = 0.0;
 	private static final double SECOND_STAGE_MTG_I_GAIN = 0.0;
-	private static final double SECOND_STAGE_MTG_D_GAIN = 0.115;
+	private static final double SECOND_STAGE_MTG_D_GAIN = 0.0; //0.115;
 	
 	//define class level Actuator Constants
 	private static final double MAX_THRESHOLD_ACTUATOR = 0.7; 
@@ -301,13 +301,13 @@ public class Shooter
 		//Display Current Shooter Motor RPM + Error
 		outDataStg1Actual = String.format( "%.0f RPM (%.2f%%)", getStg1ActualRPM(), getStg1RPMErrorPercent());
 		outDataStg2Actual = String.format("%.0f RPM (%.2f%%)", getStg2ActualRPM(), getStg2RPMErrorPercent());
-		//outDataStg1Command = String.format("%.0f RPM", _stg1MtrTargetRPM);
-		//outDataStg2Command = String.format("%.0f RPM", _stg2MtrTargetRPM);
+		outDataStg1Command = String.format("%.0f RPM", _stg1MtrTargetRPM);
+		outDataStg2Command = String.format("%.0f RPM", _stg2MtrTargetRPM);
 		
 		SmartDashboard.putString("Current Stage 1 RPM (Error)", outDataStg1Actual);
 		SmartDashboard.putString("Current Stage 2 RPM (Error)", outDataStg2Actual);
-		//SmartDashboard.putString("Current Stage 1 Command RPM", outDataStg1Command);
-		//SmartDashboard.putString("Current Stage 2 Command RPM", outDataStg2Command);
+		SmartDashboard.putString("Current Stage 1 Command RPM", outDataStg1Command);
+		SmartDashboard.putString("Current Stage 2 Command RPM", outDataStg2Command);
 
 		//Display Current Actuator Value
 		outDataActuator = String.format( "%.3f", _currentSliderPosition); //Outputs "Max" and "Min" at respective values
