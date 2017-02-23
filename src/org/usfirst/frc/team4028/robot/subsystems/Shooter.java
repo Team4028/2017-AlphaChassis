@@ -55,9 +55,9 @@ public class Shooter
 	private static final double FIRST_STAGE_MTG_D_GAIN = 0.5;
 
 	private static final double SECOND_STAGE_MTG_FF_GAIN = 0.0274;
-	private static final double SECOND_STAGE_MTG_P_GAIN = 0.0;
+	private static final double SECOND_STAGE_MTG_P_GAIN = 0.04;
 	private static final double SECOND_STAGE_MTG_I_GAIN = 0.0;
-	private static final double SECOND_STAGE_MTG_D_GAIN = 0.115;
+	private static final double SECOND_STAGE_MTG_D_GAIN = 0.4; //0.115;
 	
 	//define class level Actuator Constants
 	private static final double MAX_THRESHOLD_ACTUATOR = 0.7; 
