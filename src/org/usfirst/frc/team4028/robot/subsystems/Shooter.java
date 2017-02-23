@@ -294,20 +294,20 @@ public class Shooter
 	{
 		String outDataStg1Actual = "?";
 		String outDataStg2Actual = "?";
-		String outDataStg1Command = "?";
-		String outDataStg2Command = "?";
+		//String outDataStg1Command = "?";
+		//String outDataStg2Command = "?";
 		String outDataActuator = "?";
 		
 		//Display Current Shooter Motor RPM + Error
-		outDataStg1Actual = String.format( "%.0f RPM (%.2f%%)", getStg1ActualRPM(), getStg1RPMErrorPercent());
-		outDataStg2Actual = String.format("%.0f RPM (%.2f%%)", getStg2ActualRPM(), getStg2RPMErrorPercent());
-		outDataStg1Command = String.format("%.0f RPM", _stg1MtrTargetRPM);
-		outDataStg2Command = String.format("%.0f RPM", _stg2MtrTargetRPM);
+		outDataStg1Actual = String.format("[%.0f RPM] %.0f RPM (%.2f%%)", -1*_stg1MtrTargetRPM, -1*getStg1ActualRPM(), getStg1RPMErrorPercent());
+		outDataStg2Actual = String.format("[%.0f RPM] %.0f RPM (%.2f%%)", -1*_stg1MtrTargetRPM, -1*getStg2ActualRPM(), getStg2RPMErrorPercent());
+		//outDataStg1Command = String.format("%.0f RPM", _stg1MtrTargetRPM);
+		//outDataStg2Command = String.format("%.0f RPM", _stg2MtrTargetRPM);
 		
-		SmartDashboard.putString("Current Stage 1 RPM (Error)", outDataStg1Actual);
-		SmartDashboard.putString("Current Stage 2 RPM (Error)", outDataStg2Actual);
-		SmartDashboard.putString("Current Stage 1 Command RPM", outDataStg1Command);
-		SmartDashboard.putString("Current Stage 2 Command RPM", outDataStg2Command);
+		SmartDashboard.putString("[Command] Current Stage 1 RPM (Error)", outDataStg1Actual);
+		SmartDashboard.putString("[Command] Current Stage 2 RPM (Error)", outDataStg2Actual);
+		//SmartDashboard.putString("Current Stage 1 Command RPM", outDataStg1Command);
+		//SmartDashboard.putString("Current Stage 2 Command RPM", outDataStg2Command);
 
 		//Display Current Actuator Value
 		outDataActuator = String.format( "%.3f", _currentSliderPosition); //Outputs "Max" and "Min" at respective values
