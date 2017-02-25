@@ -37,6 +37,7 @@ public class Robot extends IterativeRobot
 	private Climber _climber;
 	private BallInfeed _ballInfeed;
 	private GearHandler _gearHandler;
+	
 	private Shooter _shooter;
 	
 	private DashboardInputs _dashboardInputs;
@@ -124,7 +125,7 @@ public class Robot extends IterativeRobot
 	@Override
 	public void disabledInit() 
 	{
-		// if logging was enabled make sure we close the file
+		// if logging was enabled, make sure we close the file
     	if(_dataLogger != null)
     	{
 	    	_dataLogger.close();
@@ -142,6 +143,7 @@ public class Robot extends IterativeRobot
 		
     	// #### GearHandler ####
     	_gearHandler.FullStop();
+    	
     	if(!_gearHandler.hasTiltAxisBeenZeroed())
     	{
     		_gearHandler.ZeroGearTiltAxisInit();
@@ -167,10 +169,8 @@ public class Robot extends IterativeRobot
       		//			and automatically recall it until complete
     		_gearHandler.ZeroGearTiltAxisReentrant();
     	}
-      	
-      	
+      	  	
 		// TODO: add logic to call the correct Auton routine to run
-		
 		
 		
     	// =====================================
@@ -196,8 +196,8 @@ public class Robot extends IterativeRobot
     	//Zero drive encoders
     	_chassis.ZeroDriveEncoders();
     	
-    	//Set shifter to LOW gear
-    	_chassis.ShiftGear(GearShiftPosition.LOW_GEAR);
+    	//Set shifter to HIGH gear
+    	_chassis.ShiftGear(GearShiftPosition.HIGH_GEAR);
     	
     	// disable acc/dec mode
     	_chassis.setIsAccDecModeEnabled(false);
@@ -215,7 +215,7 @@ public class Robot extends IterativeRobot
     	
     	// #### Shooter ####
     	_shooter.FullStop();
-    	_shooter.ActuatorInitialConfig();
+    	_shooter.ActuatorMoveToDefaultPosition();
     	
     	// #### Ball Infeed ####
     	_ballInfeed.FullStop();
@@ -267,7 +267,7 @@ public class Robot extends IterativeRobot
 		    	//=====================
 		    	// Acc/Dec Mode Toggle
 				//=====================
-		    	if(_driversStation.getIsDriver_ToggleBlenderAndFeederMtrs_BtnJustPressed())
+		    	if(_driversStation.getIsDriver_ToggleBlenderAndFeederMtrs_BtnJustPressed())  // TODO: fix this
 		    	{    		
 		    		_chassis.setIsAccDecModeEnabled(!_chassis.getIsAccDecModeEnabled());
 		    	}
@@ -292,11 +292,9 @@ public class Robot extends IterativeRobot
     			
     			//===========================================================================
     			//Switchable Cameras
-    			//=======================================================================
-    			
+    			//=======================================================================			
     			if(_driversStation.getIsOperator_CameraSwap_BtnJustPressed())
     			{
-    				
     				if(_switchableCameraServer.getCurrentCameraName() == RobotMap.GEAR_CAMERA_NAME)
     				{
     					_switchableCameraServer.ChgToCamera(RobotMap.SHOOTER_CAMERA_NAME);
@@ -309,29 +307,33 @@ public class Robot extends IterativeRobot
     				{
     					_switchableCameraServer.ChgToCamera(RobotMap.GEAR_CAMERA_NAME);
     				}
-    				
     			}
 		    	  
     			//=====================
-    			// Run Shooter Motors (TEST)
+    			// Run Shooter Motors
     			//=====================
     			
+    			// Stg 1 Bump Up / Down
     			if(_driversStation.getIsDriver_ShooterStg1Up_BtnJustPressed())
     			{
-    				_shooter.Stg1RPMUp();
+    				_shooter.Stg1MtrBumpRPMUp();
     			}
-    			if(_driversStation.getIsDriver_ShooterStg1Down_BtnJustPressed())
+    			else if(_driversStation.getIsDriver_ShooterStg1Down_BtnJustPressed())
     			{
-    				_shooter.Stg1RPMDown();
+    				_shooter.Stg1MtrBumpRPMDown();
     			}
+    			
+    			// Stg 2 Bump Up / Down
     			if(_driversStation.getIsDriver_ShooterStg2Up_BtnJustPressed())
     			{
-    				_shooter.Stg2RPMUp();
+    				_shooter.Stg2MtrBumpRPMUp();
     			}
-    			if(_driversStation.getIsDriver_ShooterStg2Down_BtnJustPressed()) 
+    			else if(_driversStation.getIsDriver_ShooterStg2Down_BtnJustPressed()) 
     			{
-    				_shooter.Stg2RPMDown();		
+    				_shooter.Stg2MtrBumpRPMDown();		
     			}
+    			
+    			// STg 1 & 2 Full Stop
     			if(_driversStation.getIsDriver_FullShooterStop_BtnJustPressed())
     			{
     				_shooter.FullStop();
@@ -353,11 +355,11 @@ public class Robot extends IterativeRobot
     			    			
     			if(_driversStation.getIsDriver_ActuatorUp_BtnJustPressed())
     			{
-    				_shooter.ActuatorUp();
+    				_shooter.ActuatorMoveUp();
     			}
     			if(_driversStation.getIsDriver_ActuatorDown_BtnJustPressed())
     			{
-    				_shooter.ActuatorDown();
+    				_shooter.ActuatorMoveDown();
     			}
     			
 		    	//=====================
