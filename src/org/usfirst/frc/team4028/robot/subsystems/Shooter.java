@@ -337,7 +337,6 @@ public class Shooter
 		logData.AddData("Stg2Mtr:Act_Rpm", String.format("%f", getStg2ActualRPM()));	
 		logData.AddData("Stg2Mtr:Err_%", String.format("%.2f%%", getStg2RPMErrorPercent()));
 		logData.AddData("Stg2Mtr: %VBus", String.format("%.2f%%", getStg2CurrentPercentVBus()));
-
 		
 		logData.AddData("Actuator Position", String.format("%.3f", _currentSliderPosition));
 	}
