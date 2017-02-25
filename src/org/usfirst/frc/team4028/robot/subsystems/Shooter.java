@@ -68,6 +68,10 @@ public class Shooter
 	//define class level Shooter Motor Constants
 	private static final double MAX_SHOOTER_RPM = -4400;
 	private static final double MIN_SHOOTER_RPM = -3000;
+	private static final double SHOOTER_BUMP_RPM = 100;
+	private static final double FIRST_STAGE_MTR_DEFAULT_RPM = -3000;
+	private static final double SECOND_STAGE_MTR_DEFAULT_RPM = -3000;
+	
 	private static final double FEEDER_PERCENTVBUS_COMMAND = -0.7; //This Mo tor Needs to Run in Reverse
 	private static final double BLENDER_PERCENTVBUS_COMMAND = 0.35;
 
@@ -164,46 +168,73 @@ public class Shooter
 	// Set Up Shooter Testing
 	//============================================================================================
 	
-	public void Stg1RPMUp()
+	public void Stg1MtrBumpRPMUp()
 	{
-		if(_stg1MtrTargetRPM > MAX_SHOOTER_RPM)
-		{
-			if(_stg1MtrTargetRPM < 0)
+		// only bump if not already at max
+		if(Math.abs(_stg1MtrTargetRPM) >= Math.abs(MAX_SHOOTER_RPM))
+		{	
+			if(Math.abs(_stg1MtrTargetRPM) >  0)
 			{
-				SpinStg1Wheel(_stg1MtrTargetRPM -= 100);
+				// if already turning, just bump
+				SpinStg1Wheel(_stg1MtrTargetRPM -= SHOOTER_BUMP_RPM);
 			}
 			else
 			{
-				SpinStg1Wheel(-3000);
+				// if currently stopped, set to default speed
+				SpinStg1Wheel(FIRST_STAGE_MTR_DEFAULT_RPM);
 			}
 		}
-	}
-	public void Stg2RPMUp()
-	{
-		if(_stg2MtrTargetRPM > MAX_SHOOTER_RPM)
+		else
 		{
-			if(_stg2MtrTargetRPM < 0)
+			DriverStation.reportWarning("Stg 1 Mtr Already at MAX ", false);
+		}
+	}
+	
+	public void Stg1MtrBumpRPMDown()
+	{
+		// only bump if not already at min
+		if(Math.abs(_stg1MtrTargetRPM) < Math.abs(MIN_SHOOTER_RPM))
+		{
+			SpinStg1Wheel(_stg1MtrTargetRPM += SHOOTER_BUMP_RPM);
+		}
+		else
+		{
+			DriverStation.reportWarning("Stg 1 Mtr Already at MIN ", false);
+		}
+	}
+	
+	public void Stg2MtrBumpRPMUp()
+	{
+		// only bump if not already at max
+		if(Math.abs(_stg2MtrTargetRPM) >= Math.abs(MAX_SHOOTER_RPM))
+		{	
+			if(Math.abs(_stg2MtrTargetRPM) >  0)
 			{
-				SpinStg2Wheel(_stg2MtrTargetRPM -= 100);
+				// if already turning, just bump
+				SpinStg1Wheel(_stg2MtrTargetRPM -= SHOOTER_BUMP_RPM);
 			}
 			else
 			{
-				SpinStg2Wheel(-3000);
+				// if currently stopped, set to default speed
+				SpinStg2Wheel(SECOND_STAGE_MTR_DEFAULT_RPM);
 			}
 		}
-	}
-	public void Stg1RPMDown()
-	{
-		if(_stg1MtrTargetRPM < MIN_SHOOTER_RPM)
+		else
 		{
-			SpinStg1Wheel(_stg1MtrTargetRPM += 100);
+			DriverStation.reportWarning("Stg 2 Mtr Already at MAX ", false);
 		}
 	}
-	public void Stg2RPMDown()
+
+	public void Stg2MtrBumpRPMDown()
 	{
-		if(_stg2MtrTargetRPM < MIN_SHOOTER_RPM)
+		// only bump if not already at min
+		if(Math.abs(_stg2MtrTargetRPM) < Math.abs(MIN_SHOOTER_RPM))
 		{
-			SpinStg2Wheel(_stg2MtrTargetRPM += 100);
+			SpinStg2Wheel(_stg2MtrTargetRPM += SHOOTER_BUMP_RPM);
+		}
+		else
+		{
+			DriverStation.reportWarning("Stg 2 Mtr Already at MIN ", false);
 		}
 	}
 	
@@ -213,25 +244,27 @@ public class Shooter
 	
 	public void ToggleSpinBlender()
 	{
+		// if current cmd is 0, then start
 		if(_blenderMtr.get() == 0)
 		{
 			SpinBlender(BLENDER_PERCENTVBUS_COMMAND);
 		}
 		else
 		{
-			SpinBlender(0);
+			SpinBlender(0.0);
 		}
 	}
 	
 	public void ToggleSpinFeeder()
 	{
+		// if current cmd is 0, then start
 		if(_feederMtr.get() == 0)
 		{
 			SpinFeeder(FEEDER_PERCENTVBUS_COMMAND);
 		}
 		else
 		{
-			SpinFeeder(0);
+			SpinFeeder(0.0);
 		}
 	}
 	
@@ -249,40 +282,45 @@ public class Shooter
 	// Linear Actuator
 	//============================================================================================
 	
-	public void ActuatorInitialConfig()
+	public void ActuatorMoveToDefaultPosition()
 	{
 		_currentSliderPosition = INITIAL_POSITION_ACTUATOR;
 		_linearActuator.setPosition(_currentSliderPosition);
+		
 		DriverStation.reportWarning("Actuator Configured to " + _currentSliderPosition, false);
 	} 
 	
-	public void ActuatorUp()
+	public void ActuatorMoveUp()
 	{
 		if (_currentSliderPosition < MAX_THRESHOLD_ACTUATOR)
 		{
 			_currentSliderPosition += CHANGE_INTERVAL_ACTUATOR;
+			
 			_currentSliderPosition = Utilities.RoundDouble(_currentSliderPosition, 3); //rounds to 3 Decimal Places
 			_linearActuator.setPosition(_currentSliderPosition);
-			DriverStation.reportWarning("Actuator Position " + _currentSliderPosition, false);
+			
+			DriverStation.reportWarning("Actuator Move Up To: " + _currentSliderPosition, false);
 		}
 		else
 		{
-			DriverStation.reportWarning("!=!=!=!=! Actuator Already at Maximum Position", false);
+			DriverStation.reportWarning("!=!=!=!=! Actuator Already at MAXIMUM Position", false);
 		}
 	}
 	
-	public void ActuatorDown()
+	public void ActuatorMoveDown()
 	{
 		if (_currentSliderPosition > MIN_THRESHOLD_ACTUATOR)
 		{
 			_currentSliderPosition -= CHANGE_INTERVAL_ACTUATOR;
+			
 			_currentSliderPosition = Utilities.RoundDouble(_currentSliderPosition, 3); //rounds to 3 Decimal Places
 			_linearActuator.setPosition(_currentSliderPosition);
-			DriverStation.reportWarning("Actuator Position " + _currentSliderPosition, false);
+			
+			DriverStation.reportWarning("Actuator Move Down To: " + _currentSliderPosition, false);
 		}
 		else
 		{
-			DriverStation.reportWarning("!=!=!=!=! Actuator Already at Minimum Position", false);
+			DriverStation.reportWarning("!=!=!=!=! Actuator Already at MINIMUM Position", false);
 		}
 	}
 	
@@ -292,13 +330,14 @@ public class Shooter
 	
 	public void OutputToSmartDashboard()
 	{
+		// working varibles
 		String outDataStg1Actual = "?";
 		String outDataStg2Actual = "?";
 		//String outDataStg1Command = "?";
 		//String outDataStg2Command = "?";
 		String outDataActuator = "?";
 		
-		//Display Current Shooter Motor RPM + Error
+		//Display Current Shooter Motor 1 & 2 Cmd & Actual RPM + Error
 		outDataStg1Actual = String.format("[%.0f RPM] %.0f RPM (%.2f%%)", -1*_stg1MtrTargetRPM, -1*getStg1ActualRPM(), getStg1RPMErrorPercent());
 		outDataStg2Actual = String.format("[%.0f RPM] %.0f RPM (%.2f%%)", -1*_stg1MtrTargetRPM, -1*getStg2ActualRPM(), getStg2RPMErrorPercent());
 		//outDataStg1Command = String.format("%.0f RPM", _stg1MtrTargetRPM);
@@ -311,6 +350,7 @@ public class Shooter
 
 		//Display Current Actuator Value
 		outDataActuator = String.format( "%.3f", _currentSliderPosition); //Outputs "Max" and "Min" at respective values
+		
 		if(_currentSliderPosition == MAX_THRESHOLD_ACTUATOR)
 		{
 			outDataActuator = outDataActuator + " (MAX)";
@@ -319,6 +359,7 @@ public class Shooter
 		{
 			outDataActuator = outDataActuator + " (MIN)";
 		}
+		
 		SmartDashboard.putString("Actuator Current Value", outDataActuator);
 	}
 	
@@ -331,12 +372,12 @@ public class Shooter
 		logData.AddData("Stg1Mtr:Cmd_Rpm", String.format("%f", _stg1MtrTargetRPM));
 		logData.AddData("Stg1Mtr:Act_Rpm", String.format("%f", getStg1ActualRPM()));
 		logData.AddData("Stg1Mtr:Err_%", String.format("%.2f%%", getStg1RPMErrorPercent()));
-		logData.AddData("Stg1Mtr: %VBus", String.format("%.2f%%", getStg1CurrentPercentVBus()));
+		logData.AddData("Stg1Mtr:%VBus", String.format("%.2f%%", getStg1CurrentPercentVBus()));
 			
 		logData.AddData("Stg2Mtr:Cmd_Rpm", String.format("%f", _stg2MtrTargetRPM));
 		logData.AddData("Stg2Mtr:Act_Rpm", String.format("%f", getStg2ActualRPM()));	
 		logData.AddData("Stg2Mtr:Err_%", String.format("%.2f%%", getStg2RPMErrorPercent()));
-		logData.AddData("Stg2Mtr: %VBus", String.format("%.2f%%", getStg2CurrentPercentVBus()));
+		logData.AddData("Stg2Mtr:%VBus", String.format("%.2f%%", getStg2CurrentPercentVBus()));
 
 		
 		logData.AddData("Actuator Position", String.format("%.3f", _currentSliderPosition));

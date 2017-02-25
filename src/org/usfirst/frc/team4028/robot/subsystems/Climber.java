@@ -43,8 +43,6 @@ public class Climber
 	private static final double MAX_TIME_OVER_THRESHHOLD = 315;
 	private static final double CLIMBER_MOTOR_VBUS = -0.55;
 	
-
-	
 	//============================================================================================
 	// constructors follow
 	//============================================================================================
@@ -76,21 +74,19 @@ public class Climber
 	private void RunMotor(double percentVBusCmd)
 	{
 		_climberMotorCurrent = _climberMtr.getOutputCurrent();
-		System.out.println("In RunMotor");
-		System.out.println("Time " + _elapsedTimeSinceMotorCurrentExceededMaxThreshholdInMSec
-				+  "  i: " + _climberMotorCurrent);
 		
 		if (Math.abs(_climberMotorCurrent) >= CLIMBER_MAX_CURRENT)
 		{	
-			
 			if (_wasLastCycleOverMax == false)
 			{
 				_wasLastCycleOverMax = true;
 				_timeWhenMotorExceededThreshhold = System.currentTimeMillis();
 			}
+			
 			// Time you've been in this part of the code equals duration between time when motor exceeded and now
-		
-			_elapsedTimeSinceMotorCurrentExceededMaxThreshholdInMSec = System.currentTimeMillis() - _timeWhenMotorExceededThreshhold;
+			_elapsedTimeSinceMotorCurrentExceededMaxThreshholdInMSec 
+					= System.currentTimeMillis() - _timeWhenMotorExceededThreshhold;
+			
 			System.out.println("Time " + _elapsedTimeSinceMotorCurrentExceededMaxThreshholdInMSec
 								+  "  i: " + _climberMotorCurrent);
 			
@@ -136,7 +132,9 @@ public class Climber
 	{
 		logData.AddData("ClimberMtr:Cmd_%VBus", String.format("%.2f", _currentPercentVBusCmd));
 		logData.AddData("ClimberMtr:Act_%VBus", String.format("%.2f", getActualPercentVBus()));
-		//logData.AddData("ClimberMtr:Thold_Mtr_I, String.format("%.2f", <replace me>));
+		
+		logData.AddData("ClimberMtr:Thold_Mtr_I", String.format("%.2f", CLIMBER_MAX_CURRENT));
+		
 		logData.AddData("ClimberMtr:Act_Mtr_I", String.format("%.2f", getActualMotorCurrent()));
 		logData.AddData("ClimberMtr:OMax_Msec", String.format("%d", _elapsedTimeSinceMotorCurrentExceededMaxThreshholdInMSec));
 	}
