@@ -37,6 +37,7 @@ public class Robot extends IterativeRobot
 	private Climber _climber;
 	private BallInfeed _ballInfeed;
 	private GearHandler _gearHandler;
+	
 	private Shooter _shooter;
 	
 	private DashboardInputs _dashboardInputs;
