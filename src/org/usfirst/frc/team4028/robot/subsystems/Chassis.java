@@ -1,8 +1,12 @@
 package org.usfirst.frc.team4028.robot.subsystems;
 
+import java.util.TimerTask;
+
+import org.usfirst.frc.team4028.robot.util.GeneratedTrajectory;
 import org.usfirst.frc.team4028.robot.LogData;
 import org.usfirst.frc.team4028.robot.constants.RobotMap;
 import org.usfirst.frc.team4028.robot.controllers.ChassisAutoAimController;
+import org.usfirst.frc.team4028.robot.controllers.TrajectoryDriveController;
 
 import com.ctre.CANTalon;
 
@@ -34,21 +38,23 @@ public class Chassis
 	// =====================================================================
 	
 	// define class level variables for Robot objects
-	private CANTalon _leftDriveMaster;
-	private CANTalon _leftDriveSlave;
-	private CANTalon _rightDriveMaster;
-	private CANTalon _rightDriveSlave;
-
+	private CANTalon _leftDriveMaster, _leftDriveSlave, _rightDriveMaster, _rightDriveSlave;
 	private RobotDrive _robotDrive;				// this supports arcade/tank style drive controls
-	
 	private DoubleSolenoid _shifterSolenoid;
-	
 	private ChassisAutoAimController _autoAim;
+	private TrajectoryDriveController _driveController;
+	private UpdaterTask _updaterTask;
 	
 	// define class level variables to hold state
 	private Value _shifterSolenoidPosition;
 	private long _lastCmdChgTimeStamp;
 	private double _driveSpeedScalingFactorClamped;
+	private int _currentSegment;
+	private java.util.Timer _updaterTimer;
+	
+	private boolean _isBrakeMode = false;
+	private boolean _isUpdaterTaskRunning;
+	private boolean _isTrajControllerEnabled;
 	
 	//accel decel variables
 	private boolean _isAccelDecelEnabled;
@@ -59,7 +65,6 @@ public class Chassis
 	
 	private double _arcadeDriveThrottleCmdAdj;
 	private double _arcadeDriveTurnCmdAdj;
-	
 	
 	private static final double ACC_DEC_RATE_FACTOR = 5.0;
 	private static final double ACC_DEC_TOTAL_TIME_SECS = 2.0;
@@ -87,7 +92,7 @@ public class Chassis
     	// ===================
     	_leftDriveMaster = new CANTalon(talonLeftMasterCanBusAddr);
     	_leftDriveMaster.changeControlMode(CANTalon.TalonControlMode.PercentVbus);	// open loop throttle
-    	_leftDriveMaster.enableBrakeMode(false);							// default to brake mode DISABLED
+    	_leftDriveMaster.enableBrakeMode(_isBrakeMode);							// default to brake mode DISABLED
     	_leftDriveMaster.setFeedbackDevice(CANTalon.FeedbackDevice.QuadEncoder);	// set encoder to be feedback device
     	_leftDriveMaster.configEncoderCodesPerRev(3072);
     	_leftDriveMaster.reverseSensor(false);  							// do not invert encoder feedback
@@ -96,7 +101,7 @@ public class Chassis
 		_leftDriveSlave = new CANTalon(talonLeftSlave1CanBusAddr);
 	   	_leftDriveSlave.changeControlMode(CANTalon.TalonControlMode.Follower);	// set this mtr ctrlr as a slave
 	   	_leftDriveSlave.set(talonLeftMasterCanBusAddr);
-	   	_leftDriveSlave.enableBrakeMode(false);							// default to brake mode DISABLED
+	   	_leftDriveSlave.enableBrakeMode(_isBrakeMode);							// default to brake mode DISABLED
 	    _leftDriveSlave.enableLimitSwitch(false, false);
 
     	// ===================
@@ -104,7 +109,7 @@ public class Chassis
     	// ===================
 		_rightDriveMaster = new CANTalon(talonRightMasterCanBusAddr);
 		_rightDriveMaster.changeControlMode(CANTalon.TalonControlMode.PercentVbus);	// open loop throttle
-		_rightDriveMaster.enableBrakeMode(false);							// default to brake mode DISABLED
+		_rightDriveMaster.enableBrakeMode(_isBrakeMode);							// default to brake mode DISABLED
     	_rightDriveMaster.setFeedbackDevice(CANTalon.FeedbackDevice.QuadEncoder);	// set encoder to be feedback device
     	_rightDriveMaster.configEncoderCodesPerRev(3072);
     	_rightDriveMaster.reverseSensor(true);  							// do not invert encoder feedback
@@ -113,7 +118,7 @@ public class Chassis
 		_rightDriveSlave = new CANTalon(talonRightSlave1CanBusAddr);
 		_rightDriveSlave.changeControlMode(CANTalon.TalonControlMode.Follower);	// set this mtr ctrlr as a slave
 		_rightDriveSlave.set(talonRightMasterCanBusAddr);
-		_rightDriveSlave.enableBrakeMode(false);							// default to brake mode DISABLED
+		_rightDriveSlave.enableBrakeMode(_isBrakeMode);							// default to brake mode DISABLED
 		_rightDriveSlave.enableLimitSwitch(false, false);
     	  	
     	//====================
@@ -250,6 +255,74 @@ public class Chassis
 	public void updateAutoAim() {
 		double motorOutput = _autoAim.update(getHeadingInDegrees());
 		tankDrive(motorOutput, -motorOutput);
+	}
+	
+	// Trajectory Controller Methods
+	public void disableTrajectoryController() {
+		_driveController.disable();
+		_isTrajControllerEnabled = false;
+		_currentSegment = 0;
+	}
+	
+	public void enableTrajectoryController() {
+		_driveController.reset();
+		_driveController.enable();
+		//_navX.zeroYaw();
+		_isTrajControllerEnabled = true;
+	}
+	
+	public boolean isTrajectoryControllerEnabled() {
+		return _driveController.isEnable();
+	}
+	
+	public boolean isTrajectoryControllerOnTarget() {
+		return _driveController.onTarget();
+	}
+	
+	public void loadProfile(double[][] leftProfile, double[][] rightProfile, double direction, double heading) {
+		_driveController.loadProfile(leftProfile, rightProfile, direction, heading);
+	}
+	
+	public void updateTrajectoryController(int currentSegment) {
+		double[] motorOutput = _driveController.update(getLeftEncoderCurrentPosition(), getRightEncoderCurrentPosition(), getHeadingInDegrees(), currentSegment);
+		tankDrive(motorOutput[0], motorOutput[1]);
+	}
+	
+	public double getSegment() {
+		return _driveController.getCurrentSegment();
+	}
+	
+	public double getAngleDiff() {
+		return _driveController.getAngleDiff();
+	}
+	
+	public boolean isEnabled() {
+		return _isTrajControllerEnabled;
+	}
+	
+	public void startTrajectoryController() {
+		_isUpdaterTaskRunning = true;
+		_updaterTimer.scheduleAtFixedRate(_updaterTask, 0, 20);
+	}
+	
+	private class UpdaterTask extends TimerTask {
+		public void run() {
+			while(_isUpdaterTaskRunning) {
+				// update method here
+				if (_isTrajControllerEnabled) {
+					if (_currentSegment != (GeneratedTrajectory.kNumPoints - 1)) {
+						updateTrajectoryController(_currentSegment);
+						_currentSegment = _currentSegment + 1;
+					}	
+				}
+				try {
+					Thread.sleep(20);
+				}
+				catch(InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 	
 	// update the Dashboard with any Chassis specific data values
