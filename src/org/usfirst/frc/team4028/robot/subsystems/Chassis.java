@@ -2,6 +2,7 @@ package org.usfirst.frc.team4028.robot.subsystems;
 
 import org.usfirst.frc.team4028.robot.LogData;
 import org.usfirst.frc.team4028.robot.constants.RobotMap;
+import org.usfirst.frc.team4028.robot.controllers.ChassisAutoAimController;
 
 import com.ctre.CANTalon;
 
@@ -33,14 +34,16 @@ public class Chassis
 	// =====================================================================
 	
 	// define class level variables for Robot objects
-	private CANTalon _leftDriveMasterMtr;
-	private CANTalon _leftDriveSlave1Mtr;
-	private CANTalon _rightDriveMasterMtr;
-	private CANTalon _rightDriveSlave1Mtr;
+	private CANTalon _leftDriveMaster;
+	private CANTalon _leftDriveSlave;
+	private CANTalon _rightDriveMaster;
+	private CANTalon _rightDriveSlave;
 
 	private RobotDrive _robotDrive;				// this supports arcade/tank style drive controls
 	
 	private DoubleSolenoid _shifterSolenoid;
+	
+	private ChassisAutoAimController _autoAim;
 	
 	// define class level variables to hold state
 	private Value _shifterSolenoidPosition;
@@ -82,36 +85,36 @@ public class Chassis
     	// ===================
     	// Left Drive Motors, Tandem Pair, looking out motor shaft: CW = Drive FWD
     	// ===================
-    	_leftDriveMasterMtr = new CANTalon(talonLeftMasterCanBusAddr);
-    	_leftDriveMasterMtr.changeControlMode(CANTalon.TalonControlMode.PercentVbus);	// open loop throttle
-    	_leftDriveMasterMtr.enableBrakeMode(false);							// default to brake mode DISABLED
-    	_leftDriveMasterMtr.setFeedbackDevice(CANTalon.FeedbackDevice.QuadEncoder);	// set encoder to be feedback device
-    	_leftDriveMasterMtr.configEncoderCodesPerRev(3072);
-    	_leftDriveMasterMtr.reverseSensor(false);  							// do not invert encoder feedback
-    	_leftDriveMasterMtr.enableLimitSwitch(false, false);
+    	_leftDriveMaster = new CANTalon(talonLeftMasterCanBusAddr);
+    	_leftDriveMaster.changeControlMode(CANTalon.TalonControlMode.PercentVbus);	// open loop throttle
+    	_leftDriveMaster.enableBrakeMode(false);							// default to brake mode DISABLED
+    	_leftDriveMaster.setFeedbackDevice(CANTalon.FeedbackDevice.QuadEncoder);	// set encoder to be feedback device
+    	_leftDriveMaster.configEncoderCodesPerRev(3072);
+    	_leftDriveMaster.reverseSensor(false);  							// do not invert encoder feedback
+    	_leftDriveMaster.enableLimitSwitch(false, false);
 
-		_leftDriveSlave1Mtr = new CANTalon(talonLeftSlave1CanBusAddr);
-	   	_leftDriveSlave1Mtr.changeControlMode(CANTalon.TalonControlMode.Follower);	// set this mtr ctrlr as a slave
-	   	_leftDriveSlave1Mtr.set(talonLeftMasterCanBusAddr);
-	   	_leftDriveSlave1Mtr.enableBrakeMode(false);							// default to brake mode DISABLED
-	    _leftDriveSlave1Mtr.enableLimitSwitch(false, false);
+		_leftDriveSlave = new CANTalon(talonLeftSlave1CanBusAddr);
+	   	_leftDriveSlave.changeControlMode(CANTalon.TalonControlMode.Follower);	// set this mtr ctrlr as a slave
+	   	_leftDriveSlave.set(talonLeftMasterCanBusAddr);
+	   	_leftDriveSlave.enableBrakeMode(false);							// default to brake mode DISABLED
+	    _leftDriveSlave.enableLimitSwitch(false, false);
 
     	// ===================
     	// Right Drive Motors, Tandem Pair, looking out motor shaft: CW = Drive FWD
     	// ===================
-		_rightDriveMasterMtr = new CANTalon(talonRightMasterCanBusAddr);
-		_rightDriveMasterMtr.changeControlMode(CANTalon.TalonControlMode.PercentVbus);	// open loop throttle
-		_rightDriveMasterMtr.enableBrakeMode(false);							// default to brake mode DISABLED
-    	_rightDriveMasterMtr.setFeedbackDevice(CANTalon.FeedbackDevice.QuadEncoder);	// set encoder to be feedback device
-    	_rightDriveMasterMtr.configEncoderCodesPerRev(3072);
-    	_rightDriveMasterMtr.reverseSensor(true);  							// do not invert encoder feedback
-		_rightDriveMasterMtr.enableLimitSwitch(false, false);
+		_rightDriveMaster = new CANTalon(talonRightMasterCanBusAddr);
+		_rightDriveMaster.changeControlMode(CANTalon.TalonControlMode.PercentVbus);	// open loop throttle
+		_rightDriveMaster.enableBrakeMode(false);							// default to brake mode DISABLED
+    	_rightDriveMaster.setFeedbackDevice(CANTalon.FeedbackDevice.QuadEncoder);	// set encoder to be feedback device
+    	_rightDriveMaster.configEncoderCodesPerRev(3072);
+    	_rightDriveMaster.reverseSensor(true);  							// do not invert encoder feedback
+		_rightDriveMaster.enableLimitSwitch(false, false);
 
-		_rightDriveSlave1Mtr = new CANTalon(talonRightSlave1CanBusAddr);
-		_rightDriveSlave1Mtr.changeControlMode(CANTalon.TalonControlMode.Follower);	// set this mtr ctrlr as a slave
-		_rightDriveSlave1Mtr.set(talonRightMasterCanBusAddr);
-		_rightDriveSlave1Mtr.enableBrakeMode(false);							// default to brake mode DISABLED
-		_rightDriveSlave1Mtr.enableLimitSwitch(false, false);
+		_rightDriveSlave = new CANTalon(talonRightSlave1CanBusAddr);
+		_rightDriveSlave.changeControlMode(CANTalon.TalonControlMode.Follower);	// set this mtr ctrlr as a slave
+		_rightDriveSlave.set(talonRightMasterCanBusAddr);
+		_rightDriveSlave.enableBrakeMode(false);							// default to brake mode DISABLED
+		_rightDriveSlave.enableLimitSwitch(false, false);
     	  	
     	//====================
     	// Shifter
@@ -123,7 +126,9 @@ public class Chassis
     	//====================
     	// Arcade Drive configured to drive in "2 motor per side setup, 
     	//	other motors follow master as slaves 
-    	_robotDrive = new RobotDrive(_leftDriveMasterMtr, _rightDriveMasterMtr);
+    	_robotDrive = new RobotDrive(_leftDriveMaster, _rightDriveMaster);
+    	
+    	_autoAim = new ChassisAutoAimController();
     
     	//set default scaling factor
     	_driveSpeedScalingFactorClamped = 1.0;
@@ -139,14 +144,14 @@ public class Chassis
 		// ----------------
 		// Step 1: make sure we are in %VBus mode (we may have chg'd to PID mode)
 		// ----------------
-		if(_leftDriveMasterMtr.getControlMode() != CANTalon.TalonControlMode.PercentVbus)
+		if(_leftDriveMaster.getControlMode() != CANTalon.TalonControlMode.PercentVbus)
 		{
-			_leftDriveMasterMtr.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
+			_leftDriveMaster.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
 		}
 		
-		if(_rightDriveMasterMtr.getControlMode() != CANTalon.TalonControlMode.PercentVbus)
+		if(_rightDriveMaster.getControlMode() != CANTalon.TalonControlMode.PercentVbus)
 		{
-			_rightDriveMasterMtr.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
+			_rightDriveMaster.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
 		}
 		
 		// calc scaled throttle cmds
@@ -222,30 +227,9 @@ public class Chassis
 	
 	public void zeroDriveEncoders()
 	{
-		_leftDriveMasterMtr.setPosition(0);
-		_rightDriveMasterMtr.setPosition(0);
+		_leftDriveMaster.setPosition(0);
+		_rightDriveMaster.setPosition(0);
 	}
-	
-	// update the Dashboard with any Chassis specific data values
-	public void outputToSmartDashboard()
-	{
-		
-	}
-	
-	public void updateLogData(LogData logData)
-	{
-		logData.AddData("Chassis:LeftDriveMtrSpd", String.format("%.2f", _leftDriveMasterMtr.getSpeed()));
-		logData.AddData("Chassis:LeftDriveMtr%VBus", String.format("%.2f", _leftDriveMasterMtr.getOutputVoltage()/_leftDriveMasterMtr.getBusVoltage()));
-		logData.AddData("Chassis:LeftDriveMtrPos", String.format("%.0f", _leftDriveMasterMtr.getPosition()));
-		
-		logData.AddData("Chassis:RightDriveMtrSpd", String.format("%.2f", _rightDriveMasterMtr.getSpeed()));
-		logData.AddData("Chassis:RightDriveMtr%VBus", String.format("%.2f", _rightDriveMasterMtr.getOutputVoltage()/_rightDriveMasterMtr.getBusVoltage()));
-		logData.AddData("Chassis:RightDriveMtrPos", String.format("%.0f", _rightDriveMasterMtr.getPosition()));
-	}
-	
-	//============================================================================================
-	// Property Accessors follow
-	//============================================================================================
 	
 	// Returns the current shifter position (gear)
 	public GearShiftPosition getGearShiftPosition()
@@ -257,6 +241,37 @@ public class Chassis
 		else
 			return GearShiftPosition.UNKNOWN;		
 	}
+	
+	// Auto Aim Methods
+	public void loadNewAutoAimTarget(double degrees) {
+		_autoAim.loadNewTarget(degrees);
+	}
+	
+	public void updateAutoAim() {
+		double motorOutput = _autoAim.update(getHeadingInDegrees());
+		tankDrive(motorOutput, -motorOutput);
+	}
+	
+	// update the Dashboard with any Chassis specific data values
+	public void outputToSmartDashboard()
+	{
+		
+	}
+	
+	public void updateLogData(LogData logData)
+	{
+		logData.AddData("Chassis:LeftDriveMtrSpd", String.format("%.2f", _leftDriveMaster.getSpeed()));
+		logData.AddData("Chassis:LeftDriveMtr%VBus", String.format("%.2f", _leftDriveMaster.getOutputVoltage()/_leftDriveMaster.getBusVoltage()));
+		logData.AddData("Chassis:LeftDriveMtrPos", String.format("%.0f", _leftDriveMaster.getPosition()));
+		
+		logData.AddData("Chassis:RightDriveMtrSpd", String.format("%.2f", _rightDriveMaster.getSpeed()));
+		logData.AddData("Chassis:RightDriveMtr%VBus", String.format("%.2f", _rightDriveMaster.getOutputVoltage()/_rightDriveMaster.getBusVoltage()));
+		logData.AddData("Chassis:RightDriveMtrPos", String.format("%.0f", _rightDriveMaster.getPosition()));
+	}
+	
+	//============================================================================================
+	// Property Accessors follow
+	//============================================================================================
 	
 	public void setDriveSpeedScalingFactor(double speedScalingFactor)
 	{
@@ -281,6 +296,26 @@ public class Chassis
 	public boolean getIsAccDecModeEnabled()
 	{
 		return _isAccelDecelEnabled;
+	}
+	
+	public double getHeadingInDegrees() {
+		return 1.0; // Add heading getter here
+	}
+	
+	public double getLeftEncoderCurrentPosition() {
+		return _leftDriveMaster.getPosition();
+	}
+	
+	public double getLeftEncoderCurrentVelocity() {
+		return _leftDriveMaster.getEncVelocity();
+	}
+	
+	public double getRightEncoderCurrentPosition() {
+		return _rightDriveMaster.getPosition();
+	}
+	
+	public double getRightEncoderCurrentVelocity() {
+		return _rightDriveMaster.getEncVelocity();
 	}
 	
 	//============================================================================================
