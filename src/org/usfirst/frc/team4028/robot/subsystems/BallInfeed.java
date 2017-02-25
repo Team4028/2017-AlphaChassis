@@ -71,15 +71,16 @@ public class BallInfeed
 	
 	public void ToggleSolenoid()
 	{
-		if(_fuelInfeedSolenoid.get() == false)
-		{
-			_fuelInfeedSolenoid.set(true);
-		}
-		else if(_fuelInfeedSolenoid.get() == true)
-		{
-			_fuelInfeedSolenoid.set(false);
-		}
+		_fuelInfeedSolenoid.set(!_fuelInfeedSolenoid.get());
 		
+		//if(_fuelInfeedSolenoid.get() == false)
+		//{
+		//	_fuelInfeedSolenoid.set(true);
+		//}
+		//else if(_fuelInfeedSolenoid.get() == true)
+		//{
+		//	_fuelInfeedSolenoid.set(false);
+		//}
 	}
 	
 	// update the Dashboard with any Climber specific data values

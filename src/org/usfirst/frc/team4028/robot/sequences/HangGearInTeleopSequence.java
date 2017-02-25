@@ -100,7 +100,6 @@ public class HangGearInTeleopSequence
 			_chassis.Drive(DRIVE_BACKWARDS_SPEED, 0);
 			_isStillRunning = true;
 		}
-		
 		else if(elapsedTimeInMSec > MSEC_SECOND_CHANGE && elapsedTimeInMSec < MAX_TIME_BEFORE_ABORT_IN_MSEC)	//final state of gear sequence
 		{
 			_gearHandler.MoveGearToHomePosition();
@@ -109,7 +108,6 @@ public class HangGearInTeleopSequence
 			_isStillRunning = false;			//ends sequence
 
 		}
-		
 		else if(elapsedTimeInMSec >= MAX_TIME_BEFORE_ABORT_IN_MSEC)  //timeout in order to end sequence
 		{
 			DriverStation.reportWarning("=!=!= HangGearInTeleopSequence Timeout ABORT =!=!=", false);

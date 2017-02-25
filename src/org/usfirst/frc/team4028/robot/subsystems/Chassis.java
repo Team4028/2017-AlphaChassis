@@ -89,13 +89,13 @@ public class Chassis
     	_leftDriveMasterMtr.configEncoderCodesPerRev(3072);
     	_leftDriveMasterMtr.reverseSensor(false);  							// do not invert encoder feedback
     	_leftDriveMasterMtr.enableLimitSwitch(false, false);
-		
+
 		_leftDriveSlave1Mtr = new CANTalon(talonLeftSlave1CanBusAddr);
 	   	_leftDriveSlave1Mtr.changeControlMode(CANTalon.TalonControlMode.Follower);	// set this mtr ctrlr as a slave
 	   	_leftDriveSlave1Mtr.set(talonLeftMasterCanBusAddr);
 	   	_leftDriveSlave1Mtr.enableBrakeMode(false);							// default to brake mode DISABLED
 	    _leftDriveSlave1Mtr.enableLimitSwitch(false, false);
-    	
+
     	// ===================
     	// Right Drive Motors, Tandem Pair, looking out motor shaft: CW = Drive FWD
     	// ===================
@@ -106,7 +106,7 @@ public class Chassis
     	_rightDriveMasterMtr.configEncoderCodesPerRev(3072);
     	_rightDriveMasterMtr.reverseSensor(true);  							// do not invert encoder feedback
 		_rightDriveMasterMtr.enableLimitSwitch(false, false);
-    	   	
+
 		_rightDriveSlave1Mtr = new CANTalon(talonRightSlave1CanBusAddr);
 		_rightDriveSlave1Mtr.changeControlMode(CANTalon.TalonControlMode.Follower);	// set this mtr ctrlr as a slave
 		_rightDriveSlave1Mtr.set(talonRightMasterCanBusAddr);
@@ -123,7 +123,7 @@ public class Chassis
     	//====================
     	// Arcade Drive configured to drive in "2 motor per side setup, 
     	//	other motors follow master as slaves 
-    	_robotDrive = new RobotDrive(_leftDriveMasterMtr,_rightDriveMasterMtr);
+    	_robotDrive = new RobotDrive(_leftDriveMasterMtr, _rightDriveMasterMtr);
     
     	//set default scaling factor
     	_driveSpeedScalingFactorClamped = 1.0;
@@ -222,7 +222,8 @@ public class Chassis
 	
 	public void zeroDriveEncoders()
 	{
-		
+		_leftDriveMasterMtr.setPosition(0);
+		_rightDriveMasterMtr.setPosition(0);
 	}
 	
 	// update the Dashboard with any Chassis specific data values
@@ -234,10 +235,12 @@ public class Chassis
 	public void updateLogData(LogData logData)
 	{
 		logData.AddData("Chassis:LeftDriveMtrSpd", String.format("%.2f", _leftDriveMasterMtr.getSpeed()));
-		logData.AddData("Chassis:RightDriveMtrSpd", String.format("%.2f", _rightDriveMasterMtr.getSpeed()));
 		logData.AddData("Chassis:LeftDriveMtr%VBus", String.format("%.2f", _leftDriveMasterMtr.getOutputVoltage()/_leftDriveMasterMtr.getBusVoltage()));
+		logData.AddData("Chassis:LeftDriveMtrPos", String.format("%.0f", _leftDriveMasterMtr.getPosition()));
+		
+		logData.AddData("Chassis:RightDriveMtrSpd", String.format("%.2f", _rightDriveMasterMtr.getSpeed()));
 		logData.AddData("Chassis:RightDriveMtr%VBus", String.format("%.2f", _rightDriveMasterMtr.getOutputVoltage()/_rightDriveMasterMtr.getBusVoltage()));
-
+		logData.AddData("Chassis:RightDriveMtrPos", String.format("%.0f", _rightDriveMasterMtr.getPosition()));
 	}
 	
 	//============================================================================================
