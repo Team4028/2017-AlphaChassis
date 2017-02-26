@@ -91,4 +91,10 @@ public class RobotMap
 	// this is where the USB stick is mounted on the RoboRIO filesystem.  You can confirm by logging into the RoboRIO using WinSCP
 	public static final String PRIMARY_LOG_FILE_PATH = "/media/sda1/logging";
 	public static final String ALTERNATE_LOG_FILE_PATH = "/media/sdb1/logging";
+	
+	// ======================================
+	// define constants for the Kangaroo & RoboRealm
+	// ======================================
+	public static final String KANGAROO_IPV4_ADDR = "10.40.28.11";
+	public static final int RR_API_PORT = 6060;
 }

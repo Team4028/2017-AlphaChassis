@@ -1,5 +1,12 @@
 package org.usfirst.frc.team4028.robot;
 
+import org.usfirst.frc.team4028.robot.autonRoutines.CrossBaseLine;
+import org.usfirst.frc.team4028.robot.autonRoutines.DoNothing;
+import org.usfirst.frc.team4028.robot.autonRoutines.HangBoilerSideGear;
+import org.usfirst.frc.team4028.robot.autonRoutines.HangCenterGear;
+import org.usfirst.frc.team4028.robot.autonRoutines.HangKeySideGear;
+import org.usfirst.frc.team4028.robot.autonRoutines.TurnAndShoot;
+import org.usfirst.frc.team4028.robot.constants.GeneralEnums.AUTON_MODE;
 import org.usfirst.frc.team4028.robot.constants.GeneralEnums.TELEOP_MODE;
 import org.usfirst.frc.team4028.robot.constants.RobotMap;
 import org.usfirst.frc.team4028.robot.sensors.Lidar;
@@ -55,6 +62,7 @@ public class Robot extends IterativeRobot
 	//   Define class level instance variables for Robot State
 	// ===========================================================
 	private TELEOP_MODE _telopMode;
+	private AUTON_MODE _autonMode;
 	
 	// ===========================================================
 	//   Define class level instance variables for Robot Telep Sequences 
@@ -64,6 +72,12 @@ public class Robot extends IterativeRobot
 	// ===========================================================
 	//   Define class level instance variables for Robot Auton Routines 
 	// ===========================================================
+	CrossBaseLine _crossBaseLineAuton;
+	DoNothing _doNothingAuton;
+	HangBoilerSideGear _hangBoilerSideGearAuton;
+	HangCenterGear _hangCenterGearAuton;
+	HangKeySideGear _hangKeySideGear;
+	TurnAndShoot _turnAndShoot;
 	
 	// ----------------------------------------------------------------------
 	// Code executed 1x at robot startup
@@ -112,9 +126,7 @@ public class Robot extends IterativeRobot
 		
 		// telop sequences follow
 		_hangGearInTeleopSeq = new HangGearInTeleopSequence(_gearHandler, _chassis);
-		
-		// auton routines follow
-		
+				
 		//Update Dashboard Fields
 		OutputAllToSmartDashboard();
 	}
@@ -131,6 +143,37 @@ public class Robot extends IterativeRobot
 	    	_dataLogger.close();
 	    	_dataLogger = null;
     	}
+    	
+    	// cleanup auton resources, since they are not needed in Telop Mode
+    	if(_crossBaseLineAuton != null)
+    	{
+    		_crossBaseLineAuton = null;
+    	}
+    	
+		if(_doNothingAuton != null)
+    	{
+			_doNothingAuton = null;
+    	}
+		
+		if(_hangBoilerSideGearAuton != null)
+    	{
+			_hangBoilerSideGearAuton = null;
+    	}
+		
+		if(_hangCenterGearAuton != null)
+    	{
+			_hangCenterGearAuton = null;
+    	}
+		
+		if(_hangKeySideGear != null)
+    	{
+			_hangKeySideGear = null;
+    	}
+		
+		if(_turnAndShoot != null)
+    	{
+			_turnAndShoot = null;
+    	}
 	}
 		
 	// ----------------------------------------------------------------------
@@ -139,18 +182,62 @@ public class Robot extends IterativeRobot
 	@Override
 	public void autonomousInit() 
 	{
-		// TODO: add logic to read from Dashboard Choosers to select the Auton routine to run
-		
-    	// #### GearHandler ####
+		// =====================================
+    	// Step 1: #### GearHandler ####
+		// =====================================
     	_gearHandler.FullStop();
     	
-    	if(!_gearHandler.hasTiltAxisBeenZeroed())
+    	// =====================================
+		// Step 2: add logic to read from Dashboard Choosers to select the Auton routine to run
+    	// =====================================
+    	// TODO: add this code
+    	
+    	// =====================================
+		// Step 2.1: Create the correct autom routine
+    	//				since we have quite a few auton routines we only create the one we need
+    	//				NOTE: each "real" auton routine is responsible to call the ZeroGearTiltAxisReentrant
+    	//						as many times as required
+    	// =====================================
+    	switch (_autonMode)
     	{
-    		_gearHandler.ZeroGearTiltAxisInit();
+			case CROSS_BASE_LINE:
+				_crossBaseLineAuton = new CrossBaseLine(_gearHandler, _chassis);
+				_crossBaseLineAuton.Initialize();
+				break;
+				
+			case DO_NOTHING:
+				_doNothingAuton = new DoNothing();
+				_doNothingAuton.Initialize();
+				break;
+				
+			case HANG_BOILER_SIDE_GEAR:
+				_hangBoilerSideGearAuton = new HangBoilerSideGear(_gearHandler, _chassis);
+				_hangBoilerSideGearAuton.Initialize();
+				break;
+				
+			case HANG_CENTER_GEAR:
+				_hangCenterGearAuton = new HangCenterGear(_gearHandler, _chassis);
+				_hangCenterGearAuton.Initialize();
+				break;
+				
+			case HANG_KEY_SIDE_GEAR:
+				_hangKeySideGear = new HangKeySideGear(_gearHandler, _chassis);
+				_hangKeySideGear.Initialize();
+				break;
+				
+			case TURN_AND_SHOOT:
+				_turnAndShoot = new TurnAndShoot(_gearHandler, _chassis, _shooter);
+				_turnAndShoot.Initialize();
+				break;
+				
+			case UNDEFINED:
+			default:
+				DriverStation.reportError("Error... NO AUTON Selected!", false);
+				break;
     	}
 		
     	// =====================================
-    	// Step N: Optionally Configure Logging
+    	// Step 3: Optionally Configure Logging
     	// =====================================
     	_dataLogger = Utilities.setupLogging("auton");
 	}
@@ -161,7 +248,9 @@ public class Robot extends IterativeRobot
 	@Override
 	public void autonomousPeriodic() 
 	{
-		// this can run concurrently with all auton routines
+		// =======================================
+		// if not complete, this must run concurrently with all auton routines
+		// =======================================
       	if(!_gearHandler.hasTiltAxisBeenZeroed())
     	{
       		// 	Note: Zeroing will take longer than 1 scan cycle to complete so
@@ -170,11 +259,61 @@ public class Robot extends IterativeRobot
     		_gearHandler.ZeroGearTiltAxisReentrant();
     	}
       	  	
-		// TODO: add logic to call the correct Auton routine to run
-		
+      	// =======================================
+		// Step 2: call the correct Auton routine to run
+      	// =======================================
+    	switch (_autonMode)
+    	{
+			case CROSS_BASE_LINE:
+				if(_crossBaseLineAuton.getIsStillRunning())
+				{
+					_crossBaseLineAuton.ExecuteRentrant();
+				}
+				break;
+				
+			case DO_NOTHING:
+				if(_doNothingAuton.getIsStillRunning())
+				{
+					_doNothingAuton.ExecuteRentrant();
+				}
+				break;
+				
+			case HANG_BOILER_SIDE_GEAR:
+				if(_hangBoilerSideGearAuton.getIsStillRunning())
+				{
+					_hangBoilerSideGearAuton.ExecuteRentrant();
+				}
+				break;
+				
+			case HANG_CENTER_GEAR:
+				if(_hangCenterGearAuton.getIsStillRunning())
+				{
+					_hangCenterGearAuton.ExecuteRentrant();
+				}
+				break;
+				
+			case HANG_KEY_SIDE_GEAR:
+				if(_hangKeySideGear.getIsStillRunning())
+				{
+					_hangKeySideGear.ExecuteRentrant();
+				}
+				break;
+				
+			case TURN_AND_SHOOT:
+				if(_turnAndShoot.getIsStillRunning())
+				{
+					_turnAndShoot.ExecuteRentrant();
+				}
+				break;
+				
+			case UNDEFINED:
+			default:
+				DriverStation.reportError("Error... NO AUTON Selected!", false);
+				break;
+    	}
 		
     	// =====================================
-    	// Step N: Optionally Log Data
+    	// Step 3: Optionally Log Data
     	// =====================================
 		WriteLogData();
 	}
@@ -275,8 +414,8 @@ public class Robot extends IterativeRobot
 		    	//=====================
 		    	// Chassis Throttle Cmd
 				//=====================
-		    	_chassis.Drive(_driversStation.getDriver_ChassisThrottle_JoystickCmd(), 
-		    					_driversStation.getDriver_ChassisTurn_JoystickCmd());
+		    	_chassis.ArcadeDrive(_driversStation.getDriver_ChassisThrottle_JoystickCmd(), 
+		    							_driversStation.getDriver_ChassisTurn_JoystickCmd());
 		    	
     			//============================================================================
     			// Fuel Infeed Cmd

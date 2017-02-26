@@ -1,7 +1,12 @@
 package org.usfirst.frc.team4028.robot.subsystems;
 
+import java.util.TimerTask;
+
+import org.usfirst.frc.team4028.robot.util.GeneratedTrajectory;
 import org.usfirst.frc.team4028.robot.LogData;
 import org.usfirst.frc.team4028.robot.constants.RobotMap;
+import org.usfirst.frc.team4028.robot.controllers.ChassisAutoAimController;
+import org.usfirst.frc.team4028.robot.controllers.TrajectoryDriveController;
 
 import com.ctre.CANTalon;
 
@@ -15,6 +20,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 //------------------------------------------------------
 //	Rev		By		 	D/T			Desc
 //	===		========	===========	=================================
+//  1.0		Seabass		2/25/17		Initial 
 //------------------------------------------------------
 //
 //=====> For Changes see Sebastian Rodriguez
@@ -32,19 +38,24 @@ public class Chassis
 	// =====================================================================
 	
 	// define class level variables for Robot objects
-	private CANTalon _leftDriveMasterMtr;
-	private CANTalon _leftDriveSlave1Mtr;
-	private CANTalon _rightDriveMasterMtr;
-	private CANTalon _rightDriveSlave1Mtr;
-
-	private RobotDrive _robotDrive;				// this supports arcade style drive controls
-	
+	private CANTalon _leftDriveMaster, _leftDriveSlave, _rightDriveMaster, _rightDriveSlave;
+	private RobotDrive _robotDrive;				// this supports arcade/tank style drive controls
 	private DoubleSolenoid _shifterSolenoid;
+	
+	private ChassisAutoAimController _autoAim;
+	private TrajectoryDriveController _driveController;
+	private UpdaterTask _updaterTask;
 	
 	// define class level variables to hold state
 	private Value _shifterSolenoidPosition;
 	private long _lastCmdChgTimeStamp;
 	private double _driveSpeedScalingFactorClamped;
+	private int _currentSegment;
+	private java.util.Timer _updaterTimer;
+	
+	private boolean _isBrakeMode = false;
+	private boolean _isUpdaterTaskRunning;
+	private boolean _isTrajControllerEnabled;
 	
 	//accel decel variables
 	private boolean _isAccelDecelEnabled;
@@ -56,15 +67,13 @@ public class Chassis
 	private double _arcadeDriveThrottleCmdAdj;
 	private double _arcadeDriveTurnCmdAdj;
 	
-	
 	private static final double ACC_DEC_RATE_FACTOR = 5.0;
 	private static final double ACC_DEC_TOTAL_TIME_SECS = 2.0;
 	
-	private static final double _turnSpeedScalingFactor = 0.6;
+	private static final double _turnSpeedScalingFactor = 0.7;
 	
 	// define public enums exposed by this class
-	public enum GearShiftPosition
-	{
+	public enum GearShiftPosition {
 		UNKNOWN,
 		HIGH_GEAR,
 		LOW_GEAR
@@ -82,38 +91,36 @@ public class Chassis
     	// ===================
     	// Left Drive Motors, Tandem Pair, looking out motor shaft: CW = Drive FWD
     	// ===================
-    	_leftDriveMasterMtr = new CANTalon(talonLeftMasterCanBusAddr);
-    	_leftDriveMasterMtr.changeControlMode(CANTalon.TalonControlMode.PercentVbus);	// open loop throttle
-    	_leftDriveMasterMtr.enableBrakeMode(false);							// default to brake mode DISABLED
-    	//_leftDriveMasterMtr.setFeedbackDevice(FeedbackDevice.QuadEncoder);	// set encoder to be feedback device
-    	//_leftDriveMasterMtr.reverseSensor(false);  							// do not invert encoder feedback
-    	_leftDriveMasterMtr.enableLimitSwitch(false, false);
-    	//_leftDriveMasterMtr.reverseOutput(true);
-		    	
-		_leftDriveSlave1Mtr = new CANTalon(talonLeftSlave1CanBusAddr);
-	   	_leftDriveSlave1Mtr.changeControlMode(CANTalon.TalonControlMode.Follower);	// set this mtr ctrlr as a slave
-	   	_leftDriveSlave1Mtr.set(talonLeftMasterCanBusAddr);
-	   	_leftDriveSlave1Mtr.enableBrakeMode(false);							// default to brake mode DISABLED
-	    _leftDriveSlave1Mtr.enableLimitSwitch(false, false);
-	    //_leftDriveSlaveMtr.reverseOutput(true);
-    	    	   	   	
+    	_leftDriveMaster = new CANTalon(talonLeftMasterCanBusAddr);
+    	_leftDriveMaster.changeControlMode(CANTalon.TalonControlMode.PercentVbus);	// open loop throttle
+    	_leftDriveMaster.enableBrakeMode(_isBrakeMode);							// default to brake mode DISABLED
+    	_leftDriveMaster.setFeedbackDevice(CANTalon.FeedbackDevice.QuadEncoder);	// set encoder to be feedback device
+    	_leftDriveMaster.configEncoderCodesPerRev(3072);
+    	_leftDriveMaster.reverseSensor(false);  							// do not invert encoder feedback
+    	_leftDriveMaster.enableLimitSwitch(false, false);
+
+		_leftDriveSlave = new CANTalon(talonLeftSlave1CanBusAddr);
+	   	_leftDriveSlave.changeControlMode(CANTalon.TalonControlMode.Follower);	// set this mtr ctrlr as a slave
+	   	_leftDriveSlave.set(talonLeftMasterCanBusAddr);
+	   	_leftDriveSlave.enableBrakeMode(_isBrakeMode);							// default to brake mode DISABLED
+	    _leftDriveSlave.enableLimitSwitch(false, false);
+
     	// ===================
     	// Right Drive Motors, Tandem Pair, looking out motor shaft: CW = Drive FWD
     	// ===================
-		_rightDriveMasterMtr = new CANTalon(talonRightMasterCanBusAddr);
-		_rightDriveMasterMtr.changeControlMode(CANTalon.TalonControlMode.PercentVbus);	// open loop throttle
-		_rightDriveMasterMtr.enableBrakeMode(false);							// default to brake mode DISABLED
-    	//_rightDriveMasterMtr.setFeedbackDevice(FeedbackDevice.QuadEncoder);	// set encoder to be feedback device
-    	//_rightDriveMasterMtr.reverseSensor(false);  							// do not invert encoder feedback
-		_rightDriveMasterMtr.enableLimitSwitch(false, false);
-    	//_rightDriveMasterMtr.reverseOutput(true);
-    	   	  	
-		_rightDriveSlave1Mtr = new CANTalon(talonRightSlave1CanBusAddr);
-		_rightDriveSlave1Mtr.changeControlMode(CANTalon.TalonControlMode.Follower);	// set this mtr ctrlr as a slave
-		_rightDriveSlave1Mtr.set(talonRightMasterCanBusAddr);
-		_rightDriveSlave1Mtr.enableBrakeMode(false);							// default to brake mode DISABLED
-		_rightDriveSlave1Mtr.enableLimitSwitch(false, false);
-	   	//_rightDriveSlave1Mtr.reverseOutput(true);
+		_rightDriveMaster = new CANTalon(talonRightMasterCanBusAddr);
+		_rightDriveMaster.changeControlMode(CANTalon.TalonControlMode.PercentVbus);	// open loop throttle
+		_rightDriveMaster.enableBrakeMode(_isBrakeMode);							// default to brake mode DISABLED
+    	_rightDriveMaster.setFeedbackDevice(CANTalon.FeedbackDevice.QuadEncoder);	// set encoder to be feedback device
+    	_rightDriveMaster.configEncoderCodesPerRev(3072);
+    	_rightDriveMaster.reverseSensor(true);  							// do not invert encoder feedback
+		_rightDriveMaster.enableLimitSwitch(false, false);
+
+		_rightDriveSlave = new CANTalon(talonRightSlave1CanBusAddr);
+		_rightDriveSlave.changeControlMode(CANTalon.TalonControlMode.Follower);	// set this mtr ctrlr as a slave
+		_rightDriveSlave.set(talonRightMasterCanBusAddr);
+		_rightDriveSlave.enableBrakeMode(_isBrakeMode);							// default to brake mode DISABLED
+		_rightDriveSlave.enableLimitSwitch(false, false);
     	  	
     	//====================
     	// Shifter
@@ -125,7 +132,9 @@ public class Chassis
     	//====================
     	// Arcade Drive configured to drive in "2 motor per side setup, 
     	//	other motors follow master as slaves 
-    	_robotDrive = new RobotDrive(_leftDriveMasterMtr, _rightDriveMasterMtr);
+    	_robotDrive = new RobotDrive(_leftDriveMaster, _rightDriveMaster);
+    	
+    	_autoAim = new ChassisAutoAimController();
     
     	//set default scaling factor
     	_driveSpeedScalingFactorClamped = 1.0;
@@ -136,19 +145,19 @@ public class Chassis
 	//============================================================================================
 	
 	// This is the (arcade) main drive method
-	public void Drive(double newThrottleCmdRaw, double newTurnCmdRaw)
+	public void ArcadeDrive(double newThrottleCmdRaw, double newTurnCmdRaw)
 	{
 		// ----------------
 		// Step 1: make sure we are in %VBus mode (we may have chg'd to PID mode)
 		// ----------------
-		if(_leftDriveMasterMtr.getControlMode() != CANTalon.TalonControlMode.PercentVbus)
+		if(_leftDriveMaster.getControlMode() != CANTalon.TalonControlMode.PercentVbus)
 		{
-			_leftDriveMasterMtr.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
+			_leftDriveMaster.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
 		}
 		
-		if(_rightDriveMasterMtr.getControlMode() != CANTalon.TalonControlMode.PercentVbus)
+		if(_rightDriveMaster.getControlMode() != CANTalon.TalonControlMode.PercentVbus)
 		{
-			_rightDriveMasterMtr.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
+			_rightDriveMaster.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
 		}
 		
 		// calc scaled throttle cmds
@@ -170,7 +179,7 @@ public class Chassis
 			_previousThrottleCmdAccDec = _currentThrottleCmdAccDec;
 			
 			//implement speed scaling
-			_arcadeDriveThrottleCmdAdj = CalcAccelDecelThrottleCmd(_currentThrottleCmdScaled, _previousThrottleCmdScaled, _lastCmdChgTimeStamp);
+			_arcadeDriveThrottleCmdAdj = calcAccelDecelThrottleCmd(_currentThrottleCmdScaled, _previousThrottleCmdScaled, _lastCmdChgTimeStamp);
 			
 			_currentThrottleCmdAccDec = _arcadeDriveThrottleCmdAdj;
 			
@@ -190,10 +199,15 @@ public class Chassis
 		_robotDrive.arcadeDrive(_arcadeDriveThrottleCmdAdj, _arcadeDriveTurnCmdAdj);		
 	}
 	
+	public void TankDrive(double leftCmd, double rightCmd) 
+	{
+		_robotDrive.tankDrive(leftCmd, rightCmd);
+	}
+	
 	// stop the motors
 	public void FullStop()
 	{
-		Drive(0.0, 0.0);
+		ArcadeDrive(0.0, 0.0);
 	}
 	
 	// shifts between high & low gear
@@ -220,8 +234,8 @@ public class Chassis
 	
 	public void ZeroDriveEncoders()
 	{
-		_leftDriveMasterMtr.setPosition(0);
-		_rightDriveMasterMtr.setPosition(0);
+		_leftDriveMaster.setPosition(0);
+		_rightDriveMaster.setPosition(0);
 	}
 	
 	// update the Dashboard with any Chassis specific data values
@@ -232,14 +246,111 @@ public class Chassis
 	
 	public void UpdateLogData(LogData logData)
 	{
-		logData.AddData("Chassis:LeftDriveMtrSpd", String.format("%.2f", _leftDriveMasterMtr.getSpeed()));
-		logData.AddData("Chassis:LeftDriveMtr%VBus", String.format("%.2f", _leftDriveMasterMtr.getOutputVoltage()/_leftDriveMasterMtr.getBusVoltage()));
-		logData.AddData("Chassis:LeftDriveMtrPos", String.format("%.0f", _leftDriveMasterMtr.getPosition()));
+		logData.AddData("Chassis:LeftDriveMtrSpd", String.format("%.2f", _leftDriveMaster.getSpeed()));
+		logData.AddData("Chassis:LeftDriveMtr%VBus", String.format("%.2f", _leftDriveMaster.getOutputVoltage()/_leftDriveMaster.getBusVoltage()));
+		logData.AddData("Chassis:LeftDriveMtrPos", String.format("%.0f", _leftDriveMaster.getPosition()));
 		
-		logData.AddData("Chassis:RightDriveMtrSpd", String.format("%.2f", _rightDriveMasterMtr.getSpeed()));
-		logData.AddData("Chassis:RightDriveMtr%VBus", String.format("%.2f", _rightDriveMasterMtr.getOutputVoltage()/_rightDriveMasterMtr.getBusVoltage()));
-		logData.AddData("Chassis:RightDriveMtrPos", String.format("%.0f", _rightDriveMasterMtr.getPosition()));
+		logData.AddData("Chassis:RightDriveMtrSpd", String.format("%.2f", _rightDriveMaster.getSpeed()));
+		logData.AddData("Chassis:RightDriveMtr%VBus", String.format("%.2f", _rightDriveMaster.getOutputVoltage()/_rightDriveMaster.getBusVoltage()));
+		logData.AddData("Chassis:RightDriveMtrPos", String.format("%.0f", _rightDriveMaster.getPosition()));
 	}
+	
+	//============================================================================================
+	// Special Auton Methods & Properties follow
+	//============================================================================================
+	
+	// Auto Aim Methods
+	public void loadNewAutoAimTarget(double degrees) 
+	{
+		_autoAim.loadNewTarget(degrees);
+	}
+	
+	public void updateAutoAim() 
+	{
+		double motorOutput = _autoAim.update(getHeadingInDegrees());
+		TankDrive(motorOutput, -motorOutput);
+	}
+	
+	// Trajectory Controller Methods
+	public void disableTrajectoryController() 
+	{
+		_driveController.disable();
+		_isTrajControllerEnabled = false;
+		_currentSegment = 0;
+	}
+	
+	public void enableTrajectoryController() 
+	{
+		_driveController.reset();
+		_driveController.enable();
+		//_navX.zeroYaw();
+		_isTrajControllerEnabled = true;
+	}
+	
+	public boolean isTrajectoryControllerEnabled() 
+	{
+		return _driveController.isEnable();
+	}
+	
+	public boolean isTrajectoryControllerOnTarget() 
+	{
+		return _driveController.onTarget();
+	}
+	
+	public void loadProfile(double[][] leftProfile, double[][] rightProfile, double direction, double heading) 
+	{
+		_driveController.loadProfile(leftProfile, rightProfile, direction, heading);
+	}
+	
+	public void updateTrajectoryController(int currentSegment) 
+	{
+		double[] motorOutput = _driveController.update(getLeftEncoderCurrentPosition(), getRightEncoderCurrentPosition(), getHeadingInDegrees(), currentSegment);
+		TankDrive(motorOutput[0], motorOutput[1]);
+	}
+	
+	public double getSegment() 
+	{
+		return _driveController.getCurrentSegment();
+	}
+	
+	public double getAngleDiff() 
+	{
+		return _driveController.getAngleDiff();
+	}
+	
+	public boolean isEnabled() 
+	{
+		return _isTrajControllerEnabled;
+	}
+	
+	public void startTrajectoryController() 
+	{
+		_isUpdaterTaskRunning = true;
+		_updaterTimer.scheduleAtFixedRate(_updaterTask, 0, 20);
+	}
+	
+	private class UpdaterTask extends TimerTask
+	{
+		public void run() {
+			while(_isUpdaterTaskRunning) {
+				// update method here
+				if (_isTrajControllerEnabled) {
+					if (_currentSegment != (GeneratedTrajectory.kNumPoints - 1)) {
+						updateTrajectoryController(_currentSegment);
+						_currentSegment = _currentSegment + 1;
+					}	
+				}
+				try {
+					Thread.sleep(20);
+				}
+				catch(InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	
+
 	
 	//============================================================================================
 	// Property Accessors follow
@@ -281,11 +392,31 @@ public class Chassis
 		return _isAccelDecelEnabled;
 	}
 	
+	public double getHeadingInDegrees() {
+		return 1.0; // Add heading getter here
+	}
+	
+	public double getLeftEncoderCurrentPosition() {
+		return _leftDriveMaster.getPosition();
+	}
+	
+	public double getLeftEncoderCurrentVelocity() {
+		return _leftDriveMaster.getEncVelocity();
+	}
+	
+	public double getRightEncoderCurrentPosition() {
+		return _rightDriveMaster.getPosition();
+	}
+	
+	public double getRightEncoderCurrentVelocity() {
+		return _rightDriveMaster.getEncVelocity();
+	}
+	
 	//============================================================================================
 	// Utility Helper Methods
 	//============================================================================================
 	// implement s-curve accel / decel
-	private double CalcAccelDecelThrottleCmd(double currentThrottleCmd, double previousThrottleCmd, long lastCmdChgTimeStamp)
+	private double calcAccelDecelThrottleCmd(double currentThrottleCmd, double previousThrottleCmd, long lastCmdChgTimeStamp)
 	{
 		double accDecMidpointTimeSecs = ACC_DEC_TOTAL_TIME_SECS / 2.0;    // a
 

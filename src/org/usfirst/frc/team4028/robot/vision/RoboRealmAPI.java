@@ -188,7 +188,6 @@ public class RoboRealmAPI
   read data to the front of the buffer and continuing reading in the
   complete image size from that point.
   */
-
   public int readImageData(byte pixels[], int len)
   {
     int num;
@@ -542,11 +541,13 @@ public class RoboRealmAPI
     name - input - the name of the variable to set
     value - input - contains the current value of the variable to be set
   */
-
   public boolean setVariable(String name, String value)
   {
-    if (!connected) return false;
-    if ((name==null)||(name.length()==0)) return false;
+    if (!connected) 
+    	return false;
+    
+    if ((name==null)||(name.length()==0)) 
+    	return false;
 
     if (send("<request><set_variable><name>"+escape(name)+"</name><value>"+escape(value)+"</value></set_variable></request>"))
     {
