@@ -69,8 +69,8 @@ public class Shooter
 	private static final double MAX_SHOOTER_RPM = -4400;
 	private static final double MIN_SHOOTER_RPM = -3000;
 	private static final double SHOOTER_BUMP_RPM = 100;
-	private static final double FIRST_STAGE_MTR_DEFAULT_RPM = -3000;
-	private static final double SECOND_STAGE_MTR_DEFAULT_RPM = -3000;
+	private static final double FIRST_STAGE_MTR_DEFAULT_RPM = -3700;
+	private static final double SECOND_STAGE_MTR_DEFAULT_RPM = -3700;
 	
 	private static final double FEEDER_PERCENTVBUS_COMMAND = -0.7; //This Mo tor Needs to Run in Reverse
 	private static final double BLENDER_PERCENTVBUS_COMMAND = 0.35;
