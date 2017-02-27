@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //	Rev		By		 	D/T			Desc
 //	===		========	===========	=================================
 //	0		Sydney	 	15.Feb.2017	Initial Version
+//	1		TomB		26.Feb.2017	Updated w/ new Auton Options
 //------------------------------------------------------
 //
 //=====> For Changes see Sydney
@@ -43,10 +44,19 @@ public class DashboardInputs
 		//============================
 		_autonModeChooser = new SendableChooser<AUTON_MODE>();
 		
-		_autonModeChooser.addDefault("Straight Line", GeneralEnums.AUTON_MODE.STRAIGHT_LINE);
-		_autonModeChooser.addObject("Center Gear", GeneralEnums.AUTON_MODE.CENTER_GEAR);
+		//CROSS_BASE_LINE,
+		//DO_NOTHING,
+		//HANG_BOILER_SIDE_GEAR,
+		//HANG_CENTER_GEAR,
+		//HANG_KEY_SIDE_GEAR,
+		//TURN_AND_SHOOT
+		
+		_autonModeChooser.addDefault("Do Nothing", GeneralEnums.AUTON_MODE.DO_NOTHING);
+		_autonModeChooser.addObject("Cross the Base Line", GeneralEnums.AUTON_MODE.CROSS_BASE_LINE);
+		_autonModeChooser.addDefault("Hang Gear on Boiler Side", GeneralEnums.AUTON_MODE.HANG_BOILER_SIDE_GEAR);
+		_autonModeChooser.addObject("Hang Gear in Center", GeneralEnums.AUTON_MODE.HANG_CENTER_GEAR);
+		_autonModeChooser.addObject("Hang Gear on Key Side", GeneralEnums.AUTON_MODE.HANG_KEY_SIDE_GEAR);
 		_autonModeChooser.addObject("Turn and Shoot", GeneralEnums.AUTON_MODE.TURN_AND_SHOOT);
-		_autonModeChooser.addObject("Hopper and Shoot", GeneralEnums.AUTON_MODE.HOPPER_AND_SHOOT);
 		
 		SmartDashboard.putData("Auton Mode Chooser", _autonModeChooser);
 		_autonModeChoice = _autonModeChooser.getSelected();

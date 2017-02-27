@@ -26,23 +26,23 @@ public class RobotMap
 	public static final int PDB_CAN_BUS_ADDR = 0; 
 	
 	// define constants for Talon SRX CAN Bus Addresses
-	public static final int LEFT_MASTER_CAN_BUS_ADDR = 3;
-	public static final int LEFT_SLAVE1_CAN_BUS_ADDR = 4;
+	public static final int LEFT_MASTER_CAN_BUS_ADDR = 11;
+	public static final int LEFT_SLAVE1_CAN_BUS_ADDR = 12;
 
-	public static final int RIGHT_MASTER_CAN_BUS_ADDR = 11;
-	public static final int RIGHT_SLAVE1_CAN_BUS_ADDR = 12;
+	public static final int RIGHT_MASTER_CAN_BUS_ADDR = 9;
+	public static final int RIGHT_SLAVE1_CAN_BUS_ADDR = 10;
 	
-	public static final int CLIMBER_CAN_BUS_ADDR = 9;
+	public static final int CLIMBER_CAN_BUS_ADDR = 4;
 	
-	public static final int GEAR_TILT_CAN_BUS_ADDR = 8;
-	public static final int GEAR_INFEED_CAN_BUS_ADDR = 7;
+	public static final int GEAR_TILT_CAN_BUS_ADDR = 7;
+	public static final int GEAR_INFEED_CAN_BUS_ADDR = 8;
 	
 	public static final int SHOOTER_STG1_CAN_BUS_ADDR = 1;
 	public static final int SHOOTER_STG2_CAN_BUS_ADDR = 2;
 	public static final int BLENDER_CAN_BUS_ADDR = 6;
 	public static final int FEEDER_CAN_BUS_ADDR = 5;
 	
-	public static final int INFEED_MTR_CAN_BUS_ADDR = 10;
+	public static final int FUEL_INFEED_MTR_CAN_BUS_ADDR = 3;
 	
 	// ======================================
 	// define constants for PWM Ports on RobioRio
@@ -89,5 +89,12 @@ public class RobotMap
 	// define constants for logging
 	// ======================================
 	// this is where the USB stick is mounted on the RoboRIO filesystem.  You can confirm by logging into the RoboRIO using WinSCP
-	public static final String LOG_FILE_PATH = "/media/sda1/logging";
+	public static final String PRIMARY_LOG_FILE_PATH = "/media/sda1/logging";
+	public static final String ALTERNATE_LOG_FILE_PATH = "/media/sdb1/logging";
+	
+	// ======================================
+	// define constants for the Kangaroo & RoboRealm
+	// ======================================
+	public static final String KANGAROO_IPV4_ADDR = "10.40.28.11";
+	public static final int RR_API_PORT = 6060;
 }

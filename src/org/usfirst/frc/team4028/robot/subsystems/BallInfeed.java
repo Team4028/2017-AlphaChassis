@@ -1,13 +1,8 @@
 package org.usfirst.frc.team4028.robot.subsystems;
 
-import java.io.WriteAbortedException;
 
 import org.usfirst.frc.team4028.robot.LogData;
-import org.usfirst.frc.team4028.robot.constants.RobotMap;
-
 import com.ctre.CANTalon;
-import com.ctre.CANTalon.FeedbackDevice;
-
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -57,7 +52,7 @@ public class BallInfeed
 
 	public void FullStop() 
 	{
-		//_fuelInfeedSolenoid.set(false);				//retract Solenoid
+		_fuelInfeedSolenoid.set(false);				//retract Solenoid
 		_fuelInfeedMtr.set(0);						//stop motors
 		
 	}
@@ -76,15 +71,16 @@ public class BallInfeed
 	
 	public void ToggleSolenoid()
 	{
-		if(_fuelInfeedSolenoid.get() == false)
-		{
-			_fuelInfeedSolenoid.set(true);
-		}
-		else if(_fuelInfeedSolenoid.get() == true)
-		{
-			_fuelInfeedSolenoid.set(false);
-		}
+		_fuelInfeedSolenoid.set(!_fuelInfeedSolenoid.get());
 		
+		//if(_fuelInfeedSolenoid.get() == false)
+		//{
+		//	_fuelInfeedSolenoid.set(true);
+		//}
+		//else if(_fuelInfeedSolenoid.get() == true)
+		//{
+		//	_fuelInfeedSolenoid.set(false);
+		//}
 	}
 	
 	// update the Dashboard with any Climber specific data values
