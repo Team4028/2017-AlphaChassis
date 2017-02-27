@@ -194,10 +194,10 @@ public class Robot extends IterativeRobot
     	_chassis.FullStop();
   	
     	//Zero drive encoders
-    	_chassis.ZeroDriveEncoders();
+    	_chassis.zeroDriveEncoders();
     	
     	//Set shifter to HIGH gear
-    	_chassis.ShiftGear(GearShiftPosition.HIGH_GEAR);
+    	_chassis.shiftGear(GearShiftPosition.HIGH_GEAR);
     	
     	// disable acc/dec mode
     	_chassis.setIsAccDecModeEnabled(false);
@@ -256,11 +256,11 @@ public class Robot extends IterativeRobot
 		    	{
 		    		if (_chassis.getGearShiftPosition() == GearShiftPosition.HIGH_GEAR)
 		    		{
-		    			_chassis.ShiftGear(GearShiftPosition.LOW_GEAR);
+		    			_chassis.shiftGear(GearShiftPosition.LOW_GEAR);
 		    		}
 		    		else 
 		    		{
-		    			_chassis.ShiftGear(GearShiftPosition.HIGH_GEAR);
+		    			_chassis.shiftGear(GearShiftPosition.HIGH_GEAR);
 					}
 		    	}
 		    	
@@ -275,7 +275,7 @@ public class Robot extends IterativeRobot
 		    	//=====================
 		    	// Chassis Throttle Cmd
 				//=====================
-		    	_chassis.Drive(_driversStation.getDriver_ChassisThrottle_JoystickCmd(), 
+		    	_chassis.tankDrive(_driversStation.getDriver_ChassisThrottle_JoystickCmd(), 
 		    					_driversStation.getDriver_ChassisTurn_JoystickCmd());
 		    	
     			//============================================================================
@@ -529,7 +529,7 @@ public class Robot extends IterativeRobot
     {
     	if(_chassis != null)
     	{
-    		_chassis.OutputToSmartDashboard();
+    		_chassis.outputToSmartDashboard();
     	}
     	
     	if(_climber != null)
@@ -579,7 +579,7 @@ public class Robot extends IterativeRobot
 	    	// ask each subsystem that exists to add its data	    	
 	    	if(_chassis != null)
 	    	{
-	    		_chassis.UpdateLogData(logData);
+	    		_chassis.updateLogData(logData);
 	    	}
 	    	
 	    	if(_climber != null)

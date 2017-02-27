@@ -90,21 +90,21 @@ public class HangGearInTeleopSequence
 		{
 			_gearHandler.MoveTiltAxisVBus(GEAR_TILT_SPEED);    //Sets gear tilt speed and outfeed speed, drives backwards
 			_gearHandler.SpinInfeedWheelsVBus(GEAR_OUTFEED_SPEED);
-			_chassis.Drive(DRIVE_BACKWARDS_SPEED, 0);			// 0 = no turn
+			_chassis.tankDrive(DRIVE_BACKWARDS_SPEED, 0);			// 0 = no turn
 			_isStillRunning = true;
 		}
 		else if(elapsedTimeInMSec > MSEC_FIRST_CHANGE && elapsedTimeInMSec <= MSEC_SECOND_CHANGE) // third state of gear Sequence
 		{
 			_gearHandler.MoveTiltAxisVBus(0);		//sets drive speed, starts zeroing of axis
 			_gearHandler.SpinInfeedWheelsVBus(0);
-			_chassis.Drive(DRIVE_BACKWARDS_SPEED, 0);
+			_chassis.tankDrive(DRIVE_BACKWARDS_SPEED, 0);
 			_isStillRunning = true;
 		}
 		else if(elapsedTimeInMSec > MSEC_SECOND_CHANGE && elapsedTimeInMSec < MAX_TIME_BEFORE_ABORT_IN_MSEC)	//final state of gear sequence
 		{
 			_gearHandler.MoveGearToHomePosition();
 			_gearHandler.SpinInfeedWheelsVBus(0);
-			_chassis.Drive(0, 0);
+			_chassis.tankDrive(0, 0);
 			_isStillRunning = false;			//ends sequence
 
 		}

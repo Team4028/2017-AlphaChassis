@@ -211,7 +211,7 @@ public class Shooter
 			if(Math.abs(_stg2MtrTargetRPM) >  0)
 			{
 				// if already turning, just bump
-				SpinStg1Wheel(_stg2MtrTargetRPM -= SHOOTER_BUMP_RPM);
+				SpinStg1Wheel(_stg2MtrTargetRPM += SHOOTER_BUMP_RPM);
 			}
 			else
 			{
@@ -224,19 +224,13 @@ public class Shooter
 			DriverStation.reportWarning("Stg 2 Mtr Already at MAX ", false);
 		}
 	}
-<<<<<<< HEAD
-	public void Stg2RPMDown()
-	{ 
-		if(_stg2MtrTargetRPM < MIN_SHOOTER_RPM)
-=======
 
 	public void Stg2MtrBumpRPMDown()
 	{
 		// only bump if not already at min
-		if(Math.abs(_stg2MtrTargetRPM) < Math.abs(MIN_SHOOTER_RPM))
->>>>>>> refs/remotes/origin/master
+		if(Math.abs(_stg2MtrTargetRPM) > Math.abs(MIN_SHOOTER_RPM))
 		{
-			SpinStg2Wheel(_stg2MtrTargetRPM += SHOOTER_BUMP_RPM);
+			SpinStg2Wheel(_stg2MtrTargetRPM -= SHOOTER_BUMP_RPM);
 		}
 		else
 		{
@@ -336,22 +330,16 @@ public class Shooter
 	
 	public void OutputToSmartDashboard()
 	{
-		// working varibles
+		// working variables
 		String outDataStg1Actual = "?";
 		String outDataStg2Actual = "?";
 		//String outDataStg1Command = "?";
 		//String outDataStg2Command = "?";
 		String outDataActuator = "?";
-		
-<<<<<<< HEAD
-		//Display Current Shooter Motor RPM + Error
-		outDataStg1Actual = String.format("[%.0f] %.0f RPM (%.2f%%)", _stg1MtrTargetRPM, getStg1ActualRPM(), getStg1RPMErrorPercent());
-		outDataStg2Actual = String.format("[%.0f] %.0f RPM (%.2f%%)", _stg2MtrTargetRPM, getStg2ActualRPM(), getStg2RPMErrorPercent());
-=======
+
 		//Display Current Shooter Motor 1 & 2 Cmd & Actual RPM + Error
 		outDataStg1Actual = String.format("[%.0f RPM] %.0f RPM (%.2f%%)", -1*_stg1MtrTargetRPM, -1*getStg1ActualRPM(), getStg1RPMErrorPercent());
 		outDataStg2Actual = String.format("[%.0f RPM] %.0f RPM (%.2f%%)", -1*_stg1MtrTargetRPM, -1*getStg2ActualRPM(), getStg2RPMErrorPercent());
->>>>>>> refs/remotes/origin/master
 		//outDataStg1Command = String.format("%.0f RPM", _stg1MtrTargetRPM);
 		//outDataStg2Command = String.format("%.0f RPM", _stg2MtrTargetRPM);
 		
@@ -389,13 +377,8 @@ public class Shooter
 		logData.AddData("Stg2Mtr:Cmd_Rpm", String.format("%f", _stg2MtrTargetRPM));
 		logData.AddData("Stg2Mtr:Act_Rpm", String.format("%f", getStg2ActualRPM()));	
 		logData.AddData("Stg2Mtr:Err_%", String.format("%.2f%%", getStg2RPMErrorPercent()));
-<<<<<<< HEAD
-		logData.AddData("Stg2Mtr: %VBus", String.format("%.2f%%", getStg2CurrentPercentVBus()));
-=======
 		logData.AddData("Stg2Mtr:%VBus", String.format("%.2f%%", getStg2CurrentPercentVBus()));
 
->>>>>>> refs/remotes/origin/master
-		
 		logData.AddData("Actuator Position", String.format("%.3f", _currentSliderPosition));
 	}
 	
