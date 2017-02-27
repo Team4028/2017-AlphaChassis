@@ -41,6 +41,7 @@ public class Chassis
 	private CANTalon _leftDriveMaster, _leftDriveSlave, _rightDriveMaster, _rightDriveSlave;
 	private RobotDrive _robotDrive;				// this supports arcade/tank style drive controls
 	private DoubleSolenoid _shifterSolenoid;
+	
 	private ChassisAutoAimController _autoAim;
 	private TrajectoryDriveController _driveController;
 	private UpdaterTask _updaterTask;
@@ -144,7 +145,7 @@ public class Chassis
 	//============================================================================================
 	
 	// This is the (arcade) main drive method
-	public void arcadeDrive(double newThrottleCmdRaw, double newTurnCmdRaw)
+	public void ArcadeDrive(double newThrottleCmdRaw, double newTurnCmdRaw)
 	{
 		// ----------------
 		// Step 1: make sure we are in %VBus mode (we may have chg'd to PID mode)
@@ -198,18 +199,19 @@ public class Chassis
 		_robotDrive.arcadeDrive(_arcadeDriveThrottleCmdAdj, _arcadeDriveTurnCmdAdj);		
 	}
 	
-	public void tankDrive(double leftCmd, double rightCmd) {
+	public void TankDrive(double leftCmd, double rightCmd) 
+	{
 		_robotDrive.tankDrive(leftCmd, rightCmd);
 	}
 	
 	// stop the motors
 	public void FullStop()
 	{
-		arcadeDrive(0.0, 0.0);
+		ArcadeDrive(0.0, 0.0);
 	}
 	
 	// shifts between high & low gear
-	public void shiftGear(GearShiftPosition gear)
+	public void ShiftGear(GearShiftPosition gear)
 	{
 		// send cmd to to solenoids
 		switch(gear)
@@ -230,82 +232,105 @@ public class Chassis
 		}
 	}
 	
-	public void zeroDriveEncoders()
+	public void ZeroDriveEncoders()
 	{
 		_leftDriveMaster.setPosition(0);
 		_rightDriveMaster.setPosition(0);
 	}
 	
-	// Returns the current shifter position (gear)
-	public GearShiftPosition getGearShiftPosition()
+	// update the Dashboard with any Chassis specific data values
+	public void OutputToSmartDashboard()
 	{
-		if(_shifterSolenoidPosition == RobotMap.SHIFTER_SOLENOID_HIGH_GEAR_POSITION)
-			return GearShiftPosition.HIGH_GEAR;
-		else if(_shifterSolenoidPosition == RobotMap.SHIFTER_SOLENOID_LOW_GEAR_POSITION)
-			return GearShiftPosition.LOW_GEAR;
-		else
-			return GearShiftPosition.UNKNOWN;		
+		
 	}
 	
+	public void UpdateLogData(LogData logData)
+	{
+		logData.AddData("Chassis:LeftDriveMtrSpd", String.format("%.2f", _leftDriveMaster.getSpeed()));
+		logData.AddData("Chassis:LeftDriveMtr%VBus", String.format("%.2f", _leftDriveMaster.getOutputVoltage()/_leftDriveMaster.getBusVoltage()));
+		logData.AddData("Chassis:LeftDriveMtrPos", String.format("%.0f", _leftDriveMaster.getPosition()));
+		
+		logData.AddData("Chassis:RightDriveMtrSpd", String.format("%.2f", _rightDriveMaster.getSpeed()));
+		logData.AddData("Chassis:RightDriveMtr%VBus", String.format("%.2f", _rightDriveMaster.getOutputVoltage()/_rightDriveMaster.getBusVoltage()));
+		logData.AddData("Chassis:RightDriveMtrPos", String.format("%.0f", _rightDriveMaster.getPosition()));
+	}
+	
+	//============================================================================================
+	// Special Auton Methods & Properties follow
+	//============================================================================================
+	
 	// Auto Aim Methods
-	public void loadNewAutoAimTarget(double degrees) {
+	public void loadNewAutoAimTarget(double degrees) 
+	{
 		_autoAim.loadNewTarget(degrees);
 	}
 	
-	public void updateAutoAim() {
+	public void updateAutoAim() 
+	{
 		double motorOutput = _autoAim.update(getHeadingInDegrees());
-		tankDrive(motorOutput, -motorOutput);
+		TankDrive(motorOutput, -motorOutput);
 	}
 	
 	// Trajectory Controller Methods
-	public void disableTrajectoryController() {
+	public void disableTrajectoryController() 
+	{
 		_driveController.disable();
 		_isTrajControllerEnabled = false;
 		_currentSegment = 0;
 	}
 	
-	public void enableTrajectoryController() {
+	public void enableTrajectoryController() 
+	{
 		_driveController.reset();
 		_driveController.enable();
 		//_navX.zeroYaw();
 		_isTrajControllerEnabled = true;
 	}
 	
-	public boolean isTrajectoryControllerEnabled() {
+	public boolean isTrajectoryControllerEnabled() 
+	{
 		return _driveController.isEnable();
 	}
 	
-	public boolean isTrajectoryControllerOnTarget() {
+	public boolean isTrajectoryControllerOnTarget() 
+	{
 		return _driveController.onTarget();
 	}
 	
-	public void loadProfile(double[][] leftProfile, double[][] rightProfile, double direction, double heading) {
+	public void loadProfile(double[][] leftProfile, double[][] rightProfile, double direction, double heading) 
+	{
 		_driveController.loadProfile(leftProfile, rightProfile, direction, heading);
 	}
 	
-	public void updateTrajectoryController(int currentSegment) {
+	public void updateTrajectoryController(int currentSegment) 
+	{
 		double[] motorOutput = _driveController.update(getLeftEncoderCurrentPosition(), getRightEncoderCurrentPosition(), getHeadingInDegrees(), currentSegment);
-		tankDrive(motorOutput[0], motorOutput[1]);
+		TankDrive(motorOutput[0], motorOutput[1]);
 	}
 	
-	public double getSegment() {
+	public double getSegment() 
+	{
 		return _driveController.getCurrentSegment();
 	}
 	
-	public double getAngleDiff() {
+	public double getAngleDiff() 
+	{
 		return _driveController.getAngleDiff();
 	}
 	
-	public boolean isEnabled() {
+	public boolean isEnabled() 
+	{
 		return _isTrajControllerEnabled;
 	}
 	
-	public void startTrajectoryController() {
+	public void startTrajectoryController() 
+	{
 		_isUpdaterTaskRunning = true;
 		_updaterTimer.scheduleAtFixedRate(_updaterTask, 0, 20);
 	}
 	
-	private class UpdaterTask extends TimerTask {
+	private class UpdaterTask extends TimerTask
+	{
 		public void run() {
 			while(_isUpdaterTaskRunning) {
 				// update method here
@@ -325,26 +350,22 @@ public class Chassis
 		}
 	}
 	
-	// update the Dashboard with any Chassis specific data values
-	public void outputToSmartDashboard()
-	{
-		
-	}
-	
-	public void updateLogData(LogData logData)
-	{
-		logData.AddData("Chassis:LeftDriveMtrSpd", String.format("%.2f", _leftDriveMaster.getSpeed()));
-		logData.AddData("Chassis:LeftDriveMtr%VBus", String.format("%.2f", _leftDriveMaster.getOutputVoltage()/_leftDriveMaster.getBusVoltage()));
-		logData.AddData("Chassis:LeftDriveMtrPos", String.format("%.0f", _leftDriveMaster.getPosition()));
-		
-		logData.AddData("Chassis:RightDriveMtrSpd", String.format("%.2f", _rightDriveMaster.getSpeed()));
-		logData.AddData("Chassis:RightDriveMtr%VBus", String.format("%.2f", _rightDriveMaster.getOutputVoltage()/_rightDriveMaster.getBusVoltage()));
-		logData.AddData("Chassis:RightDriveMtrPos", String.format("%.0f", _rightDriveMaster.getPosition()));
-	}
+
 	
 	//============================================================================================
 	// Property Accessors follow
 	//============================================================================================
+	
+	// Returns the current shifter position (gear)
+	public GearShiftPosition getGearShiftPosition()
+	{
+		if(_shifterSolenoidPosition == RobotMap.SHIFTER_SOLENOID_HIGH_GEAR_POSITION)
+			return GearShiftPosition.HIGH_GEAR;
+		else if(_shifterSolenoidPosition == RobotMap.SHIFTER_SOLENOID_LOW_GEAR_POSITION)
+			return GearShiftPosition.LOW_GEAR;
+		else
+			return GearShiftPosition.UNKNOWN;		
+	}
 	
 	public void setDriveSpeedScalingFactor(double speedScalingFactor)
 	{
