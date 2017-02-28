@@ -39,6 +39,7 @@ public class Climber
 	private boolean _isClimberMotorStalled;
 	private boolean _wasLastCycleOverMax;
 	private boolean _isClimbing;
+	private String outdata;
 	
 	// define class level constants
 	private static final double CLIMBER_MAX_CURRENT = 10.0;
@@ -60,7 +61,7 @@ public class Climber
 		_climberMtr.enableLimitSwitch(false, false);
     	//_climberMtr.reverseOutput(true);
 		
-		//_isClimbing = false;
+		_isClimbing = false;
 	}
 	
 	//============================================================================================
@@ -131,6 +132,17 @@ public class Climber
 	public void OutputToSmartDashboard()
 	{
 		SmartDashboard.putNumber("Climber Motor Current", getActualMotorCurrent());
+	
+		if (_isClimberMotorStalled)
+		{
+			outdata = "BUCKETS!!!";
+		}
+		else
+		{
+			outdata = null;
+		}
+		SmartDashboard.putString(" ", outdata);
+		
 	}
 	
 	// add any important data to the logdata

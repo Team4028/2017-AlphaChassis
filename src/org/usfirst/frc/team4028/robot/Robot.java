@@ -584,7 +584,6 @@ public class Robot extends IterativeRobot
 	    	
 	    	if(_climber != null)
 	    	{
-	    		// TODO: Temporarily commented out
 	    		_climber.UpdateLogData(logData);
 	    	}
 	    	
@@ -615,7 +614,6 @@ public class Robot extends IterativeRobot
 	    	
 	    	if(_shooter != null)
 	    	{
-	    		//TODO:16 Feb 2017 Nick Donahue temporarily commented out for lack of shooter
 	    		_shooter.UpdateLogData(logData);
 	    	}
     	
