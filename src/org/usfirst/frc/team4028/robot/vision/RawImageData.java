@@ -12,16 +12,10 @@ public class RawImageData
     public int BlobCount;
 
     public int NorthWestX;
-    public int NorthWestY;
 
     public int NorthEastX;
-    public int NorthEastY;
 
-    public int SouthWestX;
-    public int SouthWestY;
-
-    public int SouthEastX;
-    public int SouthEastY;
+    public int HighestMiddleY;
 
     public Dimension FOVDimensions;
 

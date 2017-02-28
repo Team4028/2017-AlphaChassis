@@ -666,45 +666,21 @@ public class Robot extends IterativeRobot
     // utility method that calls the outputToSmartDashboard method on all subsystems
     private void OutputAllToSmartDashboard()
     {
-    	if(_chassis != null)
-    	{
-    		_chassis.OutputToSmartDashboard();
-    	}
+    	if(_chassis != null) 		{ _chassis.OutputToSmartDashboard(); }
     	
-    	if(_climber != null)
-    	{
-    		_climber.OutputToSmartDashboard();
-    	}
+    	if(_climber != null)		{ _climber.OutputToSmartDashboard(); }
     	
-    	if(_driversStation != null)
-    	{
-    		_driversStation.OutputToSmartDashboard();
-    	}
+    	if(_driversStation != null)	{ _driversStation.OutputToSmartDashboard(); }
     	
-    	if(_gearHandler != null)
-    	{
-    		_gearHandler.OutputToSmartDashboard();
-    	}
+    	if(_gearHandler != null)	{ _gearHandler.OutputToSmartDashboard(); }
     	
-    	if(_ballInfeed != null)
-    	{
-    		_ballInfeed.OutputToSmartDashboard();			
-    	}
+    	if(_ballInfeed != null)		{ _ballInfeed.OutputToSmartDashboard(); }
     	
-    	if(_lidar != null)
-    	{
-    		_lidar.OutputToSmartDashboard();
-    	}
+    	if(_lidar != null)			{ _lidar.OutputToSmartDashboard(); }
     	
-    	if(_navX != null)
-    	{
-    		_navX.OutputToSmartDashboard();
-    	}
+    	if(_navX != null)			{ _navX.OutputToSmartDashboard(); }
     	
-    	if(_shooter != null)
-    	{
-    		_shooter.OutputToSmartDashboard();
-    	}
+    	if(_shooter != null)		{ _shooter.OutputToSmartDashboard(); }
     }
          
     // this method optionally calls the UpdateLogData on each subsystem and then logs the data
@@ -716,50 +692,24 @@ public class Robot extends IterativeRobot
         	LogData logData = new LogData();
 	    	
 	    	// ask each subsystem that exists to add its data	    	
-	    	if(_chassis != null)
-	    	{
-	    		_chassis.UpdateLogData(logData);
-	    	}
+	    	if(_chassis != null) 		{ _chassis.UpdateLogData(logData); }
 	    	
-	    	if(_climber != null)
-	    	{
-	    		// TODO: Temporarily commented out
-	    		_climber.UpdateLogData(logData);
-	    	}
+	    	if(_climber != null) 		{ _climber.UpdateLogData(logData); }
 	    	
-	    	if(_driversStation != null)
-	    	{
-	    		_driversStation.UpdateLogData(logData);
-	    	}
+	    	if(_driversStation != null) { _driversStation.UpdateLogData(logData); }
 	    	
-	    	if(_gearHandler != null)
-	    	{
-	    		_gearHandler.UpdateLogData(logData);
-	    	}
+	    	if(_gearHandler != null) 	{ _gearHandler.UpdateLogData(logData); }
 	    	
-	    	if(_ballInfeed != null)
-	    	{
-	    		_ballInfeed.UpdateLogData(logData);
-	    	}
+	    	if(_ballInfeed != null) 	{ _ballInfeed.UpdateLogData(logData); }
 	    	
-	    	if(_lidar != null)
-	    	{
-	    		_lidar.UpdateLogData(logData);
-	    	}
+	    	if(_lidar != null)			{ _lidar.UpdateLogData(logData); }
 	    	
-	    	if(_navX != null)
-	    	{
-	    		_navX.UpdateLogData(logData);
-	    	}
+	    	if(_navX != null) 			{ _navX.UpdateLogData(logData); }
 	    	
-	    	if(_shooter != null)
-	    	{
-	    		_shooter.UpdateLogData(logData);
-	    	}
+	    	if(_shooter != null)		{ _shooter.UpdateLogData(logData); }
     	
 	    	// now write to the log file
 	    	_dataLogger.WriteDataLine(logData);
     	}
     }
-
 }
