@@ -40,14 +40,19 @@ public class NavXGyro
 	// Methods follow
 	//============================================================================================
 	
+	public double getYaw() {
+		return _navXSensor.getYaw();
+	}
+	
+	public void zeroYaw() {
+		_navXSensor.zeroYaw();
+	}
 	// update the Dashboard with any NavX specific data values
-	public void OutputToSmartDashboard()
-	{
+	public void OutputToSmartDashboard() {
 		
 	}
 	
-	public void UpdateLogData(LogData logData)
-	{
+	public void UpdateLogData(LogData logData) {
 		
 	}
 }

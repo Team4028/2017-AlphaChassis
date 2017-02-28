@@ -1,28 +1,39 @@
 package org.usfirst.frc.team4028.robot.controllers;
 
 import org.usfirst.frc.team4028.robot.util.BeefyMath;
+import org.usfirst.frc.team4028.robot.util.GeneratedTrajectory;
 import org.usfirst.frc.team4028.robot.util.Trajectory;
 import org.usfirst.frc.team4028.robot.util.TrajectoryFollower;
+
+import java.util.TimerTask;
+
 import org.usfirst.frc.team4028.robot.Robot;
+import org.usfirst.frc.team4028.robot.sensors.NavXGyro;
+import org.usfirst.frc.team4028.robot.subsystems.Chassis;
 
 import edu.wpi.first.wpilibj.DriverStation;
 
 public class TrajectoryDriveController extends Robot {
 	
-	//Trajectory _trajectory;
-	double[][] _leftMotionProfile;
-	double[][] _rightMotionProfile;
-	TrajectoryFollower _leftFollower = new TrajectoryFollower("left");
-	TrajectoryFollower _rightFollower = new TrajectoryFollower("right");
-	double _direction;
-	double _heading;
-	double _kTurn = 0.0;  // Should be a constant
-	boolean _enabled = false;
-	double _leftPower;
-	double _rightPower;
-	double _angleDiff;
+	private Chassis _chassis;
+	private NavXGyro _navX;
+	private UpdaterTask _updaterTask;
+	private double[][] _leftMotionProfile;
+	private double[][] _rightMotionProfile;
+	private TrajectoryFollower _leftFollower = new TrajectoryFollower("left");
+	private TrajectoryFollower _rightFollower = new TrajectoryFollower("right");
+	private java.util.Timer _updaterTimer;
+	private double _direction;
+	private double _heading;
+	private double _kTurn = 0.0;  // Should be a constant
+	private boolean _isEnabled = false;
+	private boolean _isUpdaterTaskRunning;
+	private double _angleDiff;
+	private int _currentSegment;
 	
-	public TrajectoryDriveController() {
+	public TrajectoryDriveController(Chassis chassis, NavXGyro navX) {
+		_chassis = chassis;
+		_navX = navX;
 		_leftFollower.configure(0.0,  0.0,  0.0,  0.7,  0.0);
 		_rightFollower.configure(0.0,  0.0,  0.0,  0.7,  0.0);
 	}
@@ -35,10 +46,8 @@ public class TrajectoryDriveController extends Robot {
 		reset();
 		_leftMotionProfile = leftProfile;
 		_rightMotionProfile = rightProfile;
-		this._direction = direction;
-		this._heading = heading;
-		_leftPower = 0.0;
-		_rightPower = 0.0;
+		_direction = direction;
+		_heading = heading;
 		_angleDiff = 0.0;
 	}
 	
@@ -60,44 +69,45 @@ public class TrajectoryDriveController extends Robot {
 		return _leftFollower.getNumSegments();
 	}
 	
-	public double[] update(double leftEncoderPosition, double rightEncoderPosition, double headingInDegrees, int currentSegment) {
-		if (!_enabled) {
+	public void update(int currentSegment) {
+		if (!_isEnabled) {
 			DriverStation.reportError("Not Enabled", false);
-			return new double[] {0, 0};
+			_chassis.TankDrive(0, 0);
 		}
 		
 		if (onTarget()) {
 			DriverStation.reportError("At Target", false);
-			return new double[] {0, 0};
+			_chassis.TankDrive(0, 0);
 		} else {
-			double distanceL = _direction * leftEncoderPosition;
-			double distanceR = _direction * rightEncoderPosition;
+			double distanceL = _direction * _chassis.getLeftEncoderCurrentPosition();
+			double distanceR = _direction * _chassis.getRightEncoderCurrentPosition();
 			
-			_leftPower = _direction * _leftFollower.calculate(distanceL, _leftMotionProfile, currentSegment);
-			_rightPower = _direction * _rightFollower.calculate(distanceR, _rightMotionProfile, currentSegment);
+			double leftPower = _direction * _leftFollower.calculate(distanceL, _leftMotionProfile, currentSegment);
+			double rightPower = _direction * _rightFollower.calculate(distanceR, _rightMotionProfile, currentSegment);
 			
 			double goalHeading = _leftFollower.getHeading();
 			double goalHeadingInDegrees = BeefyMath.arctan(goalHeading);
-			double observedHeading = headingInDegrees;
+			double observedHeading = _navX.getYaw();
 
 			double turn = _kTurn * (observedHeading - goalHeadingInDegrees);
 			
-			return new double[] {_leftPower - turn, _rightPower + turn};
+			_chassis.TankDrive(leftPower - turn, rightPower + turn);
 		}
 	}
 	
 	public void enable() {
 		_leftFollower.reset();
 		_rightFollower.reset();
-		_enabled = true;
+		_isEnabled = true;
+		_currentSegment = 0;
 	}
 	
 	public void disable() {
-		_enabled = false;
+		_isEnabled = false;
 	}
 	
 	public boolean isEnable() {
-		return _enabled;
+		return _isEnabled;
 	}
 	
 	public int getCurrentSegment() {
@@ -110,5 +120,31 @@ public class TrajectoryDriveController extends Robot {
 	
 	public double getAngleDiff() {
 		return _angleDiff;
+	}
+	
+	public void startTrajectoryController() {
+		_isUpdaterTaskRunning = true;
+		_updaterTimer.scheduleAtFixedRate(_updaterTask, 0, 20);
+	}
+	
+	private class UpdaterTask extends TimerTask
+	{
+		public void run() {
+			while(_isUpdaterTaskRunning) {
+				// update method here
+				if (_isEnabled) {
+					if (_currentSegment != (GeneratedTrajectory.kNumPoints - 1)) {
+						update(_currentSegment);
+						_currentSegment = _currentSegment + 1;
+					}	
+				}
+				try {
+					Thread.sleep(20);
+				}
+				catch(InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 }

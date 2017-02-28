@@ -42,20 +42,11 @@ public class Chassis
 	private RobotDrive _robotDrive;				// this supports arcade/tank style drive controls
 	private DoubleSolenoid _shifterSolenoid;
 	
-	private ChassisAutoAimController _autoAim;
-	private TrajectoryDriveController _driveController;
-	private UpdaterTask _updaterTask;
-	
 	// define class level variables to hold state
 	private Value _shifterSolenoidPosition;
 	private long _lastCmdChgTimeStamp;
 	private double _driveSpeedScalingFactorClamped;
-	private int _currentSegment;
-	private java.util.Timer _updaterTimer;
-	
 	private boolean _isBrakeMode = false;
-	private boolean _isUpdaterTaskRunning;
-	private boolean _isTrajControllerEnabled;
 	
 	//accel decel variables
 	private boolean _isAccelDecelEnabled;
@@ -133,8 +124,6 @@ public class Chassis
     	// Arcade Drive configured to drive in "2 motor per side setup, 
     	//	other motors follow master as slaves 
     	_robotDrive = new RobotDrive(_leftDriveMaster, _rightDriveMaster);
-    	
-    	_autoAim = new ChassisAutoAimController();
     
     	//set default scaling factor
     	_driveSpeedScalingFactorClamped = 1.0;
@@ -145,18 +134,15 @@ public class Chassis
 	//============================================================================================
 	
 	// This is the (arcade) main drive method
-	public void ArcadeDrive(double newThrottleCmdRaw, double newTurnCmdRaw)
-	{
+	public void ArcadeDrive(double newThrottleCmdRaw, double newTurnCmdRaw) {
 		// ----------------
 		// Step 1: make sure we are in %VBus mode (we may have chg'd to PID mode)
 		// ----------------
-		if(_leftDriveMaster.getControlMode() != CANTalon.TalonControlMode.PercentVbus)
-		{
+		if(_leftDriveMaster.getControlMode() != CANTalon.TalonControlMode.PercentVbus) {
 			_leftDriveMaster.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
 		}
 		
-		if(_rightDriveMaster.getControlMode() != CANTalon.TalonControlMode.PercentVbus)
-		{
+		if(_rightDriveMaster.getControlMode() != CANTalon.TalonControlMode.PercentVbus) {
 			_rightDriveMaster.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
 		}
 		
@@ -165,8 +151,7 @@ public class Chassis
 		double newTurnCmdScaled = newTurnCmdRaw * _turnSpeedScalingFactor;
 		
 		// if the cmd just chg'd reset 
-		if(newThrottleCmdScaled != _previousThrottleCmdScaled)
-		{
+		if(newThrottleCmdScaled != _previousThrottleCmdScaled) {
 			_previousThrottleCmdScaled = _currentThrottleCmdAccDec;
 			_currentThrottleCmdScaled = newThrottleCmdScaled;
 			
@@ -174,8 +159,7 @@ public class Chassis
 		}
 			
 		// if acc/dec mode is enabled
-		if(_isAccelDecelEnabled)
-		{
+		if(_isAccelDecelEnabled) {
 			_previousThrottleCmdAccDec = _currentThrottleCmdAccDec;
 			
 			//implement speed scaling
@@ -183,13 +167,11 @@ public class Chassis
 			
 			_currentThrottleCmdAccDec = _arcadeDriveThrottleCmdAdj;
 			
-			if(Math.abs(_arcadeDriveThrottleCmdAdj - _currentThrottleCmdScaled) < 0.1)
-			{
+			if(Math.abs(_arcadeDriveThrottleCmdAdj - _currentThrottleCmdScaled) < 0.1) {
 				_previousThrottleCmdScaled = _currentThrottleCmdScaled;
 			}
 		}
-		else
-		{
+		else {
 			_arcadeDriveThrottleCmdAdj = newThrottleCmdScaled;
 		}
 		
@@ -199,23 +181,19 @@ public class Chassis
 		_robotDrive.arcadeDrive(_arcadeDriveThrottleCmdAdj, _arcadeDriveTurnCmdAdj);		
 	}
 	
-	public void TankDrive(double leftCmd, double rightCmd) 
-	{
+	public void TankDrive(double leftCmd, double rightCmd) {
 		_robotDrive.tankDrive(leftCmd, rightCmd);
 	}
 	
 	// stop the motors
-	public void FullStop()
-	{
+	public void FullStop() {
 		ArcadeDrive(0.0, 0.0);
 	}
 	
 	// shifts between high & low gear
-	public void ShiftGear(GearShiftPosition gear)
-	{
+	public void ShiftGear(GearShiftPosition gear) {
 		// send cmd to to solenoids
-		switch(gear)
-		{
+		switch(gear) {
 			case HIGH_GEAR:
 				_shifterSolenoid.set(RobotMap.SHIFTER_SOLENOID_HIGH_GEAR_POSITION);
 				_shifterSolenoidPosition = RobotMap.SHIFTER_SOLENOID_HIGH_GEAR_POSITION;
@@ -232,20 +210,17 @@ public class Chassis
 		}
 	}
 	
-	public void ZeroDriveEncoders()
-	{
+	public void ZeroDriveEncoders() {
 		_leftDriveMaster.setPosition(0);
 		_rightDriveMaster.setPosition(0);
 	}
 	
 	// update the Dashboard with any Chassis specific data values
-	public void OutputToSmartDashboard()
-	{
+	public void OutputToSmartDashboard() {
 		
 	}
 	
-	public void UpdateLogData(LogData logData)
-	{
+	public void UpdateLogData(LogData logData) {
 		logData.AddData("Chassis:LeftDriveMtrSpd", String.format("%.2f", _leftDriveMaster.getSpeed()));
 		logData.AddData("Chassis:LeftDriveMtr%VBus", String.format("%.2f", _leftDriveMaster.getOutputVoltage()/_leftDriveMaster.getBusVoltage()));
 		logData.AddData("Chassis:LeftDriveMtrPos", String.format("%.0f", _leftDriveMaster.getPosition()));
@@ -256,109 +231,11 @@ public class Chassis
 	}
 	
 	//============================================================================================
-	// Special Auton Methods & Properties follow
-	//============================================================================================
-	
-	// Auto Aim Methods
-	public void loadNewAutoAimTarget(double degrees) 
-	{
-		_autoAim.loadNewTarget(degrees);
-	}
-	
-	public void updateAutoAim() 
-	{
-		double motorOutput = _autoAim.update(getHeadingInDegrees());
-		TankDrive(motorOutput, -motorOutput);
-	}
-	
-	// Trajectory Controller Methods
-	public void disableTrajectoryController() 
-	{
-		_driveController.disable();
-		_isTrajControllerEnabled = false;
-		_currentSegment = 0;
-	}
-	
-	public void enableTrajectoryController() 
-	{
-		_driveController.reset();
-		_driveController.enable();
-		//_navX.zeroYaw();
-		_isTrajControllerEnabled = true;
-	}
-	
-	public boolean isTrajectoryControllerEnabled() 
-	{
-		return _driveController.isEnable();
-	}
-	
-	public boolean isTrajectoryControllerOnTarget() 
-	{
-		return _driveController.onTarget();
-	}
-	
-	public void loadProfile(double[][] leftProfile, double[][] rightProfile, double direction, double heading) 
-	{
-		_driveController.loadProfile(leftProfile, rightProfile, direction, heading);
-	}
-	
-	public void updateTrajectoryController(int currentSegment) 
-	{
-		double[] motorOutput = _driveController.update(getLeftEncoderCurrentPosition(), getRightEncoderCurrentPosition(), getHeadingInDegrees(), currentSegment);
-		TankDrive(motorOutput[0], motorOutput[1]);
-	}
-	
-	public double getSegment() 
-	{
-		return _driveController.getCurrentSegment();
-	}
-	
-	public double getAngleDiff() 
-	{
-		return _driveController.getAngleDiff();
-	}
-	
-	public boolean isEnabled() 
-	{
-		return _isTrajControllerEnabled;
-	}
-	
-	public void startTrajectoryController() 
-	{
-		_isUpdaterTaskRunning = true;
-		_updaterTimer.scheduleAtFixedRate(_updaterTask, 0, 20);
-	}
-	
-	private class UpdaterTask extends TimerTask
-	{
-		public void run() {
-			while(_isUpdaterTaskRunning) {
-				// update method here
-				if (_isTrajControllerEnabled) {
-					if (_currentSegment != (GeneratedTrajectory.kNumPoints - 1)) {
-						updateTrajectoryController(_currentSegment);
-						_currentSegment = _currentSegment + 1;
-					}	
-				}
-				try {
-					Thread.sleep(20);
-				}
-				catch(InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-	}
-	
-
-	
-	//============================================================================================
 	// Property Accessors follow
 	//============================================================================================
 	
 	// Returns the current shifter position (gear)
-	public GearShiftPosition getGearShiftPosition()
-	{
+	public GearShiftPosition getGearShiftPosition() {
 		if(_shifterSolenoidPosition == RobotMap.SHIFTER_SOLENOID_HIGH_GEAR_POSITION)
 			return GearShiftPosition.HIGH_GEAR;
 		else if(_shifterSolenoidPosition == RobotMap.SHIFTER_SOLENOID_LOW_GEAR_POSITION)
@@ -367,10 +244,9 @@ public class Chassis
 			return GearShiftPosition.UNKNOWN;		
 	}
 	
-	public void setDriveSpeedScalingFactor(double speedScalingFactor)
-	{
+	public void setDriveSpeedScalingFactor(double speedScalingFactor) {
 		// for safety, clamp the scaling factor to max of +1, -1
-		if (speedScalingFactor > 1.0){
+		if (speedScalingFactor > 1.0) {
 			speedScalingFactor = 1.0;
 		}
 		else if (speedScalingFactor < -1.0){
@@ -380,15 +256,12 @@ public class Chassis
 		_driveSpeedScalingFactorClamped = speedScalingFactor;
 	}
 	
-	public void setIsAccDecModeEnabled(boolean isEnabled)
-	{
+	public void setIsAccDecModeEnabled(boolean isEnabled) {
 		_isAccelDecelEnabled = isEnabled;
-		
 		DriverStation.reportWarning("===== Acc/Dec Mode Enabled? " + isEnabled, false);
 	}
 	
-	public boolean getIsAccDecModeEnabled()
-	{
+	public boolean getIsAccDecModeEnabled() {
 		return _isAccelDecelEnabled;
 	}
 	
@@ -416,8 +289,7 @@ public class Chassis
 	// Utility Helper Methods
 	//============================================================================================
 	// implement s-curve accel / decel
-	private double calcAccelDecelThrottleCmd(double currentThrottleCmd, double previousThrottleCmd, long lastCmdChgTimeStamp)
-	{
+	private double calcAccelDecelThrottleCmd(double currentThrottleCmd, double previousThrottleCmd, long lastCmdChgTimeStamp) {
 		double accDecMidpointTimeSecs = ACC_DEC_TOTAL_TIME_SECS / 2.0;    // a
 
         double minusK = -1.0 * ACC_DEC_RATE_FACTOR;
