@@ -64,6 +64,7 @@ public class RobotMap
 	public static final String SHOOTER_CAMERA_NAME = "cam0";
 	public static final String BALL_INFEED_CAMERA_NAME = "cam1";
 	public static final String GEAR_CAMERA_NAME = "cam2";
+	public static final String CLIMBER_CAMERA_NAME = "cam3";
 	
 	// ======================================
 	// Define constants for solenoid ports on Pneumatic Control Module (PCM)

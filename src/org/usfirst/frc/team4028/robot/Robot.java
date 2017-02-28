@@ -434,18 +434,7 @@ public class Robot extends IterativeRobot
     			//=======================================================================			
     			if(_driversStation.getIsOperator_CameraSwap_BtnJustPressed())
     			{
-    				if(_switchableCameraServer.getCurrentCameraName() == RobotMap.GEAR_CAMERA_NAME)
-    				{
-    					_switchableCameraServer.ChgToCamera(RobotMap.SHOOTER_CAMERA_NAME);
-    				}
-    				else if(_switchableCameraServer.getCurrentCameraName() == RobotMap.SHOOTER_CAMERA_NAME)
-    				{
-    					_switchableCameraServer.ChgToCamera(RobotMap.BALL_INFEED_CAMERA_NAME);
-    				}
-    				else if(_switchableCameraServer.getCurrentCameraName() == RobotMap.BALL_INFEED_CAMERA_NAME)
-    				{
-    					_switchableCameraServer.ChgToCamera(RobotMap.GEAR_CAMERA_NAME);
-    				}
+    				_switchableCameraServer.SwapToNextCamera();
     			}
 		    	  
     			//=====================
