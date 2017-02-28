@@ -54,10 +54,10 @@ public class Shooter
 	private static final double FIRST_STAGE_MTG_I_GAIN = 0.0;
 	private static final double FIRST_STAGE_MTG_D_GAIN = 0.5;
 
-	private static final double SECOND_STAGE_MTG_FF_GAIN = 0.0274;
-	private static final double SECOND_STAGE_MTG_P_GAIN = 0.0;
+	private static final double SECOND_STAGE_MTG_FF_GAIN = 0.0246;
+	private static final double SECOND_STAGE_MTG_P_GAIN = 0.04;
 	private static final double SECOND_STAGE_MTG_I_GAIN = 0.0;
-	private static final double SECOND_STAGE_MTG_D_GAIN = 0.0; //0.115;
+	private static final double SECOND_STAGE_MTG_D_GAIN = 0.4; //0.115;
 	
 	//define class level Actuator Constants
 	private static final double MAX_THRESHOLD_ACTUATOR = 0.7; 
@@ -171,12 +171,12 @@ public class Shooter
 	public void Stg1MtrBumpRPMUp()
 	{
 		// only bump if not already at max
-		if(Math.abs(_stg1MtrTargetRPM) >= Math.abs(MAX_SHOOTER_RPM))
+		if(Math.abs(_stg1MtrTargetRPM) <= Math.abs(MAX_SHOOTER_RPM))
 		{	
 			if(Math.abs(_stg1MtrTargetRPM) >  0)
 			{
 				// if already turning, just bump
-				SpinStg1Wheel(_stg1MtrTargetRPM -= SHOOTER_BUMP_RPM);
+				SpinStg1Wheel(_stg1MtrTargetRPM += SHOOTER_BUMP_RPM);
 			}
 			else
 			{
@@ -193,9 +193,9 @@ public class Shooter
 	public void Stg1MtrBumpRPMDown()
 	{
 		// only bump if not already at min
-		if(Math.abs(_stg1MtrTargetRPM) < Math.abs(MIN_SHOOTER_RPM))
+		if(Math.abs(_stg1MtrTargetRPM) > Math.abs(MIN_SHOOTER_RPM))
 		{
-			SpinStg1Wheel(_stg1MtrTargetRPM += SHOOTER_BUMP_RPM);
+			SpinStg1Wheel(_stg1MtrTargetRPM -= SHOOTER_BUMP_RPM);
 		}
 		else
 		{
@@ -206,12 +206,12 @@ public class Shooter
 	public void Stg2MtrBumpRPMUp()
 	{
 		// only bump if not already at max
-		if(Math.abs(_stg2MtrTargetRPM) >= Math.abs(MAX_SHOOTER_RPM))
+		if(Math.abs(_stg2MtrTargetRPM) <= Math.abs(MAX_SHOOTER_RPM))
 		{	
 			if(Math.abs(_stg2MtrTargetRPM) >  0)
 			{
 				// if already turning, just bump
-				SpinStg1Wheel(_stg2MtrTargetRPM -= SHOOTER_BUMP_RPM);
+				SpinStg1Wheel(_stg2MtrTargetRPM += SHOOTER_BUMP_RPM);
 			}
 			else
 			{
@@ -228,9 +228,9 @@ public class Shooter
 	public void Stg2MtrBumpRPMDown()
 	{
 		// only bump if not already at min
-		if(Math.abs(_stg2MtrTargetRPM) < Math.abs(MIN_SHOOTER_RPM))
+		if(Math.abs(_stg2MtrTargetRPM) > Math.abs(MIN_SHOOTER_RPM))
 		{
-			SpinStg2Wheel(_stg2MtrTargetRPM += SHOOTER_BUMP_RPM);
+			SpinStg2Wheel(_stg2MtrTargetRPM -= SHOOTER_BUMP_RPM);
 		}
 		else
 		{
