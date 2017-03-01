@@ -453,29 +453,52 @@ public class Robot extends IterativeRobot
     			//=====================
     			
     			// Stg 1 Bump Up / Down
-    			if(_driversStation.getIsDriver_ShooterStg1Up_BtnJustPressed())
+    			//if(_driversStation.getIsDriver_ShooterStg1Up_BtnJustPressed())
+    			//{
+    			//	_shooter.Stg1MtrBumpRPMUp();
+    			//}
+    			//else if(_driversStation.getIsDriver_ShooterStg1Down_BtnJustPressed())
+    			//{
+    			//	_shooter.Stg1MtrBumpRPMDown();
+    			//}
+    			//if (!_shooter.getIsShooterInBangBangMode())
     			{
-    				_shooter.Stg1MtrBumpRPMUp();
+    				// Stg 1 Cycle Up / Down
+        			if(_driversStation.getIsDriver_ShooterStg1CycleRPM_BtnJustPressed())
+        			{
+        				_shooter.Stg1MtrCycleRPM();
+        			}
+        			
+        			// Stg 2 Bump Up / Down
+        			//if(_driversStation.getIsDriver_ShooterStg2Up_BtnJustPressed())
+        			//{
+        			//	_shooter.Stg2MtrBumpRPMUp();
+        			//}
+        			//else if(_driversStation.getIsDriver_ShooterStg2Down_BtnJustPressed()) 
+        			//{
+        			//	_shooter.Stg2MtrBumpRPMDown();		
+        			//}
+        			
+        			// Stg 2 Cycle Up / Down
+        			if(_driversStation.getIsDriver_ShooterStg2CycleRPM_BtnJustPressed())
+        			{
+        				_shooter.Stg2MtrCycleRPM();
+        			}
+        			
     			}
-    			else if(_driversStation.getIsDriver_ShooterStg1Down_BtnJustPressed())
+    			//else
     			{
-    				_shooter.Stg1MtrBumpRPMDown();
+    				//_shooter.SpinShooterBangBang();
     			}
-    			
-    			// Stg 2 Bump Up / Down
-    			if(_driversStation.getIsDriver_ShooterStg2Up_BtnJustPressed())
+    			//Shooter Constant Velocity Through VBus
+    			/*if(_driversStation.getIsDriver_ConstantVThroughVBus_BtnJustPressed())
     			{
-    				_shooter.Stg2MtrBumpRPMUp();
-    			}
-    			else if(_driversStation.getIsDriver_ShooterStg2Down_BtnJustPressed()) 
-    			{
-    				_shooter.Stg2MtrBumpRPMDown();		
-    			}
-    			
+    				_shooter.SpinShooterBangBang();
+    			}*/
     			// STg 1 & 2 Full Stop
     			if(_driversStation.getIsDriver_FullShooterStop_BtnJustPressed())
     			{
-    				_shooter.FullStop();
+    				_shooter.FullShooterStop();
     			}
        			
     			//=====================
@@ -487,6 +510,10 @@ public class Robot extends IterativeRobot
     				_shooter.ToggleSpinFeeder();
     			}
     			
+    			if (_driversStation.getIsDriver_BlenderCycle_BtnJustPressed())
+    			{
+    				_shooter.BlenderMtrCycleVBus();
+    			}
     			
     			//=====================
     			// Handle Actuator

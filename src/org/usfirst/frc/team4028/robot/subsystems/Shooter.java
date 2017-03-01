@@ -45,6 +45,14 @@ public class Shooter
 	// define class level working variables
 	private double _stg1MtrTargetRPM;
 	private double _stg2MtrTargetRPM;
+	private double _blenderMtrTargetVBus;
+	private double _blenderLastMtrTargetVBus;
+	
+	private boolean _isStg1MtrTargetRPMBumpingUp;
+	private boolean _isStg2MtrTargetRPMBumpingUp;
+	private boolean _isShooterInBangBangMode; 
+	
+	private boolean _isBlenderVBusBumpingUp;
 	
 	private double _currentSliderPosition;
 	
@@ -73,7 +81,12 @@ public class Shooter
 	private static final double SECOND_STAGE_MTR_DEFAULT_RPM = -3700;
 	
 	private static final double FEEDER_PERCENTVBUS_COMMAND = -0.7; //This Mo tor Needs to Run in Reverse
-	private static final double BLENDER_PERCENTVBUS_COMMAND = 0.35;
+	
+	private static final double BLENDER_MAX_PERCENTVBUS_COMMAND = 0.35;
+	private static final double BLENDER_DEFAULT_PERCENTVBUS_COMMAND = 0.25;
+	private static final double BLENDER_MIN_PERCENTVBUS_COMMAND = 0.0;
+	
+	private static final double BLENDER_BUMP_PERCENTVBUS_COMMAND = 0.05;
 
 	//============================================================================================
 	// CONSTRUCTORS FOLLOW
@@ -130,6 +143,18 @@ public class Shooter
 		
 		// Slider
 		_linearActuator = new Servo(sliderPWMPort);
+		
+		// Default Blender Doubles
+		_blenderMtrTargetVBus = 0;
+		_blenderLastMtrTargetVBus = 0;
+		
+		// default to bumping rmp up on both motors
+		_isStg1MtrTargetRPMBumpingUp = true;
+		_isStg2MtrTargetRPMBumpingUp = true;
+		
+		_isBlenderVBusBumpingUp = true;
+		
+		_isShooterInBangBangMode = false;
 	}
 	
 	//============================================================================================
@@ -138,40 +163,108 @@ public class Shooter
 	
 	public void FullStop() 
 	{
+		FullShooterStop();
+		FullBlenderFeederStop();
+	}
+	
+	public void FullShooterStop() 
+	{
 		SpinStg1Wheel(0);
 		SpinStg2Wheel(0);
+	}
+	
+	public void FullBlenderFeederStop() 
+	{
 		SpinBlender(0);
 		SpinFeeder(0);
+		_isShooterInBangBangMode = false;
 	}
 	
 	//============================================================================================
 	// Shooter Motors
 	//============================================================================================
 
-	public void SpinStg1Wheel(double targetRPM)
+	public void SpinStg1Wheel(double targetRPMorVBus)
 	{
-		_stg1MtrTargetRPM = targetRPM;
-		
+		//if(!getIsShooterInBangBangMode())
+		{
+			//if(_firstStgMtr.getControlMode() != CANTalon.TalonControlMode.Speed)
+			{
+				//_firstStgMtr.changeControlMode(CANTalon.TalonControlMode.Speed);
+			}
+			DriverStation.reportWarning("Stage 1 Target RPM = " + targetRPMorVBus, true);
+			_stg1MtrTargetRPM = targetRPMorVBus;
+		}
+		//else
+		{
+			//if(_firstStgMtr.getControlMode() != CANTalon.TalonControlMode.PercentVbus)
+			{
+				//_firstStgMtr.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
+			}
+		}
+	
 		_firstStgMtr.set(_stg1MtrTargetRPM);
-		DriverStation.reportWarning("Stage 1 Target RPM = " + targetRPM, true);
 	}
 	
 	public void SpinStg2Wheel(double targetRPM)
 	{
+		//if(_secondStgMtr.getControlMode() != CANTalon.TalonControlMode.Speed)
+		{
+			//_secondStgMtr.changeControlMode(CANTalon.TalonControlMode.Speed);
+		}
+		
 		_stg2MtrTargetRPM = targetRPM;
 		
 		_secondStgMtr.set(_stg2MtrTargetRPM);
 		DriverStation.reportWarning("Stage 2 Target RPM = " + targetRPM, true);
 	}
 	
+	/*public void SpinShooterBangBang()
+	{
+		_isShooterInBangBangMode = true;
+		
+		if(_secondStgMtr.getControlMode() != CANTalon.TalonControlMode.PercentVbus)
+		{
+			_secondStgMtr.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
+		}
+		if(getStg1ActualRPM() < _stg1MtrTargetRPM)
+		{
+			SpinStg1Wheel(1);
+		}
+		else
+		{
+			SpinStg1Wheel(0);
+		}
+		if(getStg2ActualRPM() < _stg2MtrTargetRPM)
+		{
+			SpinStg2Wheel(1);
+		}
+		else
+		{
+			SpinStg2Wheel(0);
+		}
+	}*/
+	
 	//============================================================================================
 	// Set Up Shooter Testing
 	//============================================================================================
 	
+	public void Stg1MtrCycleRPM()
+	{
+		if(_isStg1MtrTargetRPMBumpingUp)
+		{
+			Stg1MtrBumpRPMUp();
+		}
+		else
+		{
+			Stg1MtrBumpRPMDown();
+		}
+	}
+	
 	public void Stg1MtrBumpRPMUp()
 	{
 		// only bump if not already at max
-		if(Math.abs(_stg1MtrTargetRPM) >= Math.abs(MAX_SHOOTER_RPM))
+		if(Math.abs(_stg1MtrTargetRPM) <= Math.abs(MAX_SHOOTER_RPM))
 		{	
 			if(Math.abs(_stg1MtrTargetRPM) >  0)
 			{
@@ -187,26 +280,40 @@ public class Shooter
 		else
 		{
 			DriverStation.reportWarning("Stg 1 Mtr Already at MAX ", false);
+			_isStg1MtrTargetRPMBumpingUp = false;
 		}
 	}
 	
 	public void Stg1MtrBumpRPMDown()
 	{
 		// only bump if not already at min
-		if(Math.abs(_stg1MtrTargetRPM) < Math.abs(MIN_SHOOTER_RPM))
+		if(Math.abs(_stg1MtrTargetRPM) > Math.abs(MIN_SHOOTER_RPM))
 		{
 			SpinStg1Wheel(_stg1MtrTargetRPM += SHOOTER_BUMP_RPM);
 		}
 		else
 		{
 			DriverStation.reportWarning("Stg 1 Mtr Already at MIN ", false);
+			_isStg1MtrTargetRPMBumpingUp = true;
+		}
+	}
+
+	public void Stg2MtrCycleRPM()
+	{
+		if(_isStg2MtrTargetRPMBumpingUp)
+		{
+			Stg2MtrBumpRPMUp();
+		}
+		else
+		{
+			Stg2MtrBumpRPMDown();
 		}
 	}
 	
 	public void Stg2MtrBumpRPMUp()
 	{
 		// only bump if not already at max
-		if(Math.abs(_stg2MtrTargetRPM) >= Math.abs(MAX_SHOOTER_RPM))
+		if(Math.abs(_stg2MtrTargetRPM) <= Math.abs(MAX_SHOOTER_RPM))
 		{	
 			if(Math.abs(_stg2MtrTargetRPM) >  0)
 			{
@@ -222,19 +329,21 @@ public class Shooter
 		else
 		{
 			DriverStation.reportWarning("Stg 2 Mtr Already at MAX ", false);
+			_isStg2MtrTargetRPMBumpingUp = false;
 		}
 	}
 
 	public void Stg2MtrBumpRPMDown()
 	{
 		// only bump if not already at min
-		if(Math.abs(_stg2MtrTargetRPM) < Math.abs(MIN_SHOOTER_RPM))
+		if(Math.abs(_stg2MtrTargetRPM) > Math.abs(MIN_SHOOTER_RPM))
 		{
 			SpinStg2Wheel(_stg2MtrTargetRPM += SHOOTER_BUMP_RPM);
 		}
 		else
 		{
 			DriverStation.reportWarning("Stg 2 Mtr Already at MIN ", false);
+			_isStg2MtrTargetRPMBumpingUp = true;
 		}
 	}
 	
@@ -247,10 +356,19 @@ public class Shooter
 		// if current cmd is 0, then start
 		if(_blenderMtr.get() == 0)
 		{
-			SpinBlender(BLENDER_PERCENTVBUS_COMMAND);
+			if (_blenderLastMtrTargetVBus > 0)
+			{
+				SpinBlender(_blenderLastMtrTargetVBus);
+			}
+			else
+			{
+				SpinBlender(BLENDER_DEFAULT_PERCENTVBUS_COMMAND);
+				_blenderMtrTargetVBus = BLENDER_DEFAULT_PERCENTVBUS_COMMAND;	
+			}
 		}
 		else
 		{
+			_blenderLastMtrTargetVBus = _blenderMtrTargetVBus;
 			SpinBlender(0.0);
 		}
 	}
@@ -268,9 +386,50 @@ public class Shooter
 		}
 	}
 	
+	public void BlenderMtrCycleVBus()
+	{
+		if(_isBlenderVBusBumpingUp)
+		{
+			BlenderBumpVBusUp();
+		}
+		else
+		{
+			BlenderBumpVBusDown();
+		}
+	}
+	
+	public void BlenderBumpVBusUp()
+	{
+		if((_blenderMtrTargetVBus + BLENDER_BUMP_PERCENTVBUS_COMMAND) <= BLENDER_MAX_PERCENTVBUS_COMMAND)
+		{	
+			// if already turning, just bump
+			SpinBlender(_blenderMtrTargetVBus += BLENDER_BUMP_PERCENTVBUS_COMMAND);
+		}
+		else
+		{
+			DriverStation.reportWarning("Blender Mtr Already at Max ", false);
+			_isBlenderVBusBumpingUp = false;
+		}
+	}
+
+	public void BlenderBumpVBusDown()
+	{
+		if((_blenderMtrTargetVBus - BLENDER_BUMP_PERCENTVBUS_COMMAND) >= BLENDER_MIN_PERCENTVBUS_COMMAND)
+		{	
+			// if already turning, just bump
+			SpinBlender(_blenderMtrTargetVBus -= BLENDER_BUMP_PERCENTVBUS_COMMAND);
+		}
+		else
+		{
+			DriverStation.reportWarning("Blender Mtr Already at Min ", false);
+			_isBlenderVBusBumpingUp = true;
+		}
+	}
+	
 	private void SpinBlender(double blenderVbusCommand)
 	{
-		_blenderMtr.set(blenderVbusCommand);
+		_blenderMtrTargetVBus = blenderVbusCommand;
+		_blenderMtr.set(_blenderMtrTargetVBus);
 	}
 	
 	private void SpinFeeder(double feederVbusCommand)
@@ -335,6 +494,7 @@ public class Shooter
 		String outDataStg2Actual = "?";
 		//String outDataStg1Command = "?";
 		//String outDataStg2Command = "?";
+		String outDataBlenderCommand = "?";
 		String outDataActuator = "?";
 		
 		//Display Current Shooter Motor 1 & 2 Cmd & Actual RPM + Error
@@ -347,7 +507,12 @@ public class Shooter
 		SmartDashboard.putString("[Command] Current Stage 2 RPM (Error)", outDataStg2Actual);
 		//SmartDashboard.putString("Current Stage 1 Command RPM", outDataStg1Command);
 		//SmartDashboard.putString("Current Stage 2 Command RPM", outDataStg2Command);
-
+		
+		//Display Current Blender %VBus Command
+		outDataBlenderCommand = String.format("%.2f%% Vbus", _blenderMtrTargetVBus);
+		
+		SmartDashboard.putString("Blender Vbus Command)", outDataBlenderCommand);
+		
 		//Display Current Actuator Value
 		outDataActuator = String.format( "%.3f", _currentSliderPosition); //Outputs "Max" and "Min" at respective values
 		
@@ -436,5 +601,9 @@ public class Shooter
 		double currentActualSpeed = (currentOutputVoltage / currentBusVoltage);
 		
 		return Utilities.RoundDouble(currentActualSpeed, 2);
+	}
+	public boolean getIsShooterInBangBangMode()
+	{
+		return _isShooterInBangBangMode;
 	}
 }

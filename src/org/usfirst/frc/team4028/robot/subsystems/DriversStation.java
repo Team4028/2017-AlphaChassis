@@ -86,7 +86,7 @@ public class DriversStation extends BaseDriversStation
 	} 
 	*/
 	
-	// ShifterToggleBtn
+	// ConstantVelocityThroughVBus
 	public boolean getIsDriver_GearShiftToggle_BtnJustPressed()
 	{
 		return super.getIsDriverBlueBtnXJustPressed();
@@ -99,27 +99,39 @@ public class DriversStation extends BaseDriversStation
 	}
 	
 	//ShooterStg1Up
-	public boolean getIsDriver_ShooterStg1Up_BtnJustPressed()
+	//public boolean getIsDriver_ShooterStg1Up_BtnJustPressed()
+	//{
+	//	return super.getIsDriverLeftBumperBtnJustPressed();
+	//}
+	
+	//ShooterStg1Down
+	//public boolean getIsDriver_ShooterStg1Down_BtnJustPressed()
+	//{
+	//	return super.getIsDriverBackBtnJustPressed();
+	//}
+	
+	// Shooter Stg 1 Cycle Up/Down
+	public boolean getIsDriver_ShooterStg1CycleRPM_BtnJustPressed()
 	{
 		return super.getIsDriverLeftBumperBtnJustPressed();
 	}
 	
-	//ShooterStg2Up
-	public boolean getIsDriver_ShooterStg2Up_BtnJustPressed()
+	// Blender Cycle
+	public boolean getIsDriver_BlenderCycle_BtnJustPressed()
 	{
-		return super.getIsDriverRightBumperBtnJustPressed();
-	}
-	
-	//ShooterStg1Down
-	public boolean getIsDriver_ShooterStg1Down_BtnJustPressed()
-	{
-		return super.getIsDriverBackBtnJustPressed();
+		return super.getIsDriverStartBtnJustPressed();
 	}
 	
 	//ShooterStg2Down
-	public boolean getIsDriver_ShooterStg2Down_BtnJustPressed()
+	//public boolean getIsDriver_ShooterStg2Down_BtnJustPressed()
+	//{
+	//	return super.getIsDriverStartBtnJustPressed();
+	//}
+	
+	// Shooter Stg 2 Cycle Up/Down
+	public boolean getIsDriver_ShooterStg2CycleRPM_BtnJustPressed()
 	{
-		return super.getIsDriverStartBtnJustPressed();
+		return super.getIsDriverRightBumperBtnJustPressed();
 	}
 	
 	//ActuatorUp
@@ -137,7 +149,7 @@ public class DriversStation extends BaseDriversStation
 	//FullStop
 	public boolean getIsDriver_FullShooterStop_BtnJustPressed() //HERE
 	{
-		return super.getIsDriverPovUpBtnJustPressed();
+		return super.getIsDriverBackBtnJustPressed();
 	}
 		
 	// ===================================
