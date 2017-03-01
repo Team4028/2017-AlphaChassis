@@ -555,7 +555,6 @@ public class Robot extends IterativeRobot {
     	// Step 5: Check the climber
     	// =====================================
     	
-    		if (!_climber.getIsClimbing())
     	if (_driversStation.getIsOperator_StartClimb_ButtonJustPressed()) {
     		if (!_climber.getIsClimbing()) {
     			_climber.StartClimber();
