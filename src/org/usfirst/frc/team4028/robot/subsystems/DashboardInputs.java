@@ -53,7 +53,7 @@ public class DashboardInputs
 		
 		_autonModeChooser.addDefault("Do Nothing", GeneralEnums.AUTON_MODE.DO_NOTHING);
 		_autonModeChooser.addObject("Cross the Base Line", GeneralEnums.AUTON_MODE.CROSS_BASE_LINE);
-		_autonModeChooser.addDefault("Hang Gear on Boiler Side", GeneralEnums.AUTON_MODE.HANG_BOILER_SIDE_GEAR);
+		_autonModeChooser.addObject("Hang Gear on Boiler Side", GeneralEnums.AUTON_MODE.HANG_BOILER_SIDE_GEAR);
 		_autonModeChooser.addObject("Hang Gear in Center", GeneralEnums.AUTON_MODE.HANG_CENTER_GEAR);
 		_autonModeChooser.addObject("Hang Gear on Key Side", GeneralEnums.AUTON_MODE.HANG_KEY_SIDE_GEAR);
 		_autonModeChooser.addObject("Turn and Shoot", GeneralEnums.AUTON_MODE.TURN_AND_SHOOT);

@@ -1,5 +1,4 @@
 package org.usfirst.frc.team4028.robot.controllers;
-
 import org.usfirst.frc.team4028.robot.util.BeefyMath;
 import org.usfirst.frc.team4028.robot.util.GeneratedTrajectory;
 import org.usfirst.frc.team4028.robot.util.Trajectory;
@@ -36,10 +35,15 @@ public class TrajectoryDriveController extends Robot {
 		_navX = navX;
 		_leftFollower.configure(0.0,  0.0,  0.0,  0.7,  0.0);
 		_rightFollower.configure(0.0,  0.0,  0.0,  0.7,  0.0);
+		_updaterTimer = new java.util.Timer();
 	}
 	
 	public boolean onTarget() {
-		return _leftFollower.isTrajectoryFinished();
+		if(_currentSegment == (GeneratedTrajectory.kNumPoints - 1)) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	public void loadProfile(double[][] leftProfile, double[][] rightProfile, double direction, double heading) {

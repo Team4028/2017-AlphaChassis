@@ -59,7 +59,7 @@ public class Chassis
 	private double _arcadeDriveTurnCmdAdj;
 	
 	private static final double ACC_DEC_RATE_FACTOR = 5.0;
-	private static final double ACC_DEC_TOTAL_TIME_SECS = 2.0;
+	private static final double ACC_DEC_TOTAL_TIME_SECS = 0.8;
 	
 	private static final double _turnSpeedScalingFactor = 0.7;
 	

@@ -381,7 +381,7 @@ abstract class BaseDriversStation
 	    	_isDriverRightBumperBtnPressed = _driverGamepad.getRawButton(LogitechF310.RIGHT_BUMPER);
 	    	_isDriverBackBtnPressed = _driverGamepad.getRawButton(LogitechF310.BACK_BUTTON);
 	    	_isDriverStartBtnPressed = _driverGamepad.getRawButton(LogitechF310.START_BUTTON);
-	    	_isDriverPovUpBtnPressed = _driverGamepad.getRawButton(LogitechF310.POV_UP_0); //HERE
+	    	_isDriverPovUpBtnPressed = _driverGamepad.getRawButton(LogitechF310.POV_UP_RIGHT_1); //HERE
 	    	
 			_isOperatorGreenBtnAPressed = _operatorGamepad.getRawButton(LogitechF310.GREEN_BUTTON_A);
 	    	_isOperatorRedBtnBPressed = _operatorGamepad.getRawButton(LogitechF310.RED_BUTTON_B);

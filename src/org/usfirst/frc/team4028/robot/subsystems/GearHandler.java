@@ -45,7 +45,7 @@ public class GearHandler
 	private static final double TILT_PID_D_CONSTANT = 50.0;
 	private static final double TILT_PID_RAMP_RATE = 0.1;
 		
-	private static final double TILT_MAX_V_DOWN_TILT = +2.0; // Down is positive (RIP MAXIMUM...)
+	private static final double TILT_MAX_V_DOWN_TILT = +3.0; // Down is positive (RIP MAXIMUM...)
 	private static final double TILT_MAX_V_UP_TILT = -6.0;
 	// --------------------------------------------------------
 	
@@ -69,8 +69,8 @@ public class GearHandler
 	}
 	
 	private static final double GEAR_TILT_AXIS_HOME_POSITION_IN_ROTATIONS = 00.00;
-	private static final double GEAR_TILT_SCORING_POSITION_IN_ROTATIONS = 000.112;
-	private static final double GEAR_TILT_CHANGE_TO_V_BUS_POSITION_IN_ROTATIONS = 000.373;
+	private static final double GEAR_TILT_SCORING_POSITION_IN_ROTATIONS = 0.1;
+	private static final double GEAR_TILT_CHANGE_TO_V_BUS_POSITION_IN_ROTATIONS = 00.48;
 	private static final double TARGET_DEADBAND = 00.03;
 	
 	private static final double GEAR_MOVE_TO_HOME_VELOCITY_CMD = -0.25;   //set
