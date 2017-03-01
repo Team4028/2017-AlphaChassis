@@ -509,8 +509,7 @@ public class Robot extends IterativeRobot
     				_shooter.ToggleSpinBlender();
     				_shooter.ToggleSpinFeeder();
     			}
-    			
-    			if (_driversStation.getIsDriver_BlenderCycle_BtnJustPressed())
+    			else if (_driversStation.getIsDriver_BlenderCycle_BtnJustPressed())
     			{
     				_shooter.BlenderMtrCycleVBus();
     			}

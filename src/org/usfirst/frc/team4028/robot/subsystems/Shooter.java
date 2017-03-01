@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //	2		Patrick		2/20 10:02		Code Review on Shooter Testing
 //	3		Patrick		2/20 18:47		Updating Values Written to SmartDashboard
 //	4		Patrick		2/22 12:34		Making toggle button for Blender/Feeder
+//	5		Patrick		3/1	 5:57		Toggle Blender Speed
 //-------------------------------------------------------------
 public class Shooter 
 {
@@ -82,9 +83,9 @@ public class Shooter
 	
 	private static final double FEEDER_PERCENTVBUS_COMMAND = -0.7; //This Mo tor Needs to Run in Reverse
 	
-	private static final double BLENDER_MAX_PERCENTVBUS_COMMAND = 0.35;
-	private static final double BLENDER_DEFAULT_PERCENTVBUS_COMMAND = 0.25;
-	private static final double BLENDER_MIN_PERCENTVBUS_COMMAND = 0.0;
+	private static final double BLENDER_MAX_PERCENTVBUS_COMMAND = 0.7;
+	private static final double BLENDER_DEFAULT_PERCENTVBUS_COMMAND = 0.35;
+	private static final double BLENDER_MIN_PERCENTVBUS_COMMAND = 0.05;
 	
 	private static final double BLENDER_BUMP_PERCENTVBUS_COMMAND = 0.05;
 
@@ -362,8 +363,7 @@ public class Shooter
 			}
 			else
 			{
-				SpinBlender(BLENDER_DEFAULT_PERCENTVBUS_COMMAND);
-				_blenderMtrTargetVBus = BLENDER_DEFAULT_PERCENTVBUS_COMMAND;	
+				SpinBlender(BLENDER_DEFAULT_PERCENTVBUS_COMMAND);	
 			}
 		}
 		else
@@ -388,13 +388,17 @@ public class Shooter
 	
 	public void BlenderMtrCycleVBus()
 	{
-		if(_isBlenderVBusBumpingUp)
+		// Don't honor bump command if motors are currently stopped
+		if (_blenderMtr.get() != 0.0)
 		{
-			BlenderBumpVBusUp();
-		}
-		else
-		{
-			BlenderBumpVBusDown();
+			if(_isBlenderVBusBumpingUp)
+			{
+				BlenderBumpVBusUp();
+			}
+			else
+			{
+				BlenderBumpVBusDown();
+			}
 		}
 	}
 	
@@ -509,7 +513,7 @@ public class Shooter
 		//SmartDashboard.putString("Current Stage 2 Command RPM", outDataStg2Command);
 		
 		//Display Current Blender %VBus Command
-		outDataBlenderCommand = String.format("%.2f%% Vbus", _blenderMtrTargetVBus);
+		outDataBlenderCommand = String.format("%.0f%% Vbus", _blenderMtrTargetVBus*100.0);
 		
 		SmartDashboard.putString("Blender Vbus Command)", outDataBlenderCommand);
 		
