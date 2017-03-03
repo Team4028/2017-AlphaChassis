@@ -24,6 +24,7 @@ import org.usfirst.frc.team4028.robot.subsystems.Shooter;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.SerialPort;
 
 /**
  * The is the main code for:
@@ -120,7 +121,7 @@ public class Robot extends IterativeRobot
 								RobotMap.SHOOTER_SLIDER_PWM_PORT);
 		
 		// sensors follow
-		_lidar = new Lidar();
+		_lidar = new Lidar(SerialPort.Port.kMXP);
 		//_navX = new NavXGyro(RobotMap.NAVX_PORT);
 		_switchableCameraServer = new SwitchableCameraServer(RobotMap.GEAR_CAMERA_NAME);
 		
@@ -174,6 +175,12 @@ public class Robot extends IterativeRobot
     	{
 			_turnAndShoot = null;
     	}
+		
+		if( _lidar != null)
+		{
+			_lidar.stop();
+		}
+		
 	}
 		
 	// ----------------------------------------------------------------------
@@ -191,6 +198,10 @@ public class Robot extends IterativeRobot
 		// Step 2: add logic to read from Dashboard Choosers to select the Auton routine to run
     	// =====================================
     	// TODO: add this code
+    	if(_lidar != null)
+    	{
+    		_lidar.start();
+    	}
     	
     	// =====================================
 		// Step 2.1: Create the correct autom routine
@@ -365,6 +376,11 @@ public class Robot extends IterativeRobot
     	// #### Telop Sequences ####
     	_telopMode = TELEOP_MODE.STANDARD;	// default to std mode
     	
+    	// #### Lidar starts doing ####
+    	if(_lidar != null)
+    	{
+    		_lidar.start();
+    	}
     	// =====================================
     	// Step N: Configure Logging (if USB Memory Stick is present)
     	// =====================================    	
