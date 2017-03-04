@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //	3		Patrick		2/20 18:47		Updating Values Written to SmartDashboard
 //	4		Patrick		2/22 12:34		Making toggle button for Blender/Feeder
 //	5		Patrick		3/1	 5:57		Toggle Blender Speed
+//	6		Patrick		3/4	 11:06		Updating to Log %Voltage
 //-------------------------------------------------------------
 public class Shooter 
 {
@@ -60,25 +61,25 @@ public class Shooter
 	
 	//define class level PID constants
 	private static final double FIRST_STAGE_MTG_FF_GAIN = 0.033; //0.0325; //0.034; //0.032; //0.0315; //0.031;
-	private static final double FIRST_STAGE_MTG_P_GAIN = 0.2; //0.1;
+	private static final double FIRST_STAGE_MTG_P_GAIN = 0.25; //0.2; //0.1;
 	private static final double FIRST_STAGE_MTG_I_GAIN = 0.0;
-	private static final double FIRST_STAGE_MTG_D_GAIN = 3.0;
+	private static final double FIRST_STAGE_MTG_D_GAIN = 3.5; //3.0;
 
-	private static final double SECOND_STAGE_MTG_FF_GAIN = 0.0274;
-	private static final double SECOND_STAGE_MTG_P_GAIN = 0.0;
+	private static final double SECOND_STAGE_MTG_FF_GAIN = 0.03; //0.0274;
+	private static final double SECOND_STAGE_MTG_P_GAIN = 0.15;
 	private static final double SECOND_STAGE_MTG_I_GAIN = 0.0;
-	private static final double SECOND_STAGE_MTG_D_GAIN = 0.0; //0.115;
+	private static final double SECOND_STAGE_MTG_D_GAIN = 5.0; //4.0;//3.5; //0.0;//5; //6; //0.115;
 	
 	//define class level Actuator Constants
 	private static final double MAX_THRESHOLD_ACTUATOR = 0.7; 
 	private static final double MIN_THRESHOLD_ACTUATOR = 0.4;
 	private static final double CHANGE_INTERVAL_ACTUATOR = 0.025;
-	private static final double INITIAL_POSITION_ACTUATOR = 0.55;
+	private static final double INITIAL_POSITION_ACTUATOR = 0.65;
 	
 	//define class level Shooter Motor Constants
 	private static final double MAX_SHOOTER_RPM = -4400;
 	private static final double MIN_SHOOTER_RPM = -3000;
-	private static final double SHOOTER_BUMP_RPM = 100;
+	private static final double SHOOTER_BUMP_RPM = 10;
 	private static final double FIRST_STAGE_MTR_DEFAULT_RPM = -3700;
 	private static final double SECOND_STAGE_MTR_DEFAULT_RPM = -3700;
 	
@@ -320,7 +321,8 @@ public class Shooter
 			if(Math.abs(_stg2MtrTargetRPM) >  0)
 			{
 				// if already turning, just bump
-				SpinStg1Wheel(_stg2MtrTargetRPM -= SHOOTER_BUMP_RPM);
+				SpinStg2Wheel(_stg2MtrTargetRPM -= SHOOTER_BUMP_RPM);
+				DriverStation.reportWarning("Bumping Up Stage 2", true);
 			}
 			else
 			{
@@ -504,7 +506,7 @@ public class Shooter
 		
 		//Display Current Shooter Motor 1 & 2 Cmd & Actual RPM + Error
 		outDataStg1Actual = String.format("[%.0f RPM] %.0f RPM (%.2f%%)", -1*_stg1MtrTargetRPM, -1*getStg1ActualRPM(), getStg1RPMErrorPercent());
-		outDataStg2Actual = String.format("[%.0f RPM] %.0f RPM (%.2f%%)", -1*_stg1MtrTargetRPM, -1*getStg2ActualRPM(), getStg2RPMErrorPercent());
+		outDataStg2Actual = String.format("[%.0f RPM] %.0f RPM (%.2f%%)", -1*_stg2MtrTargetRPM, -1*getStg2ActualRPM(), getStg2RPMErrorPercent());
 		//outDataStg1Command = String.format("%.0f RPM", _stg1MtrTargetRPM);
 		//outDataStg2Command = String.format("%.0f RPM", _stg2MtrTargetRPM);
 		
@@ -549,6 +551,8 @@ public class Shooter
 		logData.AddData("Stg2Mtr:Err_%", String.format("%.2f%%", getStg2RPMErrorPercent()));
 		logData.AddData("Stg2Mtr:%VBus", String.format("%.2f%%", getStg2CurrentPercentVBus()));
 
+		logData.AddData("Stg1Output%", String.format("%.2f%%", getCurrentBatteryOutputVoltageMotor1()));
+		logData.AddData("Stg2VOutput%", String.format("%.2f%%", getCurrentBatteryOutputVoltageMotor2()));
 		
 		logData.AddData("Actuator Position", String.format("%.3f", _currentSliderPosition));
 	}
@@ -610,5 +614,23 @@ public class Shooter
 	public boolean getIsShooterInBangBangMode()
 	{
 		return _isShooterInBangBangMode;
+	}
+	public double getCurrentBatteryOutputVoltageMotor1()
+	{
+		double currentStg1InputVoltage = _firstStgMtr.getBusVoltage();
+		double currentStg1OutputVoltage = _firstStgMtr.getOutputVoltage();
+		
+		double stage1PercentOutput = ((currentStg1OutputVoltage / currentStg1InputVoltage) * 100);
+		
+		return stage1PercentOutput;
+	}
+	public double getCurrentBatteryOutputVoltageMotor2()
+	{
+		double currentStg2InputVoltage = _secondStgMtr.getBusVoltage();
+		double currentStg2OutputVoltage = _secondStgMtr.getOutputVoltage();
+		
+		double stage2PercentOutput = ((currentStg2OutputVoltage / currentStg2InputVoltage) * 100);
+		
+		return stage2PercentOutput;
 	}
 }
