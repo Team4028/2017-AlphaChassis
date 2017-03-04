@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //	4		Patrick		2/22 12:34		Making toggle button for Blender/Feeder
 //	5		Patrick		3/1	 5:57		Toggle Blender Speed
 //	6		Patrick		3/4	 11:06		Updating to Log %Voltage
+//	7		Patrick		3/4	 1:31		Changing PID Values
 //-------------------------------------------------------------
 public class Shooter 
 {
@@ -60,14 +61,14 @@ public class Shooter
 	
 	//define class level PID constants
 	private static final double FIRST_STAGE_MTG_FF_GAIN = 0.033; //0.0325; //0.034; //0.032; //0.0315; //0.031;
-	private static final double FIRST_STAGE_MTG_P_GAIN = 0.25; //0.2; //0.1;
+	private static final double FIRST_STAGE_MTG_P_GAIN = 0.325; //0.25; //0.2; //0.1;
 	private static final double FIRST_STAGE_MTG_I_GAIN = 0.0;
-	private static final double FIRST_STAGE_MTG_D_GAIN = 3.5; //3.0;
+	private static final double FIRST_STAGE_MTG_D_GAIN = 5.0; //3.0;
 
 	private static final double SECOND_STAGE_MTG_FF_GAIN = 0.03; //0.0274;
-	private static final double SECOND_STAGE_MTG_P_GAIN = 0.15;
+	private static final double SECOND_STAGE_MTG_P_GAIN = 0.175; //0.2; //0.15;
 	private static final double SECOND_STAGE_MTG_I_GAIN = 0.0;
-	private static final double SECOND_STAGE_MTG_D_GAIN = 5.0; //4.0;//3.5; //0.0;//5; //6; //0.115;
+	private static final double SECOND_STAGE_MTG_D_GAIN = 6.0; //5.0; //4.0;//3.5; //0.0;//5; //6; //0.115;
 	
 	//define class level Actuator Constants
 	private static final double MAX_THRESHOLD_ACTUATOR = 0.7; 
@@ -82,7 +83,7 @@ public class Shooter
 	private static final double FIRST_STAGE_MTR_DEFAULT_RPM = -3700;
 	private static final double SECOND_STAGE_MTR_DEFAULT_RPM = -3700;
 	
-	private static final double FEEDER_PERCENTVBUS_COMMAND = -0.7; //This Mo tor Needs to Run in Reverse
+	private static final double FEEDER_PERCENTVBUS_COMMAND = -0.7; //This Motor Needs to Run in Reverse
 	
 	private static final double BLENDER_MAX_PERCENTVBUS_COMMAND = 0.7;
 	private static final double BLENDER_DEFAULT_PERCENTVBUS_COMMAND = 0.35;
