@@ -19,9 +19,20 @@ import edu.wpi.first.wpilibj.DriverStation;
 
 //This class implements all functionality for operator/driver cameras
 //=====> For Changes see Nick Donahue (javadotmakeitwork)
+//=========================REVISION BLOCK==================================
+//Rev		By			D/T				Description
+//0		Nick		2/27 8:47		Added 4th Camera and Added "Swapped to Next" method for increased organization
+//-------------------------------------------------------------
 public class SwitchableCameraServer
 {	
-	private String _cameraname;
+	private String _cameraName;
+	private boolean _isCam0Present;
+	private boolean _isCam1Present;
+	private boolean _isCam2Present;
+	private boolean _isCam3Present;
+	private boolean _isImageAvailable = false;
+	private CircularQueue<String> _camList;
+
 
 	
 	//============================================================================================
@@ -29,9 +40,28 @@ public class SwitchableCameraServer
 	//============================================================================================
 	public SwitchableCameraServer(String cameraname)
 	{
-		_cameraname = cameraname;
+		_cameraName = cameraname;
 		Thread cameraThread = new Thread(JavadotMakeItWork);
 		cameraThread.start();
+		_camList = new CircularQueue<String>();
+		
+		if(_isCam0Present)
+		{
+			_camList.add("cam0");
+		}
+		if(_isCam1Present)
+		{
+			_camList.add("cam1");
+		}
+		if(_isCam2Present)
+		{
+			_camList.add("cam2");
+		}
+		if(_isCam3Present)
+		{
+			_camList.add("cam3");
+		}
+
 	}
 
 	//============================================================================================
@@ -39,8 +69,16 @@ public class SwitchableCameraServer
 	//============================================================================================
 	public void ChgToCamera(String cameraname) 
 	{
-		_cameraname = cameraname;
+		_cameraName = cameraname;
 		System.out.println("Camera Swapped");
+	}
+	
+	public void SwapToNextCamera()
+	{
+	if((_isImageAvailable))				
+	{
+		ChgToCamera(_camList.getNext());
+	}
 	}
 	
 	//============================================================================================
@@ -48,7 +86,7 @@ public class SwitchableCameraServer
 	//============================================================================================
 	public String getCurrentCameraName()
 	{
-		return _cameraname;
+		return _cameraName;
 	}
 	
 	//============================================================================================
@@ -59,38 +97,51 @@ public class SwitchableCameraServer
 		@Override
 		public void run() 
 		{
-	    	boolean isCam0Present = Files.exists(Paths.get("/dev/video0"));
-	    	boolean isCam1Present = Files.exists(Paths.get("/dev/video1"));
-	    	boolean isCam2Present = Files.exists(Paths.get("/dev/video2"));
-	    	System.out.println("Cam0isConnected:" + isCam0Present);
+	    	_isCam0Present = Files.exists(Paths.get("/dev/video0"));
+	    	_isCam1Present = Files.exists(Paths.get("/dev/video1"));
+	    	_isCam2Present = Files.exists(Paths.get("/dev/video2"));
+	    	_isCam3Present = Files.exists(Paths.get("/dev/viedo3"));
+	    	/*System.out.println("Cam0isConnected:" + isCam0Present);
 	    	System.out.println("Cam1isConnected:" + isCam1Present);
 	    	System.out.println("Cam2isConnected:" + isCam2Present);
+	    	System.out.println("Cam3isConnected:" + isCam3Present);*/
+	    	DriverStation.reportWarning("Cam0isConnected:" + _isCam0Present, false);
+	    	DriverStation.reportWarning("Cam1isConnected:" + _isCam1Present, false);
+	    	DriverStation.reportWarning("Cam2isConnected:" + _isCam2Present, false);
+	    	DriverStation.reportWarning("Cam3isConnected:" + _isCam3Present, false);
 
 	   
 	    	UsbCamera cam0 = null;
 	    	UsbCamera cam1 = null;
 	    	UsbCamera cam2 = null;
+	    	UsbCamera cam3 = null;
 	    	
 	    	CvSink cvSink0 = null;
 	    	CvSink cvSink1 = null;
 	    	CvSink cvSink2 = null;
+	    	CvSink cvSink3 = null;
 	    	
 			// create instances of the all the cameras
             // create sinks for each camera
-	    	if(isCam0Present)
+	    	if(_isCam0Present)
 	    	{
 	    		cam0 = new UsbCamera(RobotMap.GEAR_CAMERA_NAME, 0); 				
 	    		 cvSink0 = CameraServer.getInstance().getVideo(cam0); 
 	    	}
-	    	if(isCam1Present)
+	    	if(_isCam1Present)
 	    	{
 	    		cam1 = new UsbCamera(RobotMap.SHOOTER_CAMERA_NAME,  1); 	
 	    		cvSink1 = CameraServer.getInstance().getVideo(cam1);
 	    	}
-		    if(isCam2Present)
+		    if(_isCam2Present)
 		    {
 		    	cam2 = new UsbCamera(RobotMap.BALL_INFEED_CAMERA_NAME, 2); 
 		    	cvSink2 = CameraServer.getInstance().getVideo(cam2);
+		    }
+		    if(_isCam3Present)
+		    {
+		    	cam3 = new UsbCamera(RobotMap.CLIMBER_CAMERA_NAME, 3); 
+		    	cvSink3 = CameraServer.getInstance().getVideo(cam3);
 		    }
  
             // create an output stream
@@ -105,89 +156,131 @@ public class SwitchableCameraServer
             // set the image source for the mjepg server to be the output stream
             server.setSource(outputStream);
             
-            boolean isImageAvailable = false;
+           
             
             // start looping
             while(!Thread.interrupted()) 
             {
-        		isImageAvailable = false;
+        		_isImageAvailable = false;
 
-        		if(_cameraname == "cam0")
+        		if(_cameraName == "cam0")
         		{       
             		// disable the other cameras
             		//	NOTE: Key point is to disable all other cameras BEFORE you enable the one
             		//			you want to avoid USB bus overload!
-        			if(isCam1Present)
+        			if(_isCam1Present)
         			{
             			cvSink1.setEnabled(false);
         			}
         			
-        			if(isCam2Present)
+        			if(_isCam2Present)
         			{
             			cvSink2.setEnabled(false);
         			}
+        			
+        			if(_isCam3Present)
+        			{
+        				cvSink3.setEnabled(false);
+        			}
             		// enable this camera & configure it
-        			if(isCam0Present)
+        			if(_isCam0Present)
         			{
 		                cvSink0.setEnabled(true);
 	                	cam0.setFPS(60);
 	               		cam0.setResolution(640, 480);
 	               		cam0.setExposureManual(30);
 	            		cvSink0.grabFrame(image);	     		// grab the current frame from this camera and put it into the 2D array
-	            		isImageAvailable = true;
+	            		_isImageAvailable = true;
         			}
 
             	} 
-            	else if(_cameraname == "cam1")
+            	else if(_cameraName == "cam1")
             	{
             		
-        			if(isCam2Present)
+        			if(_isCam2Present)
         			{
             			cvSink2.setEnabled(false);
         			}
         			
-        			if(isCam0Present)
+        			if(_isCam0Present)
         			{
             			cvSink0.setEnabled(false);
         			}
+        			
+        			if(_isCam3Present)
+        			{
+        				cvSink3.setEnabled(false);
+        			}
             		// enable this camera & configure it
-        			if(isCam1Present)
+        			if(_isCam1Present)
         			{
 		                cvSink1.setEnabled(true);
 	                	cam1.setFPS(60);
 	               		cam1.setResolution(640, 480);
 	               		cam1.setExposureManual(30);
 	            		cvSink1.grabFrame(image);	     		// grab the current frame from this camera and put it into the 2D array
-	            		isImageAvailable = true;
+	            		_isImageAvailable = true;
         			}
             		
             	}
-            	else if(_cameraname =="cam2")
+            	else if(_cameraName =="cam2")
             	{
-        			if(isCam0Present)
+        			if(_isCam0Present)
         			{
             			cvSink0.setEnabled(false);
         			}
         			
-        			if(isCam1Present)
+        			if(_isCam1Present)
         			{
             			cvSink1.setEnabled(false);
         			}
+        			
+        			if(_isCam3Present)
+        			{
+        				cvSink3.setEnabled(false);
+        			}
             		// enable this camera & configure it
-        			if(isCam2Present)
+        			if(_isCam2Present)
         			{
 		                cvSink2.setEnabled(true);
 	                	cam2.setFPS(60);
 	               		cam2.setResolution(640, 480);
 	               		cam2.setExposureManual(30);
 	            		cvSink2.grabFrame(image);	     		// grab the current frame from this camera and put it into the 2D array
-	            		isImageAvailable = true;
-
+	            		_isImageAvailable = true;
         			}
             	}
+        		else if(_cameraName == "cam3")
+        		{
+        			if(_isCam0Present)
+        			{
+            			cvSink0.setEnabled(false);
+        			}
+        			
+        			if(_isCam1Present)
+        			{
+            			cvSink1.setEnabled(false);
+        			}
+        			
+        			if(_isCam2Present)
+        			{
+        				cvSink2.setEnabled(false);
+        			}
+            		// enable this camera & configure it
+        			if(_isCam3Present)
+        			{
+		                cvSink3.setEnabled(true);
+	                	cam3.setFPS(60);
+	               		cam3.setResolution(640, 480);
+	               		cam3.setExposureManual(30);
+	            		cvSink2.grabFrame(image);	     		// grab the current frame from this camera and put it into the 2D array
+	            		_isImageAvailable = true;
+        			}
+        		}
+            	
 
 	           	// push the captured frame to the output stream
-           		if(isImageAvailable)
+           		if(_isImageAvailable)
            		{
            			outputStream.putFrame(image);
            		}
