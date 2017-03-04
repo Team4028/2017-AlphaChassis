@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import java.util.TimerTask;
 
-import org.usfirst.frc.team4028.robot.LogData;
+import org.usfirst.frc.team4028.robot.utilities.LogData;
 
 import java.lang.String;
 
@@ -103,12 +103,12 @@ public class Lidar {
 		public void OutputToSmartDashboard()
 		{
 			SmartDashboard.putBoolean("Lidar:IsValid", get_IsValid());
-			SmartDashboard.putString("Lidar:DistanceInCm", String.format("%.0f", get_DistanceInCm()));
+			SmartDashboard.putString("Lidar:DistanceInCm", String.format("%01d", get_DistanceInCm()));
 		}
 		
 		public void UpdateLogData(LogData logData)
 		{
-			logData.AddData("Lidar:DistanceInCm", String.format("%.0f", get_DistanceInCm()));
+			logData.AddData("Lidar:DistanceInCm", String.format("%01d", get_DistanceInCm()));
 			logData.AddData("Lidar:IsValid", Boolean.toString(get_IsValid()));
 		}
 		

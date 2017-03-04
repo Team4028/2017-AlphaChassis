@@ -1,6 +1,6 @@
 package org.usfirst.frc.team4028.robot.subsystems;
 
-import org.usfirst.frc.team4028.robot.LogData;
+import org.usfirst.frc.team4028.robot.utilities.LogData;
 
 import edu.wpi.first.wpilibj.DriverStation;
 
@@ -35,35 +35,40 @@ public class DriversStation extends BaseDriversStation
 	DRIVER_RIGHT_Y_AXIS
 	
 	--- Driver Buttons --------
-	DRIVER_GREEN_BUTTON_A			Feeder And Blender (AccDecModeToggle_Btn)
+	DRIVER_GREEN_BUTTON_A			Toggle Blender And Feeder Mtrs
 	DRIVER_RED_BUTTON_B				Shooter Slider Down
-	DRIVER_BLUE_BUTTON_X			GearShiftToggle_Btn
+	DRIVER_BLUE_BUTTON_X			Gear Shift Toggle
 	DRIVER_YELLOW_BUTTON_Y			Shooter Slider Up
-	DRIVER_LEFT_BUMPER				Shooter Stage 1 Motor RPM Up 100
-	DRIVER_RIGHT_BUMPER				Shooter Stage 2 Motor RPM Up 100
-	DRIVER_BACK_BUTTON				Shooter Stage 1 Motor RPM Down 100
-	DRIVER_START_BUTTON				Shooter Stage 2 Motor RPM Down 100
+	DRIVER_LEFT_BUMPER				Shooter Stg1 Cycle RPM
+	DRIVER_RIGHT_BUMPER				Shooter Stg2 Cycle RPM
+	DRIVER_BACK_BUTTON				Full Shooter Stop
+	DRIVER_START_BUTTON				Blender Cycle RPM
 	DRIVER_LEFT_THUMBSTICK		
 	DRIVER_RIGHT_THUMBSTICK
 		
+									Acc/Dec Mode Toggle
+									Shooter Stg 1 Motor RPM + 100
+									Shooter Stg 1 Motor RPM - 100
+									Shooter Stg 2 Motor RPM + 100
+									Shooter Stg 2 Motor RPM - 100
 	==========================================================================
 		
 	--- Operator Joysticks --------
 	OPERATOR_LEFT_X_AXIS
-	OPERATOR_LEFT_Y_AXIS			
+	OPERATOR_LEFT_Y_AXIS			Gear Tilt
 	OPERATOR_LEFT_TRIGGER
 	OPERATOR_RIGHT_TRIGGER
 	OPERATOR_RIGHT_X_AXIS
-	OPERATOR_RIGHT_Y_AXIS			GearInfeedOutFeed_JoystickCmd
+	OPERATOR_RIGHT_Y_AXIS			Gear Infeed/OutFeed
 	
 	--- Operator Buttons --------
-	OPERATOR_GREEN_BUTTON_A			Gear Tilt Floor
-	OPERATOR_RED_BUTTON_B			Gear Tilt Score 
-	OPERATOR_BLUE_BUTTON_X			Gear Sequence Initiation
-	OPERATOR_YELLOW_BUTTON_Y		Gear Tilt Home
-	OPERATOR_LEFT_BUMPER			Fuel Infeed Motor
+	OPERATOR_GREEN_BUTTON_A			Gear Tilt Goto Floor
+	OPERATOR_RED_BUTTON_B			Gear Tilt Goto Score 
+	OPERATOR_BLUE_BUTTON_X			Hang Gear Sequence Initiation
+	OPERATOR_YELLOW_BUTTON_Y		Gear Tilt GoTo Home
+	OPERATOR_LEFT_BUMPER			Fuel Infeed
 	OPERATOR_RIGHT_BUMPER			Camera Swap
-	OPERATOR_BACK_BUTTON			Ball Infeed Tilt Toggle
+	OPERATOR_BACK_BUTTON			Start Climb
 	OPERATOR_START_BUTTON			Gear Tilt ReZero
 	OPERATOR_LEFT_THUMBSTICK
 	OPERATOR_RIGHT_THUMBSTICK
@@ -75,6 +80,10 @@ public class DriversStation extends BaseDriversStation
 	//		Implement calls into base class property accessors with 
 	//		Robot function specific names
 	// ======================================================
+	
+	// =========================================================================================================
+	// DRIVER	DRIVER	DRIVER	DRIVER	DRIVER	DRIVER	DRIVER	DRIVER	DRIVER	DRIVER	DRIVER	DRIVER
+	// =========================================================================================================
 	
 	// ===================================
 	// === driver Just Pressed buttons ===
@@ -117,7 +126,7 @@ public class DriversStation extends BaseDriversStation
 	}
 	
 	// Blender Cycle
-	public boolean getIsDriver_BlenderCycle_BtnJustPressed()
+	public boolean getIsDriver_BlenderCycleRPM_BtnJustPressed()
 	{
 		return super.getIsDriverStartBtnJustPressed();
 	}
@@ -135,13 +144,13 @@ public class DriversStation extends BaseDriversStation
 	}
 	
 	//ActuatorUp
-	public boolean getIsDriver_ActuatorUp_BtnJustPressed()
+	public boolean getIsDriver_ShooterSliderUp_BtnJustPressed()
 	{
 		return super.getIsDriverYellowBtnYJustPressed();
 	}
 	
 	//ActuatorDown
-	public boolean getIsDriver_ActuatorDown_BtnJustPressed()
+	public boolean getIsDriver_ShooterSliderDown_BtnJustPressed()
 	{
 		return super.getIsDriverRedBtnBJustPressed();
 	}
@@ -183,6 +192,11 @@ public class DriversStation extends BaseDriversStation
 	{
 		return super.getDriverRightXAxisCmd();
 	}
+	
+	// =========================================================================================================
+	// OPERATOR		OPERATOR	OPERATOR	OPERATOR	OPERATOR	OPERATOR	OPERATOR	OPERATOR	
+	// =========================================================================================================
+	
 	
 	// =====================================
 	// === operator Just Pressed buttons ===
@@ -238,20 +252,6 @@ public class DriversStation extends BaseDriversStation
 	{
 		return super.getIsOperatorLeftBumperBtnPressed();
 	}
-	
-	/*
-	// Gear Infeed
-	public boolean getIsOperator_GearInfeed_BtnPressed()
-	{
-		return super.getIsOperatorGreenBtnAPressed();
-	}	
-	
-	// Gear Outfeed
-	public boolean getIsOperator_GearOutfeed_BtnPressed()
-	{
-		return super.getIsOperatorRedBtnBPressed();
-	}
-	*/
 	
 	// =====================================
 	// === operator Joysticks ==============

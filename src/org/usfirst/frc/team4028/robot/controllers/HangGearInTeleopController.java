@@ -1,4 +1,4 @@
-package org.usfirst.frc.team4028.robot.sequences;
+package org.usfirst.frc.team4028.robot.controllers;
 
 import org.usfirst.frc.team4028.robot.subsystems.Chassis;
 import org.usfirst.frc.team4028.robot.subsystems.GearHandler;
@@ -30,7 +30,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 //------------------------------------------------------
 //
 //=====> For Changes see Nick Donahue (javadotmakeitwork)
-public class HangGearInTeleopSequence  
+public class HangGearInTeleopController  
 {
 	// define class level variables for Robot subsystems
 	private GearHandler _gearHandler;
@@ -51,7 +51,7 @@ public class HangGearInTeleopSequence
 	//============================================================================================
 	// constructors follow
 	//============================================================================================
-	public HangGearInTeleopSequence(GearHandler gearHandler, Chassis chassis)
+	public HangGearInTeleopController(GearHandler gearHandler, Chassis chassis)
 	{
 		// these are the subsystems that this sequence needs to control
 		_gearHandler = gearHandler;
@@ -67,19 +67,19 @@ public class HangGearInTeleopSequence
 	{
 		if(!_gearHandler.IsGearInScoringPosition())
 		{
-			DriverStation.reportError("Cannot start sequence: gear not in scoring position.", false);
+			DriverStation.reportError("Cannot start controller: gear not in scoring position.", false);
 		}
 		else
 		{
 			_seqStartedTimeStamp = System.currentTimeMillis();
 			_isStillRunning = true;
 			
-			DriverStation.reportWarning("===== Entering HangGearInTeleopSequence =====", false);
+			DriverStation.reportWarning("===== Entering HangGearInTeleopController =====", false);
 		}
 	}
 			
 	// execute the sequence, return = true indicates sequence is still running
-	public boolean ExecuteSequenceRentrant()
+	public boolean ExecuteRentrant()
 	{	
 		// safety valve since in this mode we take away operator control temporarily
 		long elapsedTimeInMSec = System.currentTimeMillis() - _seqStartedTimeStamp;

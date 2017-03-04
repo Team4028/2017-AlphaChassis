@@ -1,7 +1,9 @@
-package org.usfirst.frc.team4028.robot.sensors;
+package org.usfirst.frc.team4028.robot.utilities;
 
 import java.util.ArrayList;
 
+// This generic class implements a circualr queue
+//	created in 2017 to support cycling between "n" cameras
 public class CircularQueue<E> extends ArrayList<E>
 {
 	private static final long serialVersionUID = 1L;

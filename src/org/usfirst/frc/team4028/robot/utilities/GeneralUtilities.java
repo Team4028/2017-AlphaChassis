@@ -1,4 +1,4 @@
-package org.usfirst.frc.team4028.robot;
+package org.usfirst.frc.team4028.robot.utilities;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -12,12 +12,13 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
+import org.usfirst.frc.team4028.robot.Robot;
 import org.usfirst.frc.team4028.robot.constants.RobotMap;
 
 import edu.wpi.first.wpilibj.DriverStation;
 
 // This class contains general helper utility functions
-public class Utilities 
+public class GeneralUtilities 
 {
     /**
     / This method writes general info about the build to the Operator's Console

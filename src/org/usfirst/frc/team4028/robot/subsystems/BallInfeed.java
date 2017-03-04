@@ -1,7 +1,8 @@
 package org.usfirst.frc.team4028.robot.subsystems;
 
 
-import org.usfirst.frc.team4028.robot.LogData;
+import org.usfirst.frc.team4028.robot.utilities.LogData;
+
 import com.ctre.CANTalon;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;

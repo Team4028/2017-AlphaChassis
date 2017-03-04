@@ -1,7 +1,7 @@
 package org.usfirst.frc.team4028.robot.subsystems;
 
-import org.usfirst.frc.team4028.robot.LogData;
-import org.usfirst.frc.team4028.robot.Utilities;
+import org.usfirst.frc.team4028.robot.utilities.LogData;
+import org.usfirst.frc.team4028.robot.utilities.GeneralUtilities;
 
 import com.ctre.CANTalon;
 
@@ -64,7 +64,7 @@ public class Climber
 	//============================================================================================
 	
 	// This method starts the climber when the button is pressed
-	public void StartClimber()
+	public void RunClimberReentrant()
 	{
 			RunMotor(CLIMBER_MOTOR_VBUS);
 			_isClimbing = true;
@@ -155,6 +155,6 @@ public class Climber
 	
 	private double getActualPercentVBus()
 	{
-		return Utilities.RoundDouble((_climberMtr.getOutputVoltage() / _climberMtr.getBusVoltage()), 2);
+		return GeneralUtilities.RoundDouble((_climberMtr.getOutputVoltage() / _climberMtr.getBusVoltage()), 2);
 	}
 }

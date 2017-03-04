@@ -1,7 +1,8 @@
 package org.usfirst.frc.team4028.robot.subsystems;
 
-import org.usfirst.frc.team4028.robot.LogData;
-import org.usfirst.frc.team4028.robot.Utilities;
+import org.usfirst.frc.team4028.robot.utilities.LogData;
+import org.usfirst.frc.team4028.robot.utilities.GeneralUtilities;
+
 import com.ctre.CANTalon;
 import com.ctre.CANTalon.FeedbackDevice;
 
@@ -459,7 +460,7 @@ public class Shooter
 		{
 			_currentSliderPosition += CHANGE_INTERVAL_ACTUATOR;
 			
-			_currentSliderPosition = Utilities.RoundDouble(_currentSliderPosition, 3); //rounds to 3 Decimal Places
+			_currentSliderPosition = GeneralUtilities.RoundDouble(_currentSliderPosition, 3); //rounds to 3 Decimal Places
 			_linearActuator.setPosition(_currentSliderPosition);
 			
 			DriverStation.reportWarning("Actuator Move Up To: " + _currentSliderPosition, false);
@@ -476,7 +477,7 @@ public class Shooter
 		{
 			_currentSliderPosition -= CHANGE_INTERVAL_ACTUATOR;
 			
-			_currentSliderPosition = Utilities.RoundDouble(_currentSliderPosition, 3); //rounds to 3 Decimal Places
+			_currentSliderPosition = GeneralUtilities.RoundDouble(_currentSliderPosition, 3); //rounds to 3 Decimal Places
 			_linearActuator.setPosition(_currentSliderPosition);
 			
 			DriverStation.reportWarning("Actuator Move Down To: " + _currentSliderPosition, false);
@@ -578,7 +579,7 @@ public class Shooter
 		
 		double currentActualSpeed = (currentOutputVoltage / currentBusVoltage);
 		
-		return Utilities.RoundDouble(currentActualSpeed, 2);
+		return GeneralUtilities.RoundDouble(currentActualSpeed, 2);
 	}
 	
 	private double getStg2ActualRPM()
@@ -604,7 +605,7 @@ public class Shooter
 		
 		double currentActualSpeed = (currentOutputVoltage / currentBusVoltage);
 		
-		return Utilities.RoundDouble(currentActualSpeed, 2);
+		return GeneralUtilities.RoundDouble(currentActualSpeed, 2);
 	}
 	public boolean getIsShooterInBangBangMode()
 	{
