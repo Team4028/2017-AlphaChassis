@@ -33,12 +33,13 @@ public class CrossBaseLine
 	//============================================================================================
 	// constructors follow
 	//============================================================================================
-	public CrossBaseLine(GearHandler gearHandler, Chassis chassis) {
+	public CrossBaseLine(GearHandler gearHandler, Chassis chassis, NavXGyro navX) {
 		// these are the subsystems that this auton routine needs to control
 		_gearHandler = gearHandler;
 		_chassis = chassis;
-		//_trajController = new TrajectoryDriveController(_chassis, _navX);
-		//_trajController.startTrajectoryController();
+		_navX = navX;
+		_trajController = new TrajectoryDriveController(_chassis, _navX);
+		_trajController.startTrajectoryController();
 		DriverStation.reportError("Auton Initialized", false);
 	}
 	
@@ -50,14 +51,8 @@ public class CrossBaseLine
 		_autonStartedTimeStamp = System.currentTimeMillis();
 		_isStillRunning = true;
 		
-		//_trajController.loadProfile(GeneratedTrajectory.LeftPoints, GeneratedTrajectory.RightPoints, 1.0, 0);
-		//_trajController.enable();
-		
-		_gearHandler.FullStop();
-		if(!_gearHandler.hasTiltAxisBeenZeroed()) {
-    		_gearHandler.ZeroGearTiltAxisInit();
-    	}
-		_gearHandler.ZeroGearTiltAxisInit();
+		_trajController.loadProfile(GeneratedTrajectory.LeftPoints, GeneratedTrajectory.RightPoints, 1.0, 0);
+		_trajController.enable();
 		
 		DriverStation.reportWarning("===== Entering CrossBaseLine Auton =====", false);
 	}
@@ -74,16 +69,14 @@ public class CrossBaseLine
       		//			we must treat it as a Reentrant function
       		//			and automatically recall it until complete
     		_gearHandler.ZeroGearTiltAxisReentrant();
-    	}
+      	}   
+      	else {
+      		_gearHandler.MoveGearToScorePosition();
+      	}
       	
-      	DriverStation.reportError("In Reentrant", false);
-		      	
-      	/*
-		// TODO: put auton code here
 		if (_trajController.onTarget()) {
 			_trajController.disable();
 		}
-		*/
 		
 		// cleanup
 		if(!_isStillRunning) {
@@ -91,6 +84,10 @@ public class CrossBaseLine
 		}
 		
 		return _isStillRunning; 
+	}
+	
+	public void Disabled() {
+		_trajController.disable();
 	}
 	
 	//============================================================================================

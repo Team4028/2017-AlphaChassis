@@ -63,6 +63,8 @@ public class Chassis
 	
 	private static final double _turnSpeedScalingFactor = 0.7;
 	
+	// Gearbox Ratios: 1:3 encoder shaft, 34:50 output shaft
+	
 	// define public enums exposed by this class
 	public enum GearShiftPosition {
 		UNKNOWN,
@@ -86,7 +88,7 @@ public class Chassis
     	_leftDriveMaster.changeControlMode(CANTalon.TalonControlMode.PercentVbus);	// open loop throttle
     	_leftDriveMaster.enableBrakeMode(_isBrakeMode);							// default to brake mode DISABLED
     	_leftDriveMaster.setFeedbackDevice(CANTalon.FeedbackDevice.QuadEncoder);	// set encoder to be feedback device
-    	_leftDriveMaster.configEncoderCodesPerRev(3072);
+    	_leftDriveMaster.configEncoderCodesPerRev(1850);
     	_leftDriveMaster.reverseSensor(false);  							// do not invert encoder feedback
     	_leftDriveMaster.enableLimitSwitch(false, false);
 
@@ -103,7 +105,7 @@ public class Chassis
 		_rightDriveMaster.changeControlMode(CANTalon.TalonControlMode.PercentVbus);	// open loop throttle
 		_rightDriveMaster.enableBrakeMode(_isBrakeMode);							// default to brake mode DISABLED
     	_rightDriveMaster.setFeedbackDevice(CANTalon.FeedbackDevice.QuadEncoder);	// set encoder to be feedback device
-    	_rightDriveMaster.configEncoderCodesPerRev(3072);
+    	_rightDriveMaster.configEncoderCodesPerRev(1850);
     	_rightDriveMaster.reverseSensor(true);  							// do not invert encoder feedback
 		_rightDriveMaster.enableLimitSwitch(false, false);
 

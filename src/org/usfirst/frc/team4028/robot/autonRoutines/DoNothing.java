@@ -33,18 +33,16 @@ public class DoNothing {
 		_autonStartedTimeStamp = System.currentTimeMillis();
 		_isStillRunning = false;
 		
-		DriverStation.reportWarning("===== Entering DoNothing Auton =====", false);
+		DriverStation.reportError("===== Entering DoNothing Auton =====", false);
 	}
 	
 	// execute the auton routine, return = true indicates auton is still running
 	// This is a LONG RUNNING method (it spans multiple scan cycles)
 	// It is the resonsibility of the caller to repeatable call it until it completes
 	public boolean ExecuteRentrant() {
-		// TODO: put auton code here
-		
 		// cleanup
 		if(!_isStillRunning) {
-			DriverStation.reportWarning("===== Completed DoNothing Auton =====", false);
+			DriverStation.reportError("===== Completed DoNothing Auton =====", false);
 		}
 		
 		return _isStillRunning; 

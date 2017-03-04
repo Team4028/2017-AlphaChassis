@@ -24,7 +24,8 @@ public class TrajectoryDriveController extends Robot {
 	private java.util.Timer _updaterTimer;
 	private double _direction;
 	private double _heading;
-	private double _kTurn = 0.0;  // Should be a constant
+	private double _kTurnGyro = -0.01;  // Should be a constant
+	private double _kTurnVision = 0.0;
 	private boolean _isEnabled = false;
 	private boolean _isUpdaterTaskRunning;
 	private double _angleDiff;
@@ -33,9 +34,10 @@ public class TrajectoryDriveController extends Robot {
 	public TrajectoryDriveController(Chassis chassis, NavXGyro navX) {
 		_chassis = chassis;
 		_navX = navX;
-		_leftFollower.configure(0.0,  0.0,  0.0,  0.7,  0.0);
-		_rightFollower.configure(0.0,  0.0,  0.0,  0.7,  0.0);
+		_leftFollower.configure(0.25,  0.0,  0.0,  0.31,  0.0);
+		_rightFollower.configure(0.25,  0.0,  0.0,  0.31,  0.0);
 		_updaterTimer = new java.util.Timer();
+		_updaterTask = new UpdaterTask();
 	}
 	
 	public boolean onTarget() {
@@ -90,10 +92,10 @@ public class TrajectoryDriveController extends Robot {
 			double rightPower = _direction * _rightFollower.calculate(distanceR, _rightMotionProfile, currentSegment);
 			
 			double goalHeading = _leftFollower.getHeading();
-			double goalHeadingInDegrees = BeefyMath.arctan(goalHeading);
+			double goalHeadingInDegrees = _heading * BeefyMath.arctan(goalHeading);
 			double observedHeading = _navX.getYaw();
 
-			double turn = _kTurn * (observedHeading - goalHeadingInDegrees);
+			double turn = _kTurnGyro * (observedHeading - goalHeadingInDegrees);
 			
 			_chassis.TankDrive(leftPower - turn, rightPower + turn);
 		}
@@ -102,6 +104,8 @@ public class TrajectoryDriveController extends Robot {
 	public void enable() {
 		_leftFollower.reset();
 		_rightFollower.reset();
+		_chassis.ZeroDriveEncoders();
+		_navX.zeroYaw();
 		_isEnabled = true;
 		_currentSegment = 0;
 	}
@@ -119,7 +123,7 @@ public class TrajectoryDriveController extends Robot {
 	}
 	
 	public double getCurrentHeading() {
-		return _leftFollower.getHeading();
+		return _navX.getYaw();
 	}
 	
 	public double getAngleDiff() {
@@ -137,6 +141,7 @@ public class TrajectoryDriveController extends Robot {
 			while(_isUpdaterTaskRunning) {
 				// update method here
 				if (_isEnabled) {
+					//DriverStation.reportError(Integer.toString(_currentSegment), false);
 					if (_currentSegment != (GeneratedTrajectory.kNumPoints - 1)) {
 						update(_currentSegment);
 						_currentSegment = _currentSegment + 1;

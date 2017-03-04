@@ -115,7 +115,7 @@ public class Robot extends IterativeRobot {
 		
 		// sensors follow
 		_lidar = new Lidar();
-		//_navX = new NavXGyro(RobotMap.NAVX_PORT);
+		_navX = new NavXGyro(RobotMap.NAVX_PORT);
 		_switchableCameraServer = new SwitchableCameraServer(RobotMap.GEAR_CAMERA_NAME);
 		
 		// telop sequences follow
@@ -138,6 +138,7 @@ public class Robot extends IterativeRobot {
     	
     	// cleanup auton resources, since they are not needed in Telop Mode
     	if(_crossBaseLineAuton != null) {
+    		_crossBaseLineAuton.Disabled();
     		_crossBaseLineAuton = null;
     	}
     	
@@ -146,10 +147,12 @@ public class Robot extends IterativeRobot {
     	}
 		
 		if(_hangBoilerSideGearAuton != null) {
+			_hangBoilerSideGearAuton.Disabled();
 			_hangBoilerSideGearAuton = null;
     	}
 		
 		if(_hangCenterGearAuton != null) {
+			_hangCenterGearAuton.Disabled();
 			_hangCenterGearAuton = null;
     	}
 		
@@ -160,6 +163,7 @@ public class Robot extends IterativeRobot {
 		if(_turnAndShoot != null) {
 			_turnAndShoot = null;
     	}
+		
 	}
 		
 	// ----------------------------------------------------------------------
@@ -172,13 +176,13 @@ public class Robot extends IterativeRobot {
     	// Step 1: #### GearHandler ####
 		// =====================================
     	_gearHandler.FullStop();
+    	_gearHandler.ZeroGearTiltAxisInit();
     	
     	// =====================================
 		// Step 2: add logic to read from Dashboard Choosers to select the Auton routine to run
     	// =====================================
-    	// TODO: add this code
-    	
-    	_autonMode = _dashboardInputs.get_autonMode();
+    	//_autonMode = _dashboardInputs.get_autonMode();
+    	_autonMode = AUTON_MODE.HANG_CENTER_GEAR;
     	
     	// =====================================
 		// Step 2.1: Create the correct autom routine
@@ -188,7 +192,7 @@ public class Robot extends IterativeRobot {
     	// =====================================
     	switch (_autonMode) {
 			case CROSS_BASE_LINE:
-				_crossBaseLineAuton = new CrossBaseLine(_gearHandler, _chassis);
+				_crossBaseLineAuton = new CrossBaseLine(_gearHandler, _chassis, _navX);
 				_crossBaseLineAuton.Initialize();
 				break;
 				
@@ -198,12 +202,12 @@ public class Robot extends IterativeRobot {
 				break;
 				
 			case HANG_BOILER_SIDE_GEAR:
-				_hangBoilerSideGearAuton = new HangBoilerSideGear(_gearHandler, _chassis);
+				_hangBoilerSideGearAuton = new HangBoilerSideGear(_gearHandler, _chassis, _navX, _hangGearInTeleopSeq);
 				_hangBoilerSideGearAuton.Initialize();
 				break;
 				
 			case HANG_CENTER_GEAR:
-				_hangCenterGearAuton = new HangCenterGear(_gearHandler, _chassis);
+				_hangCenterGearAuton = new HangCenterGear(_gearHandler, _chassis, _navX, _hangGearInTeleopSeq);
 				_hangCenterGearAuton.Initialize();
 				break;
 				
@@ -677,5 +681,4 @@ public class Robot extends IterativeRobot {
 	    	_dataLogger.WriteDataLine(logData);
     	}
     }
-
 }
