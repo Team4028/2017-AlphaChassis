@@ -29,8 +29,8 @@ public class DriversStation extends BaseDriversStation
 	--- Driver Joysticks --------
 	DRIVER_LEFT_X_AXIS
 	DRIVER_LEFT_Y_AXIS				ChassisThrottle_JoystickCmd
-	DRIVER_LEFT_TRIGGER
-	DRIVER_RIGHT_TRIGGER
+	DRIVER_LEFT_TRIGGER				Shooter Stg1 Cycle Down RPM
+	DRIVER_RIGHT_TRIGGER			Shooter Stg2 Cycle Down RPM
 	DRIVER_RIGHT_X_AXIS				ChassisTurn_JoystickCmd
 	DRIVER_RIGHT_Y_AXIS
 	
@@ -120,7 +120,12 @@ public class DriversStation extends BaseDriversStation
 	//}
 	
 	// Shooter Stg 1 Cycle Up/Down
-	public boolean getIsDriver_ShooterStg1CycleRPM_BtnJustPressed()
+	//public boolean getIsDriver_ShooterStg1CycleRPM_BtnJustPressed()
+	//{
+	//	return super.getIsDriverLeftBumperBtnJustPressed();
+	//}
+	
+	public boolean getIsDriver_ShooterStg1StepRPMUp_BtnJustPressed()
 	{
 		return super.getIsDriverLeftBumperBtnJustPressed();
 	}
@@ -138,7 +143,12 @@ public class DriversStation extends BaseDriversStation
 	//}
 	
 	// Shooter Stg 2 Cycle Up/Down
-	public boolean getIsDriver_ShooterStg2CycleRPM_BtnJustPressed()
+	//public boolean getIsDriver_ShooterStg2CycleRPM_BtnJustPressed()
+	//{
+	//	return super.getIsDriverRightBumperBtnJustPressed();
+	//}
+	
+	public boolean getIsDriver_ShooterStg2StepRPMUp_BtnJustPressed()
 	{
 		return super.getIsDriverRightBumperBtnJustPressed();
 	}
@@ -192,6 +202,20 @@ public class DriversStation extends BaseDriversStation
 	{
 		return super.getDriverRightXAxisCmd();
 	}
+	
+	
+	// Stg 1 Mtr Down
+	public boolean getIsDriver_ShooterStg1StepRPMDown_BtnJustPressed()
+	{
+		return (Math.abs(super.getDriverLeftTriggerCmd()) > 0.2);
+	}
+	
+	// Stg 2 Mtr Down
+	public boolean getIsDriver_ShooterStg2StepRPMDown_BtnJustPressed()
+	{
+		return (Math.abs(super.getDriverRightTriggerCmd()) > 0.2);
+	}
+	
 	
 	// =========================================================================================================
 	// OPERATOR		OPERATOR	OPERATOR	OPERATOR	OPERATOR	OPERATOR	OPERATOR	OPERATOR	

@@ -61,27 +61,27 @@ public class Shooter
 	
 	//define class level PID constants
 	private static final double FIRST_STAGE_MTG_FF_GAIN = 0.033; //0.0325; //0.034; //0.032; //0.0315; //0.031;
-	private static final double FIRST_STAGE_MTG_P_GAIN = 0.25; //0.2; //0.1;
+	private static final double FIRST_STAGE_MTG_P_GAIN = 0.325; //0.2; //0.1;
 	private static final double FIRST_STAGE_MTG_I_GAIN = 0.0;
-	private static final double FIRST_STAGE_MTG_D_GAIN = 3.5; //3.0;
+	private static final double FIRST_STAGE_MTG_D_GAIN = 5.0; //3.0;
 
 	private static final double SECOND_STAGE_MTG_FF_GAIN = 0.03; //0.0274;
-	private static final double SECOND_STAGE_MTG_P_GAIN = 0.15;
+	private static final double SECOND_STAGE_MTG_P_GAIN = 0.175;
 	private static final double SECOND_STAGE_MTG_I_GAIN = 0.0;
-	private static final double SECOND_STAGE_MTG_D_GAIN = 5.0; //4.0;//3.5; //0.0;//5; //6; //0.115;
+	private static final double SECOND_STAGE_MTG_D_GAIN = 6.0; //4.0;//3.5; //0.0;//5; //6; //0.115;
 	
 	//define class level Actuator Constants
 	private static final double MAX_THRESHOLD_ACTUATOR = 0.7; 
 	private static final double MIN_THRESHOLD_ACTUATOR = 0.4;
-	private static final double CHANGE_INTERVAL_ACTUATOR = 0.025;
+	private static final double CHANGE_INTERVAL_ACTUATOR = 0.02;
 	private static final double INITIAL_POSITION_ACTUATOR = 0.65;
 	
 	//define class level Shooter Motor Constants
 	private static final double MAX_SHOOTER_RPM = -4400;
 	private static final double MIN_SHOOTER_RPM = -3000;
-	private static final double SHOOTER_BUMP_RPM = 10;
-	private static final double FIRST_STAGE_MTR_DEFAULT_RPM = -3700;
-	private static final double SECOND_STAGE_MTR_DEFAULT_RPM = -3700;
+	private static final double SHOOTER_BUMP_RPM = 50;
+	private static final double FIRST_STAGE_MTR_DEFAULT_RPM = -3500;
+	private static final double SECOND_STAGE_MTR_DEFAULT_RPM = -3200;
 	
 	private static final double FEEDER_PERCENTVBUS_COMMAND = -0.7; //This Mo tor Needs to Run in Reverse
 	
@@ -187,66 +187,19 @@ public class Shooter
 	// Shooter Motors
 	//============================================================================================
 
-	public void SpinStg1Wheel(double targetRPMorVBus)
+	public void SpinStg1Wheel(double targetRPM)
 	{
-		//if(!getIsShooterInBangBangMode())
-		{
-			//if(_firstStgMtr.getControlMode() != CANTalon.TalonControlMode.Speed)
-			{
-				//_firstStgMtr.changeControlMode(CANTalon.TalonControlMode.Speed);
-			}
-			DriverStation.reportWarning("Stage 1 Target RPM = " + targetRPMorVBus, true);
-			_stg1MtrTargetRPM = targetRPMorVBus;
-		}
-		//else
-		{
-			//if(_firstStgMtr.getControlMode() != CANTalon.TalonControlMode.PercentVbus)
-			{
-				//_firstStgMtr.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
-			}
-		}
-	
+		_stg1MtrTargetRPM = targetRPM;
 		_firstStgMtr.set(_stg1MtrTargetRPM);
+		DriverStation.reportWarning("Stage 1 Target RPM = " + targetRPM, false);
 	}
 	
 	public void SpinStg2Wheel(double targetRPM)
 	{
-		//if(_secondStgMtr.getControlMode() != CANTalon.TalonControlMode.Speed)
-		{
-			//_secondStgMtr.changeControlMode(CANTalon.TalonControlMode.Speed);
-		}
-		
 		_stg2MtrTargetRPM = targetRPM;
-		
 		_secondStgMtr.set(_stg2MtrTargetRPM);
-		DriverStation.reportWarning("Stage 2 Target RPM = " + targetRPM, true);
+		DriverStation.reportWarning("Stage 2 Target RPM = " + targetRPM, false);
 	}
-	
-	/*public void SpinShooterBangBang()
-	{
-		_isShooterInBangBangMode = true;
-		
-		if(_secondStgMtr.getControlMode() != CANTalon.TalonControlMode.PercentVbus)
-		{
-			_secondStgMtr.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
-		}
-		if(getStg1ActualRPM() < _stg1MtrTargetRPM)
-		{
-			SpinStg1Wheel(1);
-		}
-		else
-		{
-			SpinStg1Wheel(0);
-		}
-		if(getStg2ActualRPM() < _stg2MtrTargetRPM)
-		{
-			SpinStg2Wheel(1);
-		}
-		else
-		{
-			SpinStg2Wheel(0);
-		}
-	}*/
 	
 	//============================================================================================
 	// Set Up Shooter Testing
@@ -322,7 +275,7 @@ public class Shooter
 			{
 				// if already turning, just bump
 				SpinStg2Wheel(_stg2MtrTargetRPM -= SHOOTER_BUMP_RPM);
-				DriverStation.reportWarning("Bumping Up Stage 2", true);
+				DriverStation.reportWarning("Bumping Up Stage 2", false);
 			}
 			else
 			{

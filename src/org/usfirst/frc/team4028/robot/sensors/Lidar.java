@@ -13,7 +13,7 @@ import java.lang.String;
 public class Lidar {
 	private final int TEXT_CHUNK_MIN_LENGTH = 9;
 	private final int LIDAR_TIMEOUT_IN_MSEC = 250;
-	private final int DISCONNECT_TIMER_IN_MSEC = 3000;
+	private final int DISCONNECT_TIMER_IN_MSEC = 10000;
 	
 	private java.util.Timer _updaterTimer;
 	private LIDARUpdaterTask _task;

@@ -30,7 +30,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 //------------------------------------------------------
 //
 //=====> For Changes see Nick Donahue (javadotmakeitwork)
-public class HangGearInTeleopController  
+public class HangGearController  
 {
 	// define class level variables for Robot subsystems
 	private GearHandler _gearHandler;
@@ -42,7 +42,7 @@ public class HangGearInTeleopController
 	
 	// define class level constants
 	private static final long MAX_TIME_BEFORE_ABORT_IN_MSEC = 2000; 
-	private static final double DRIVE_BACKWARDS_SPEED = 00.50;
+	private static final double DRIVE_BACKWARDS_SPEED = -00.50;
 	private static final double GEAR_OUTFEED_SPEED = -1.0;
 	private static final double GEAR_TILT_SPEED = 00.75;
 	private static final int MSEC_FIRST_CHANGE = 300;
@@ -51,7 +51,7 @@ public class HangGearInTeleopController
 	//============================================================================================
 	// constructors follow
 	//============================================================================================
-	public HangGearInTeleopController(GearHandler gearHandler, Chassis chassis)
+	public HangGearController(GearHandler gearHandler, Chassis chassis)
 	{
 		// these are the subsystems that this sequence needs to control
 		_gearHandler = gearHandler;

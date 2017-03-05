@@ -93,7 +93,7 @@ public class GearHandler
 		// Tilt Motor
 		_gearTiltMotor = new CANTalon(talonTiltCanBusAddr);
 		_gearTiltMotor.changeControlMode(CANTalon.TalonControlMode.PercentVbus);	// open loop throttle
-		_gearTiltMotor.enableBrakeMode(true);							// default to brake mode DISABLED
+		_gearTiltMotor.enableBrakeMode(false);							// default to brake mode DISABLED
 		_gearTiltMotor.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Relative);	// set encoder to be feedback device
 		_gearTiltMotor.reverseSensor(false);  							// do not invert encoder feedback
 		_gearTiltMotor.enableLimitSwitch(false, true);
@@ -209,12 +209,16 @@ public class GearHandler
     {
     	MoveTiltAxisPIDP(GEAR_TILT_AXIS_HOME_POSITION_IN_ROTATIONS);
     	_isLastTiltMoveToFloorCallComplete = true;
+    	
+    	DriverStation.reportWarning("Move Gear To Home Position", false);
     }
     
     public void MoveGearToScorePosition()
     {
     	MoveTiltAxisPIDP(GEAR_TILT_SCORING_POSITION_IN_ROTATIONS);
     	_isLastTiltMoveToFloorCallComplete = true;
+    	
+    	DriverStation.reportWarning("Move Gear To Score Position", false);
     }
     
     public void MoveGearToFloorPositionReentrant()
@@ -230,6 +234,8 @@ public class GearHandler
 			MoveTiltAxisPIDP(GEAR_TILT_CHANGE_TO_V_BUS_POSITION_IN_ROTATIONS);
 			_isLastTiltMoveToFloorCallComplete = false;
 		}
+		
+		DriverStation.reportWarning("Move Gear To Floor Position", false);
     }
     
     public void MoveTiltAxisPIDP (double positionCmd)
@@ -243,7 +249,7 @@ public class GearHandler
 
 	public void MoveTiltAxisVBus(double percentVBusCmd)
 	{
-		MoveTiltAxisVBus(percentVBusCmd, false);
+		MoveTiltAxisVBus(percentVBusCmd, true);
 	}
     
 	public void MoveTiltAxisVBus(double percentVBusCmd, boolean isUseRawCmd)

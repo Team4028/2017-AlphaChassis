@@ -8,7 +8,7 @@ import org.usfirst.frc.team4028.robot.autonRoutines.HangKeySideGear;
 import org.usfirst.frc.team4028.robot.autonRoutines.TurnAndShoot;
 import org.usfirst.frc.team4028.robot.constants.GeneralEnums.AUTON_MODE;
 import org.usfirst.frc.team4028.robot.constants.GeneralEnums.TELEOP_MODE;
-import org.usfirst.frc.team4028.robot.controllers.HangGearInTeleopController;
+import org.usfirst.frc.team4028.robot.controllers.HangGearController;
 import org.usfirst.frc.team4028.robot.constants.RobotMap;
 import org.usfirst.frc.team4028.robot.sensors.Lidar;
 import org.usfirst.frc.team4028.robot.sensors.NavXGyro;
@@ -71,7 +71,7 @@ public class Robot extends IterativeRobot
 	// ===========================================================
 	//   Define class level instance variables for Robot Telep Sequences 
 	// ===========================================================
-	private HangGearInTeleopController _hangGearInTeleopCtrlr;
+	private HangGearController _hangGearController;
 	
 	// ===========================================================
 	//   Define class level instance variables for Robot Auton Routines 
@@ -131,7 +131,7 @@ public class Robot extends IterativeRobot
 		_switchableCameraServer = new SwitchableCameraServer(RobotMap.GEAR_CAMERA_NAME);
 		
 		// telop Controller follow
-		_hangGearInTeleopCtrlr = new HangGearInTeleopController(_gearHandler, _chassis);
+		_hangGearController = new HangGearController(_gearHandler, _chassis);
 				
 		//Update Dashboard Fields (push all fields to dashboard)
 		OutputAllToSmartDashboard();
@@ -445,16 +445,24 @@ public class Robot extends IterativeRobot
     			//=====================
     			
 				// Stg 1 Cycle Up / Down
-    			if(_driversStation.getIsDriver_ShooterStg1CycleRPM_BtnJustPressed())
+    			if(_driversStation.getIsDriver_ShooterStg1StepRPMUp_BtnJustPressed())
     			{
-    				_shooter.Stg1MtrCycleRPM();
+    				_shooter.Stg1MtrBumpRPMUp();
     			}
+    			else if (_driversStation.getIsDriver_ShooterStg1StepRPMDown_BtnJustPressed())
+				{
+    				_shooter.Stg1MtrBumpRPMDown();
+				}
     			
     			// Stg 2 Cycle Up / Down
-    			if(_driversStation.getIsDriver_ShooterStg2CycleRPM_BtnJustPressed())
+    			if(_driversStation.getIsDriver_ShooterStg2StepRPMUp_BtnJustPressed())
     			{
-    				_shooter.Stg2MtrCycleRPM();
+    				_shooter.Stg2MtrBumpRPMUp();
     			}
+    			else if (_driversStation.getIsDriver_ShooterStg2StepRPMDown_BtnJustPressed())
+				{
+    				_shooter.Stg2MtrBumpRPMDown();
+				}
     			
     			// Stg 1 & 2 Full Stop
     			if(_driversStation.getIsDriver_FullShooterStop_BtnJustPressed())
@@ -603,7 +611,7 @@ public class Robot extends IterativeRobot
     				if(_gearHandler.hasTiltAxisBeenZeroed())
     				{
 	    				_telopMode = TELEOP_MODE.HANG_GEAR_SEQUENCE_MODE;
-	    				_hangGearInTeleopCtrlr.Initialize();
+	    				_hangGearController.Initialize();
     				}
     				else
     				{
@@ -617,7 +625,7 @@ public class Robot extends IterativeRobot
     			
     			// in this teleop mode the driver & operator do not have control until
     			// the sequence completes or it times out
-    			boolean isStillRunning = _hangGearInTeleopCtrlr.ExecuteRentrant();
+    			boolean isStillRunning = _hangGearController.ExecuteRentrant();
     			
     			// if not still running, switch back to std teleop mode
     			//	(ie: give control back to the driver & operator)
