@@ -220,14 +220,14 @@ public class Chassis
 				_shifterSolenoid.set(RobotMap.SHIFTER_SOLENOID_HIGH_GEAR_POSITION);
 				_shifterSolenoidPosition = RobotMap.SHIFTER_SOLENOID_HIGH_GEAR_POSITION;
 				
-    			DriverStation.reportError("Shift into HIGH gear", false);
+    			DriverStation.reportWarning("Shift into HIGH gear", false);
 				break;
 			
 			case LOW_GEAR:
 				_shifterSolenoid.set(RobotMap.SHIFTER_SOLENOID_LOW_GEAR_POSITION);
 				_shifterSolenoidPosition = RobotMap.SHIFTER_SOLENOID_LOW_GEAR_POSITION;
 				
-    			DriverStation.reportError("Shift into LOW gear", false);
+    			DriverStation.reportWarning("Shift into LOW gear", false);
 				break;
 		}
 	}

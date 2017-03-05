@@ -141,7 +141,7 @@ public class Robot extends IterativeRobot
 	// called each time the robot enters disabled mode from either telop or auton mode
 	// ----------------------------------------------------------------------
 	@Override
-	public void disabledInit() 
+	public void disabledPeriodic() 
 	{
 		// if logging was enabled, make sure we close the file
     	if(_dataLogger != null)
@@ -181,7 +181,7 @@ public class Robot extends IterativeRobot
     	_gearHandler.FullStop();
     	
     	// start the lidar polling
-    	if(_lidar != null)	{ _lidar.start(); }
+    	//if(_lidar != null)	{ _lidar.start(); }	//TODO: reslove timeout
     	
     	// =====================================
 		// Step 2: add logic to read from Dashboard Choosers to select the Auton routine to run
@@ -361,7 +361,7 @@ public class Robot extends IterativeRobot
     	_telopMode = TELEOP_MODE.STANDARD;	// default to std mode
     	
     	// #### Lidar starts doing ####
-    	if(_lidar != null)	{ _lidar.start(); }
+    	//if(_lidar != null)	{ _lidar.start(); }	//TODO: reslove timeout
     	
     	// =====================================
     	// Step 2: Configure Logging (if USB Memory Stick is present)
@@ -469,40 +469,7 @@ public class Robot extends IterativeRobot
     			{
     				_shooter.FullShooterStop();
     			}
-    			
-    			// Stg 1 Bump Up / Down
-    			//if(_driversStation.getIsDriver_ShooterStg1Up_BtnJustPressed())
-    			//{
-    			//	_shooter.Stg1MtrBumpRPMUp();
-    			//}
-    			//else if(_driversStation.getIsDriver_ShooterStg1Down_BtnJustPressed())
-    			//{
-    			//	_shooter.Stg1MtrBumpRPMDown();
-    			//}
-    			//if (!_shooter.getIsShooterInBangBangMode())
-    			//{
-    					
-    			// Stg 2 Bump Up / Down
-    			//if(_driversStation.getIsDriver_ShooterStg2Up_BtnJustPressed())
-    			//{
-    			//	_shooter.Stg2MtrBumpRPMUp();
-    			//}
-    			//else if(_driversStation.getIsDriver_ShooterStg2Down_BtnJustPressed()) 
-    			//{
-    			//	_shooter.Stg2MtrBumpRPMDown();		
-    			//}
-        			
-    			//}
-    			//else
-    			//{
-    				//_shooter.SpinShooterBangBang();
-    			//}
-    			//Shooter Constant Velocity Through VBus
-    			/*if(_driversStation.getIsDriver_ConstantVThroughVBus_BtnJustPressed())
-    			{
-    				_shooter.SpinShooterBangBang();
-    			}*/
-    			      			
+    			   			      			
     			//=====================
     			// Blender and Feeder Motors
     			//=====================
@@ -566,10 +533,9 @@ public class Robot extends IterativeRobot
 		    	//=======================================
 		    	// Switchable Cameras
 		    	//=====================================
-				
 				if(_driversStation.getIsOperator_CameraSwap_BtnJustPressed())
 				{
-					_switchableCameraServer.SwapToNextCamera();
+					_switchableCameraServer.ChgToNextCamera();
 				}
 		    	
 		    	//if(_driversStation.getIsOperator_CameraSwap_BtnJustPressed())
