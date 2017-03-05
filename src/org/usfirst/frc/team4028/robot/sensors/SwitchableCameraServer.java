@@ -20,7 +20,8 @@ import edu.wpi.first.wpilibj.DriverStation;
 //=====> For Changes see Nick Donahue (javadotmakeitwork)
 //=========================REVISION BLOCK==================================
 //Rev		By			D/T				Description
-//0		Nick		2/27 8:47		Added 4th Camera and Added "Swapped to Next" method for increased organization
+// 0		Nick		2/27 8:47		Added 4th Camera and Added "Swapped to Next" method for increased organization
+// 1		TomB		5.Mar.2017		Added code to handle unplugging & replugging cameras
 //-------------------------------------------------------------
 public class SwitchableCameraServer
 {	
